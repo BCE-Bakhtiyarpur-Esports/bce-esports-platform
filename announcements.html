@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Announcements — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  @media (max-width: 768px) {
+    .responsive-table thead { display: none; }
+    .responsive-table tr { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; padding: 12px; }
+    .responsive-table td { display: flex; justify-content: space-between; border: none; padding: 6px 0; font-size: 14px; }
+    .responsive-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+  }
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+        <div>
+          <h1>Announcements</h1>
+          <p>Manage news and updates for the public website.</p>
+        </div>
+        <button onclick="openAnnModal()" class="btn btn-primary">＋ Create Announcement</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="annBody">
+            <tr><td colspan="5" style="text-align: center; padding: 30px;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="annModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="annModalTitle">Create Announcement</h3>
+      <button class="modal-close" onclick="document.getElementById('annModal').classList.remove('open')">&times;</button>
+    </div>
+    <form id="annForm" style="display: flex; flex-direction: column; gap: 16px;">
+      <input type="hidden" id="annId">
+      <div class="form-group">
+        <label class="form-label">Title *</label>
+        <input type="text" id="annTitle" class="form-input" required placeholder="e.g. Registration for BGMI Open begins!">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="annCategory" class="form-select">
+          <option value="Update">Update</option>
+          <option value="Tournament">Tournament</option>
+          <option value="Result">Result</option>
+          <option value="Alert">Alert</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Short Excerpt</label>
+        <textarea id="annExcerpt" class="form-textarea" rows="2" placeholder="Short summary for the homepage..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Full Content</label>
+        <textarea id="annContent" class="form-textarea" rows="5" placeholder="Write the full details here..."></textarea>
+      </div>
+      <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+        <input type="checkbox" id="annPublished" checked style="width: auto;">
+        <label class="form-label" style="margin: 0;">Publish immediately</label>
+      </div>
+      <button type="submit" id="annSaveBtn" class="btn btn-primary">Save Announcement</button>
+    </form>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Content / Announcements');
+  if (!admin) return;
+
+  let allAnn = [];
+
+  async function loadData() {
+    try {
+      const res = await ADMIN_API.get('admin.getAnnouncements');
+      if (res.success) {
+        allAnn = res.data || [];
+        allAnn.sort((a, b) => new Date(b.PublishedAt || 0) - new Date(a.PublishedAt || 0));
+        render();
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  function render() {
+    const tbody = document.getElementById('annBody');
+    if (allAnn.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No announcements found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = allAnn.map(a => {
+      const isPub = a.IsPublished === true || String(a.IsPublished).toUpperCase() === 'TRUE';
+      const date = a.PublishedAt ? new Date(a.PublishedAt).toLocaleDateString('en-IN') : '-';
+      return `
+        <tr>
+          <td data-label="Title"><strong style="color:#fff;">${a.Title || 'Untitled'}</strong></td>
+          <td data-label="Category"><span class="badge" style="background:var(--bg-secondary);">${a.Category || 'Update'}</span></td>
+          <td data-label="Date">${date}</td>
+          <td data-label="Status"><span class="badge badge-${isPub ? 'active' : 'inactive'}">${isPub ? 'Published' : 'Draft'}</span></td>
+          <td data-label="Actions">
+            <div style="display:flex; gap:8px;">
+              <button onclick='editAnn(${JSON.stringify(a).replace(/'/g, "&#39;")})' class="btn btn-outline btn-sm">Edit</button>
+              <button onclick="deleteAnn('${a.AnnouncementID}')" class="btn btn-danger btn-sm">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  loadData();
+
+  window.openAnnModal = () => {
+    document.getElementById('annForm').reset();
+    document.getElementById('annId').value = '';
+    document.getElementById('annModalTitle').textContent = 'Create Announcement';
+    document.getElementById('annModal').classList.add('open');
+  };
+
+  window.editAnn = (a) => {
+    document.getElementById('annId').value = a.AnnouncementID;
+    document.getElementById('annTitle').value = a.Title || '';
+    document.getElementById('annCategory').value = a.Category || 'Update';
+    document.getElementById('annExcerpt').value = a.Excerpt || '';
+    document.getElementById('annContent').value = a.Content || '';
+    document.getElementById('annPublished').checked = (a.IsPublished === true || String(a.IsPublished).toUpperCase() === 'TRUE');
+    
+    document.getElementById('annModalTitle').textContent = 'Edit Announcement';
+    document.getElementById('annModal').classList.add('open');
+  };
+
+  window.deleteAnn = async (id) => {
+    if (!confirm('Delete this announcement?')) return;
+    try {
+      const res = await ADMIN_API.post('admin.deleteAnnouncement', { announcementId: id });
+      if (res.success) loadData();
+      else alert(res.message);
+    } catch (e) { alert('Error'); }
+  };
+
+  document.getElementById('annForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('annSaveBtn');
+    btn.disabled = true;
+    
+    const id = document.getElementById('annId').value;
+    const isEdit = id !== '';
+
+    const data = {
+      Title: document.getElementById('annTitle').value,
+      Category: document.getElementById('annCategory').value,
+      Excerpt: document.getElementById('annExcerpt').value,
+      Content: document.getElementById('annContent').value,
+      IsPublished: document.getElementById('annPublished').checked ? 'TRUE' : 'FALSE',
+      PublishedAt: new Date().toISOString()
+    };
+
+    if (isEdit) data.AnnouncementID = id;
+
+    try {
+      const action = isEdit ? 'admin.updateAnnouncement' : 'admin.createAnnouncement';
+      const res = await ADMIN_API.post(action, { data });
+      if (res.success) {
+        document.getElementById('annModal').classList.remove('open');
+        loadData();
+      } else alert(res.message);
+    } catch (err) { alert('Error'); }
+    finally { btn.disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>
