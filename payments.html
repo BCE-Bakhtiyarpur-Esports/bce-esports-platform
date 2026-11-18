@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payments — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Payment Verification</h1>
+        <p>Check UTR numbers and payment screenshots to verify.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="flex: 1; min-width: 200px; margin: 0;">
+          <label class="form-label">Search</label>
+          <input type="text" id="searchInput" class="form-input" placeholder="Search by Reg ID or Payment ID...">
+        </div>
+        <div class="form-group" style="min-width: 150px; margin: 0;">
+          <label class="form-label">Status</label>
+          <select id="statusFilter" class="form-select">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="verified">Verified</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pay ID</th>
+              <th>Reg ID</th>
+              <th>Amount</th>
+              <th>UTR</th>
+              <th>Status</th>
+              <th>Proof</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsBody">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading payments...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal for Image Proof -->
+<div id="proofModal" class="modal">
+  <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-header">
+      <h3>Payment Proof</h3>
+      <button class="modal-close" onclick="document.getElementById('proofModal').classList.remove('open')">&times;</button>
+    </div>
+    <div id="proofImageContainer" style="text-align: center; background: #000; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+      <span style="color: #fff;">Loading image...</span>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Payments');
+  if (!admin) return;
+
+  let allPayments = [];
+
+  function badge(status) {
+    const s = String(status || 'pending').toLowerCase();
+    return `<span class="badge badge-${s}">${s}</span>`;
+  }
+
+  function renderTable() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const statusF = document.getElementById('statusFilter').value.toLowerCase();
+
+    const filtered = allPayments.filter(p => {
+      const matchSearch = String(p.PaymentID || '').toLowerCase().includes(query) || 
+                          String(p.RegistrationID || '').toLowerCase().includes(query);
+      const matchStatus = statusF === 'all' || String(p.Status || '').toLowerCase() === statusF;
+      return matchSearch && matchStatus;
+    });
+
+    const tbody = document.getElementById('paymentsBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">No payments found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(p => `
+      <tr>
+        <td><strong style="color:#fff;">${p.PaymentID}</strong></td>
+        <td>${p.RegistrationID}</td>
+        <td>₹${p.Amount || 0}</td>
+        <td>${p.UTR || '-'}</td>
+        <td>${badge(p.Status)}</td>
+        <td>
+          ${p.ProofFileID || p.ProofURL ? 
+            `<button onclick="viewProof('${p.PaymentID}')" class="btn btn-outline btn-sm">View Proof</button>` : 
+            '<span style="color:var(--text-muted); font-size:12px;">No Proof</span>'}
+        </td>
+        <td>
+          <div style="display:flex; gap:8px;">
+            ${String(p.Status).toLowerCase() === 'pending' ? `
+              <button onclick="verifyPay('${p.PaymentID}')" class="btn btn-success btn-sm">Verify</button>
+              <button onclick="rejectPay('${p.PaymentID}')" class="btn btn-danger btn-sm">Reject</button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // Load Data
+  try {
+    const res = await ADMIN_API.get('admin.getPayments');
+    if (res.success) {
+      allPayments = res.data || [];
+      allPayments.sort((a, b) => new Date(b.CreatedAt || 0) - new Date(a.CreatedAt || 0));
+      renderTable();
+    }
+  } catch (e) {
+    document.getElementById('paymentsBody').innerHTML = `<tr><td colspan="7" style="text-align: center; color: #f87171; padding: 30px;">Error: ${e.message}</td></tr>`;
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+  document.getElementById('statusFilter').addEventListener('change', renderTable);
+
+})();
+
+// Modal Actions
+window.viewProof = async function(paymentId) {
+  const modal = document.getElementById('proofModal');
+  const container = document.getElementById('proofImageContainer');
+  modal.classList.add('open');
+  container.innerHTML = '<span style="color: #fff;">Loading...</span>';
+
+  try {
+    const res = await ADMIN_API.post('admin.getPaymentProof', { paymentId: paymentId });
+    if (res.success && res.data.base64) {
+      container.innerHTML = `<img src="data:${res.data.mimeType};base64,${res.data.base64}" style="max-width: 100%; max-height: 70vh; object-fit: contain;">`;
+    } else {
+      container.innerHTML = `<span style="color: #f87171;">${res.message || 'Image not found'}</span>`;
+    }
+  } catch (e) {
+    container.innerHTML = '<span style="color: #f87171;">Error loading image.</span>';
+  }
+};
+
+// Table Actions
+window.verifyPay = async function(id) {
+  if (!confirm('Verify this payment?')) return;
+  try {
+    const res = await ADMIN_API.post('admin.verifyPayment', { paymentId: id });
+    if (res.success) window.location.reload();
+    else alert(res.message);
+  } catch (e) { alert('Error'); }
+};
+
+window.rejectPay = async function(id) {
+  const reason = prompt('Reason for rejection:');
+  if (reason === null) return;
+  try {
+    const res = await ADMIN_API.post('admin.rejectPayment', { paymentId: id, reason: reason });
+    if (res.success) window.location.reload();
+    else alert(res.message);
+  } catch (e) { alert('Error'); }
+};
+</script>
+</body>
+</html>
