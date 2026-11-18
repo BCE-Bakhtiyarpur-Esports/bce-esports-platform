@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Games Management — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Games Management</h1>
+        <p>Add and manage games available for tournaments.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start;">
+        
+        <!-- Add Game Form -->
+        <div class="dashboard-card">
+          <h2>Add New Game</h2>
+          <form id="gameForm" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label">Game Name *</label>
+              <input type="text" id="gName" class="form-input" required placeholder="e.g. Clash of Clans">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Game Code (Short) *</label>
+              <input type="text" id="gCode" class="form-input" required placeholder="e.g. COC">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Default Team Size</label>
+              <input type="number" id="gTeamSize" class="form-input" value="4" required>
+            </div>
+            <button type="submit" id="addGameBtn" class="btn btn-primary" style="margin-top: 8px;">Add Game</button>
+          </form>
+        </div>
+
+        <!-- Games List -->
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Game Name</th>
+                <th>Code</th>
+                <th>Team Size</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="gamesBody">
+              <tr><td colspan="4" style="text-align: center; padding: 30px;">Loading games...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Games');
+  if (!admin) return;
+
+  async function loadGames() {
+    try {
+      const res = await ADMIN_API.get('getGames');
+      const tbody = document.getElementById('gamesBody');
+      
+      if (res.success && res.data && res.data.length > 0) {
+        tbody.innerHTML = res.data.map(g => `
+          <tr>
+            <td><strong>${g.Name}</strong></td>
+            <td><span class="badge badge-upcoming" style="background:#222;color:#fff;border:1px solid #333;">${g.GameID || g.Code || '-'}</span></td>
+            <td>${g.DefaultTeamSize || 4} Players</td>
+            <td><span class="badge badge-active">Active</span></td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">No games found. Add one using the form.</td></tr>';
+      }
+    } catch (e) {
+      document.getElementById('gamesBody').innerHTML = `<tr><td colspan="4" style="text-align: center; color: #f87171; padding: 30px;">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  // Load initial data
+  loadGames();
+
+  // Handle Add Game
+  document.getElementById('gameForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('addGameBtn');
+    btn.disabled = true;
+    btn.textContent = 'Adding...';
+
+    const name = document.getElementById('gName').value.trim();
+    const code = document.getElementById('gCode').value.trim().toUpperCase();
+    const teamSize = Number(document.getElementById('gTeamSize').value);
+
+    try {
+      // Note: Backend needs to handle 'admin.createGame' which we added in v4.0
+      const res = await ADMIN_API.post('admin.createGame', { 
+        data: { Name: name, GameID: code, DefaultTeamSize: teamSize, IsActive: true } 
+      });
+      
+      if (res.success) {
+        document.getElementById('gameForm').reset();
+        loadGames(); // reload list
+      } else {
+        alert(res.message || 'Error adding game.');
+      }
+    } catch (err) {
+      alert('Network error.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Add Game';
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
