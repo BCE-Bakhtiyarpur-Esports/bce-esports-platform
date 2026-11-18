@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrations — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Registrations</h1>
+        <p>View and manage all tournament registrations.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="flex: 1; min-width: 200px; margin: 0;">
+          <label class="form-label">Search</label>
+          <input type="text" id="searchInput" class="form-input" placeholder="Search by Reg ID, Team, or Captain...">
+        </div>
+        <div class="form-group" style="min-width: 150px; margin: 0;">
+          <label class="form-label">Status</label>
+          <select id="statusFilter" class="form-select">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Reg ID</th>
+              <th>Team / Captain</th>
+              <th>Tournament ID</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="regBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading registrations...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Registrations');
+  if (!admin) return;
+
+  let allRegs = [];
+
+  function badge(status) {
+    const s = String(status || 'pending').toLowerCase();
+    return `<span class="badge badge-${s}">${s}</span>`;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    return isNaN(d) ? '-' : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function renderTable() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const statusF = document.getElementById('statusFilter').value.toLowerCase();
+
+    const filtered = allRegs.filter(r => {
+      const matchSearch = String(r.RegistrationID || '').toLowerCase().includes(query) || 
+                          String(r.TeamNameSnapshot || '').toLowerCase().includes(query) ||
+                          String(r.CaptainName || '').toLowerCase().includes(query);
+      const matchStatus = statusF === 'all' || String(r.Status || '').toLowerCase() === statusF;
+      return matchSearch && matchStatus;
+    });
+
+    const tbody = document.getElementById('regBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No registrations found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td><strong style="color:#fff;">${r.RegistrationID}</strong></td>
+        <td>
+          <strong style="color:#fff;">${r.TeamNameSnapshot || 'Unknown Team'}</strong><br>
+          <small style="color:var(--text-muted);">${r.CaptainName || ''}</small>
+        </td>
+        <td>${r.TournamentID || '-'}</td>
+        <td>${badge(r.Status)}</td>
+        <td>${formatDate(r.SubmittedAt)}</td>
+        <td>
+          <div style="display:flex; gap:8px;">
+            <a href="registration-details.html?id=${r.RegistrationID}" class="btn btn-outline btn-sm">View</a>
+            ${String(r.Status).toLowerCase() === 'pending' ? `
+              <button onclick="approveReg('${r.RegistrationID}')" class="btn btn-success btn-sm">Approve</button>
+              <button onclick="rejectReg('${r.RegistrationID}')" class="btn btn-danger btn-sm">Reject</button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // Load Data
+  try {
+    const res = await ADMIN_API.get('admin.getRegistrations');
+    if (res.success) {
+      allRegs = res.data || [];
+      allRegs.sort((a, b) => new Date(b.SubmittedAt || 0) - new Date(a.SubmittedAt || 0));
+      renderTable();
+    }
+  } catch (e) {
+    document.getElementById('regBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: #f87171; padding: 30px;">Error: ${e.message}</td></tr>`;
+  }
+
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+  document.getElementById('statusFilter').addEventListener('change', renderTable);
+
+})();
+
+// Global Actions
+window.approveReg = async function(id) {
+  if (!confirm('Approve this registration?')) return;
+  try {
+    const res = await ADMIN_API.post('admin.approveRegistration', { registrationId: id });
+    if (res.success) window.location.reload();
+    else alert(res.message);
+  } catch (e) { alert('Error'); }
+};
+
+window.rejectReg = async function(id) {
+  const reason = prompt('Reason for rejection:');
+  if (reason === null) return;
+  try {
+    const res = await ADMIN_API.post('admin.rejectRegistration', { registrationId: id, reason: reason });
+    if (res.success) window.location.reload();
+    else alert(res.message);
+  } catch (e) { alert('Error'); }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Welcome back, <strong id="adminName">...</strong></p>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card"><div class="kpi-label">Loading…</div><div class="kpi-value">–</div></div>
+      </div>
+
+      <div class="dashboard-columns">
+        <section class="dashboard-card">
+          <h2>Recent Registrations</h2>
+          <div id="recentRegs"><p class="empty">Loading…</p></div>
+        </section>
+        <section class="dashboard-card">
+          <h2>Recent Activity</h2>
+          <div id="recentActivity"><p class="empty">Loading…</p></div>
+        </section>
+      </div>
+
+      <section class="dashboard-card">
+        <h2>Upcoming Matches</h2>
+        <div id="upcomingMatches"><p class="empty">Loading…</p></div>
+      </section>
+
+      <section class="dashboard-card" style="margin-top:24px">
+        <h2>Quick Actions</h2>
+        <div class="page-actions">
+          <a href="tournament-form.html" class="btn btn-primary btn-sm">＋ Create Tournament</a>
+          <a href="registrations.html?status=pending" class="btn btn-outline btn-sm">Review Registrations</a>
+          <a href="payments.html?status=pending" class="btn btn-outline btn-sm">Verify Payments</a>
+          <a href="announcements.html" class="btn btn-outline btn-sm">Post Announcement</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Dashboard');
+  if (!admin) return;
+  document.getElementById('adminName').textContent = admin.DisplayName || admin.Email;
+
+  function badge(status) {
+    const s = String(status || 'pending').toLowerCase();
+    return `<span class="badge badge-${s}">${s}</span>`;
+  }
+  function shortDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d)) return '—';
+    return d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+
+  try {
+    const res = await ADMIN_API.get('admin.getDashboard');
+    if (!res.success) throw new Error(res.message || 'Failed to load');
+    const d = res.data;
+
+    // KPIs
+    document.getElementById('kpiGrid').innerHTML = [
+      { label: 'Tournaments', value: d.tournaments.total,
+        sub: `${d.tournaments.upcoming} upcoming · ${d.tournaments.live} live` },
+      { label: 'Registrations', value: d.registrations.total,
+        sub: `${d.registrations.pending} pending · ${d.registrations.approved} approved` },
+      { label: 'Payments', value: d.payments.total,
+        sub: `₹${d.payments.revenue} verified · ${d.payments.pending} pending` },
+      { label: 'Teams / Players', value: `${d.totals.teams}/${d.totals.players}`,
+        sub: 'Active roster count' }
+    ].map(k => `
+      <div class="kpi-card">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-value">${k.value}</div>
+        <div class="kpi-sub">${k.sub}</div>
+      </div>
+    `).join('');
+
+    // Recent registrations
+    const rr = document.getElementById('recentRegs');
+    rr.innerHTML = (!d.recentRegistrations || !d.recentRegistrations.length)
+      ? '<p class="empty">No registrations yet.</p>'
+      : d.recentRegistrations.map(r => `
+          <div class="list-row">
+            <div>
+              <strong>${r.TeamName || 'Team'}</strong><br>
+              <small>${r.CaptainName || ''} · ${r.RegistrationID}</small>
+            </div>
+            ${badge(r.Status)}
+          </div>
+        `).join('');
+
+    // Recent activity
+    const ra = document.getElementById('recentActivity');
+    ra.innerHTML = (!d.recentActivity || !d.recentActivity.length)
+      ? '<p class="empty">No activity yet.</p>'
+      : d.recentActivity.map(a => `
+          <div class="list-row">
+            <div>
+              <strong>${a.Action}</strong><br>
+              <small>${a.AdminEmail || 'system'}</small>
+            </div>
+            <small>${shortDate(a.CreatedAt)}</small>
+          </div>
+        `).join('');
+
+    // Upcoming matches
+    const um = document.getElementById('upcomingMatches');
+    um.innerHTML = (!d.upcomingMatches || !d.upcomingMatches.length)
+      ? '<p class="empty">No upcoming matches scheduled.</p>'
+      : d.upcomingMatches.map(m => `
+          <div class="list-row">
+            <div>
+              <strong>${m.Round || 'Match'}</strong><br>
+              <small>${m.TournamentID} · ${m.MatchID || ''}</small>
+            </div>
+            <small>${shortDate(m.ScheduledAt)}</small>
+          </div>
+        `).join('');
+  } catch (e) {
+    document.getElementById('kpiGrid').innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-label">Error</div>
+        <div class="kpi-value" style="color:#f87171;font-size:16px">${e.message}</div>
+      </div>`;
+  }
+})();
+</script>
+</body>
+</html>

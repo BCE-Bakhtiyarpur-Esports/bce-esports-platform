@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Tournaments — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <h1>All Tournaments</h1>
+          <p>Manage, edit, and view all tournaments.</p>
+        </div>
+        <a href="tournament-form.html" class="btn btn-primary">＋ Create Tournament</a>
+      </div>
+
+      <!-- Filters -->
+      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="flex: 1; min-width: 200px; margin: 0;">
+          <label class="form-label">Search</label>
+          <input type="text" id="searchInput" class="form-input" placeholder="Search by name or ID...">
+        </div>
+        <div class="form-group" style="min-width: 150px; margin: 0;">
+          <label class="form-label">Status</label>
+          <select id="statusFilter" class="form-select">
+            <option value="all">All Statuses</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="live">Live</option>
+            <option value="completed">Completed</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+        <div class="form-group" style="min-width: 150px; margin: 0;">
+          <label class="form-label">Game</label>
+          <select id="gameFilter" class="form-select">
+            <option value="all">All Games</option>
+            <!-- Games will load here -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tournament</th>
+              <th>Game</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Fee</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tournamentsBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading tournaments...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Hidden SVG for missing icons (optional) -->
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  // Initialize Layout
+  const admin = await ADMIN_LAYOUT.init('Tournaments');
+  if (!admin) return;
+
+  let allTournaments = [];
+  let allGames = {};
+
+  function badge(status) {
+    const s = String(status || 'upcoming').toLowerCase();
+    return `<span class="badge badge-${s}">${s}</span>`;
+  }
+
+  function formatDate(iso) {
+    if (!iso) return 'TBA';
+    const d = new Date(iso);
+    if (isNaN(d)) return 'TBA';
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  // Render Table
+  function renderTable() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const statusF = document.getElementById('statusFilter').value.toLowerCase();
+    const gameF = document.getElementById('gameFilter').value;
+
+    const filtered = allTournaments.filter(t => {
+      const matchSearch = String(t.Name || '').toLowerCase().includes(query) || String(t.TournamentID || '').toLowerCase().includes(query);
+      const matchStatus = statusF === 'all' || String(t.Status || '').toLowerCase() === statusF;
+      const matchGame = gameF === 'all' || String(t.GameID || '') === gameF;
+      return matchSearch && matchStatus && matchGame;
+    });
+
+    const tbody = document.getElementById('tournamentsBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">No tournaments found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(t => {
+      const gameName = allGames[t.GameID] || t.GameID || 'Unknown';
+      const fee = Number(t.EntryFee) > 0 ? '₹' + t.EntryFee : 'Free';
+      
+      return `
+        <tr>
+          <td>
+            <strong style="color:#fff;">${t.Name || 'Untitled'}</strong><br>
+            <small style="color:var(--text-muted); font-size:11px;">${t.TournamentID || ''}</small>
+          </td>
+          <td>${gameName}</td>
+          <td>${formatDate(t.TournamentStartAt)}</td>
+          <td>${badge(t.Status)}</td>
+          <td>${fee}</td>
+          <td>
+            <div style="display:flex; gap:8px;">
+              <a href="tournament-details.html?id=${t.TournamentID}" class="btn btn-outline btn-sm">View</a>
+              <a href="tournament-form.html?id=${t.TournamentID}" class="btn btn-outline btn-sm">Edit</a>
+              ${t.Status !== 'archived' ? `<button onclick="archiveTournament('${t.TournamentID}')" class="btn btn-danger btn-sm">Archive</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Fetch initial data
+  try {
+    const [tournRes, gamesRes] = await Promise.all([
+      ADMIN_API.get('admin.getTournaments'),
+      ADMIN_API.get('getGames')
+    ]);
+
+    if (tournRes.success) {
+      allTournaments = tournRes.data || [];
+      // Sort by latest first
+      allTournaments.sort((a, b) => new Date(b.CreatedAt || 0) - new Date(a.CreatedAt || 0));
+    }
+
+    if (gamesRes.success) {
+      const gameSelect = document.getElementById('gameFilter');
+      (gamesRes.data || []).forEach(g => {
+        allGames[g.GameID] = g.Name;
+        const opt = document.createElement('option');
+        opt.value = g.GameID;
+        opt.textContent = g.Name;
+        gameSelect.appendChild(opt);
+      });
+    }
+
+    renderTable();
+
+  } catch (err) {
+    document.getElementById('tournamentsBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: #f87171; padding: 30px;">Error loading data: ${err.message}</td></tr>`;
+  }
+
+  // Event Listeners for filters
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+  document.getElementById('statusFilter').addEventListener('change', renderTable);
+  document.getElementById('gameFilter').addEventListener('change', renderTable);
+
+})();
+
+// Global function to archive a tournament
+window.archiveTournament = async function(id) {
+  if (!confirm('Are you sure you want to archive this tournament? It will be hidden from the public site.')) return;
+  try {
+    const res = await ADMIN_API.post('admin.deleteTournament', { tournamentId: id });
+    if (res.success) {
+      alert('Tournament archived successfully.');
+      window.location.reload();
+    } else {
+      alert('Error: ' + res.message);
+    }
+  } catch (e) {
+    alert('Network error.');
+  }
+};
+</script>
+</body>
+</html>

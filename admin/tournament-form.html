@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tournament Form — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1 id="pageTitle">Create Tournament</h1>
+        <p>Fill in the details below to set up a new tournament.</p>
+      </div>
+
+      <form id="tournamentForm" class="form">
+        <input type="hidden" id="tournamentId" value="">
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Tournament Name *</label>
+            <input type="text" id="name" class="form-input" required placeholder="e.g. BCE Winter Showdown">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Game *</label>
+            <select id="gameId" class="form-select" required>
+              <option value="">Select a Game...</option>
+              <!-- Games will load here -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="status" class="form-select">
+              <option value="upcoming">Upcoming</option>
+              <option value="live">Live</option>
+              <option value="completed">Completed</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Max Teams</label>
+            <input type="number" id="maxTeams" class="form-input" placeholder="e.g. 16" value="16">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Start Date & Time</label>
+            <input type="datetime-local" id="startDate" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Entry Fee (₹)</label>
+            <input type="number" id="entryFee" class="form-input" placeholder="0 for Free" value="0">
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">Prize Pool (₹)</label>
+            <input type="number" id="prizePool" class="form-input" placeholder="e.g. 5000" value="0">
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label">Description / Rules</label>
+            <textarea id="description" class="form-textarea" rows="4" placeholder="Enter tournament rules, format, and details..."></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;">
+          <a href="tournaments.html" class="btn btn-outline">Cancel</a>
+          <button type="submit" id="saveBtn" class="btn btn-primary">Save Tournament</button>
+        </div>
+      </form>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Tournaments / Form');
+  if (!admin) return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('id');
+
+  // Load Games Dropdown
+  try {
+    const gamesRes = await ADMIN_API.get('getGames');
+    if (gamesRes.success) {
+      const select = document.getElementById('gameId');
+      (gamesRes.data || []).forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g.GameID;
+        opt.textContent = g.Name;
+        select.appendChild(opt);
+      });
+    }
+  } catch (e) { console.error('Failed to load games', e); }
+
+  // If Edit Mode, load existing data
+  if (editId) {
+    document.getElementById('pageTitle').textContent = 'Edit Tournament';
+    document.getElementById('tournamentId').value = editId;
+    
+    try {
+      const res = await ADMIN_API.get('getTournament', { id: editId });
+      if (res.success && res.data) {
+        const t = res.data;
+        document.getElementById('name').value = t.Name || '';
+        document.getElementById('gameId').value = t.GameID || '';
+        document.getElementById('status').value = t.Status || 'upcoming';
+        document.getElementById('maxTeams').value = t.MaxTeams || 16;
+        document.getElementById('entryFee').value = t.EntryFee || 0;
+        document.getElementById('prizePool').value = t.PrizePool || 0;
+        document.getElementById('description').value = t.Description || '';
+        
+        // Format Date for datetime-local input
+        if (t.TournamentStartAt) {
+          const d = new Date(t.TournamentStartAt);
+          if (!isNaN(d)) {
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            document.getElementById('startDate').value = d.toISOString().slice(0, 16);
+          }
+        }
+      }
+    } catch (e) {
+      alert('Error loading tournament data.');
+    }
+  }
+
+  // Handle Form Submit
+  document.getElementById('tournamentForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const data = {
+      Name: document.getElementById('name').value.trim(),
+      GameID: document.getElementById('gameId').value,
+      Status: document.getElementById('status').value,
+      MaxTeams: Number(document.getElementById('maxTeams').value),
+      TournamentStartAt: document.getElementById('startDate').value,
+      EntryFee: Number(document.getElementById('entryFee').value),
+      PrizePool: Number(document.getElementById('prizePool').value),
+      Description: document.getElementById('description').value.trim()
+    };
+
+    try {
+      const action = editId ? 'admin.updateTournament' : 'admin.createTournament';
+      if (editId) data.TournamentID = editId;
+
+      const res = await ADMIN_API.post(action, { data: data });
+      
+      if (res.success) {
+        window.location.href = 'tournaments.html';
+      } else {
+        alert(res.message || 'Error saving tournament');
+        btn.disabled = false;
+        btn.textContent = 'Save Tournament';
+      }
+    } catch (err) {
+      alert('Network error. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Save Tournament';
+    }
+  });
+})();
+</script>
+</body>
+</html>

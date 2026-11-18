@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration Details — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <div style="margin-bottom: 8px;">
+          <a href="registrations.html" style="color: var(--text-muted); font-size: 13px; text-decoration: none;">← Back to Registrations</a>
+        </div>
+        <h1 id="teamNameTitle">Loading Team...</h1>
+        <p>Registration ID: <strong id="regIdTitle" style="color: var(--red);"></strong></p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+        
+        <!-- Captain Details -->
+        <div class="dashboard-card">
+          <h2>Captain Details</h2>
+          <div class="list-row"><strong>Name:</strong> <span id="capName">-</span></div>
+          <div class="list-row"><strong>Email:</strong> <span id="capEmail">-</span></div>
+          <div class="list-row"><strong>Phone:</strong> <span id="capPhone">-</span></div>
+          <div class="list-row"><strong>Discord:</strong> <span id="capDiscord">-</span></div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="dashboard-card">
+          <h2>Payment Status</h2>
+          <div class="list-row"><strong>Status:</strong> <span id="payStatus">-</span></div>
+          <div class="list-row"><strong>Amount:</strong> <span id="payAmount">-</span></div>
+          <div class="list-row"><strong>UTR:</strong> <span id="payUtr">-</span></div>
+        </div>
+
+        <!-- Roster (Full Width) -->
+        <div class="dashboard-card" style="grid-column: 1 / -1;">
+          <h2>Team Roster</h2>
+          <div class="table-wrap" style="border: none; background: transparent;">
+            <table>
+              <thead>
+                <tr>
+                  <th>IGN (In-Game Name)</th>
+                  <th>Role</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody id="rosterBody">
+                <tr><td colspan="3" style="text-align: center;">Loading roster...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Registrations / Details');
+  if (!admin) return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const regId = urlParams.get('id');
+
+  if (!regId) {
+    alert('No Registration ID found.');
+    window.location.href = 'registrations.html';
+    return;
+  }
+
+  try {
+    const res = await ADMIN_API.get('admin.getRegistration', { id: regId });
+    
+    if (res.success && res.data.registration) {
+      const reg = res.data.registration;
+      const roster = res.data.roster || [];
+      const payment = res.data.payment || {};
+
+      // Set Titles
+      document.getElementById('teamNameTitle').textContent = reg.TeamNameSnapshot || 'Unknown Team';
+      document.getElementById('regIdTitle').textContent = reg.RegistrationID;
+
+      // Captain Details
+      document.getElementById('capName').textContent = reg.CaptainName || '-';
+      document.getElementById('capEmail').textContent = reg.CaptainEmail || '-';
+      document.getElementById('capPhone').textContent = reg.CaptainPhone || '-';
+      document.getElementById('capDiscord').textContent = reg.CaptainDiscord || '-';
+
+      // Payment Details
+      document.getElementById('payStatus').innerHTML = `<span class="badge badge-${String(payment.Status || 'pending').toLowerCase()}">${payment.Status || 'Pending'}</span>`;
+      document.getElementById('payAmount').textContent = payment.Amount ? '₹' + payment.Amount : '-';
+      document.getElementById('payUtr').textContent = payment.UTR || '-';
+
+      // Roster
+      const tbody = document.getElementById('rosterBody');
+      if (roster.length > 0) {
+        tbody.innerHTML = roster.map(p => `
+          <tr>
+            <td><strong style="color:#fff;">${p.IGN || 'Unknown'}</strong></td>
+            <td>${p.Role || 'Player'}</td>
+            <td>
+              ${String(p.IsCaptain).toUpperCase() === 'TRUE' ? '<span class="badge badge-active">Captain</span>' : ''}
+              ${String(p.IsSubstitute).toUpperCase() === 'TRUE' ? '<span class="badge badge-pending">Substitute</span>' : '<span class="badge badge-completed">Main</span>'}
+            </td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No players found in roster.</td></tr>';
+      }
+
+    } else {
+      alert('Registration not found.');
+      window.location.href = 'registrations.html';
+    }
+  } catch (e) {
+    alert('Error loading details: ' + e.message);
+  }
+})();
+</script>
+</body>
+</html>

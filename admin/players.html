@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Players Management — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  /* Player Mobile Card Style */
+  .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .player-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; transition: 0.3s; }
+  .player-card:hover { border-color: var(--red); transform: translateY(-3px); }
+  .player-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #e10600, #7a0400); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 20px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Players Directory</h1>
+        <p>Search and view all registered esports athletes.</p>
+      </div>
+
+      <div class="dashboard-card" style="margin-bottom: 24px;">
+        <input type="text" id="searchInput" class="form-input" placeholder="Search by IGN or Real Name..." style="max-width: 400px;">
+      </div>
+
+      <div class="player-grid" id="playersGrid">
+        <div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 40px;">Loading players...</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Players');
+  if (!admin) return;
+
+  let allPlayers = [];
+
+  function getInitials(name) {
+    if (!name) return '??';
+    return name.substring(0, 2).toUpperCase();
+  }
+
+  function render() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allPlayers.filter(p => 
+      String(p.IGN || '').toLowerCase().includes(q) || 
+      String(p.RealName || '').toLowerCase().includes(q)
+    );
+
+    const grid = document.getElementById('playersGrid');
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 40px;">No players found.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(p => `
+      <div class="player-card">
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <div class="player-avatar">${getInitials(p.IGN)}</div>
+          <div>
+            <div style="font-family: var(--font-display); font-weight: 700; font-size: 18px; color: #fff;">${p.IGN || 'Unknown'}</div>
+            <div style="font-size: 13px; color: var(--text-muted);">${p.RealName || 'No Real Name'}</div>
+          </div>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 13px;">
+          <div><span style="color: var(--text-muted);">Team:</span> <strong>${p.TeamName || 'Free Agent'}</strong></div>
+          <div>${String(p.IsCaptain).toUpperCase() === 'TRUE' ? '<span class="badge badge-active">Captain</span>' : ''}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  try {
+    const res = await ADMIN_API.get('admin.getPlayers');
+    if (res.success) {
+      allPlayers = res.data || [];
+      render();
+    }
+  } catch (e) {
+    document.getElementById('playersGrid').innerHTML = '<div style="color: #f87171; text-align: center; grid-column: 1/-1;">Error loading players.</div>';
+  }
+
+  document.getElementById('searchInput').addEventListener('input', render);
+})();
+</script>
+</body>
+</html>

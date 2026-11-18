@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teams Management — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  /* Mobile Card View for Teams */
+  @media (max-width: 768px) {
+    .responsive-table thead { display: none; }
+    .responsive-table tr { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; padding: 12px; }
+    .responsive-table td { display: flex; justify-content: space-between; border: none; padding: 6px 0; font-size: 14px; }
+    .responsive-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+  }
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Teams</h1>
+        <p>Manage all registered teams across tournaments.</p>
+      </div>
+
+      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="flex: 1; min-width: 200px; margin: 0;">
+          <label class="form-label">Search Team</label>
+          <input type="text" id="searchInput" class="form-input" placeholder="Search by team name or tag...">
+        </div>
+        <div class="form-group" style="min-width: 150px; margin: 0;">
+          <label class="form-label">Filter by Game</label>
+          <select id="gameFilter" class="form-select">
+            <option value="all">All Games</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Team Name</th>
+              <th>Tag</th>
+              <th>Game</th>
+              <th>Captain ID</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="teamsBody">
+            <tr><td colspan="5" style="text-align: center; padding: 30px;">Loading teams...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Teams');
+  if (!admin) return;
+
+  let allTeams = [];
+  let allGames = {};
+
+  function badge(status) {
+    const s = String(status || 'active').toLowerCase();
+    return `<span class="badge badge-${s}">${s}</span>`;
+  }
+
+  function render() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const gameF = document.getElementById('gameFilter').value;
+
+    const filtered = allTeams.filter(t => {
+      const matchQ = String(t.Name || '').toLowerCase().includes(q) || String(t.Tag || '').toLowerCase().includes(q);
+      const matchG = gameF === 'all' || String(t.PrimaryGameID) === gameF;
+      return matchQ && matchG;
+    });
+
+    const tbody = document.getElementById('teamsBody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No teams found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(t => `
+      <tr>
+        <td data-label="Team Name"><strong style="color:#fff;">${t.Name || 'Unknown'}</strong></td>
+        <td data-label="Tag"><span class="badge" style="background:var(--bg-secondary);border:1px solid var(--border);">${t.Tag || '-'}</span></td>
+        <td data-label="Game">${allGames[t.PrimaryGameID] || t.PrimaryGameID || '-'}</td>
+        <td data-label="Captain">${t.CaptainPlayerID || '-'}</td>
+        <td data-label="Status">${badge(t.Status)}</td>
+      </tr>
+    `).join('');
+  }
+
+  try {
+    const [teamsRes, gamesRes] = await Promise.all([
+      ADMIN_API.get('admin.getTeams'),
+      ADMIN_API.get('getGames')
+    ]);
+
+    if (gamesRes.success) {
+      const sel = document.getElementById('gameFilter');
+      (gamesRes.data || []).forEach(g => {
+        allGames[g.GameID] = g.Name;
+        sel.innerHTML += `<option value="${g.GameID}">${g.Name}</option>`;
+      });
+    }
+
+    if (teamsRes.success) {
+      allTeams = teamsRes.data || [];
+      render();
+    }
+  } catch (e) {
+    document.getElementById('teamsBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #f87171;">Error loading data</td></tr>`;
+  }
+
+  document.getElementById('searchInput').addEventListener('input', render);
+  document.getElementById('gameFilter').addEventListener('change', render);
+})();
+</script>
+</body>
+</html>
