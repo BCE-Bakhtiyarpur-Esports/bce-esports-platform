@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Website Settings</h1>
+        <p>Manage public configuration variables.</p>
+      </div>
+
+      <div class="dashboard-card" style="max-width: 800px;">
+        <form id="settingsForm" style="display: flex; flex-direction: column; gap: 20px;">
+          <div id="settingsContainer">
+            <div style="text-align: center; padding: 20px;">Loading settings...</div>
+          </div>
+          <button type="submit" id="saveSettingsBtn" class="btn btn-primary" style="margin-top: 10px;">Save Settings</button>
+        </form>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('System / Settings');
+  if (!admin) return;
+
+  if (admin.Role !== 'Super Admin') {
+    document.querySelector('.admin-content').innerHTML = '<div style="padding: 40px; text-align: center; color: #f87171;"><h1>Access Denied</h1></div>';
+    return;
+  }
+
+  let settingsData = {};
+
+  try {
+    const res = await ADMIN_API.get('admin.getSettings');
+    const container = document.getElementById('settingsContainer');
+    
+    if (res.success && res.data.length > 0) {
+      container.innerHTML = res.data.map(s => {
+        settingsData[s.SettingKey] = s.SettingValue;
+        return `
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label">${s.SettingKey}</label>
+            <input type="text" class="form-input setting-input" data-key="${s.SettingKey}" value="${s.SettingValue || ''}">
+          </div>
+        `;
+      }).join('');
+    } else {
+      container.innerHTML = '<p style="color: var(--text-muted);">No settings found in the database.</p>';
+    }
+  } catch (e) { console.error(e); }
+
+  document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('saveSettingsBtn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+
+    const payload = {};
+    document.querySelectorAll('.setting-input').forEach(input => {
+      payload[input.getAttribute('data-key')] = input.value;
+    });
+
+    try {
+      const res = await ADMIN_API.post('admin.updateSettings', { data: payload });
+      if (res.success) alert('Settings saved successfully!');
+      else alert(res.message);
+    } catch (err) { alert('Error'); }
+    finally { btn.disabled = false; btn.textContent = 'Save Settings'; }
+  });
+})();
+</script>
+</body>
+</html>
