@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tournament details — BCE Esports. View overview, schedule, standings, teams, and results for this tournament.">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Tournament Details — BCE Esports</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Yahan Same Rahega (No Changes) */
+        :root {
+            --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --bg-card-hover: #1f1f1f;
+            --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225, 6, 0, 0.35);
+            --text-primary: #ffffff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b;
+            --border: #232323; --border-bright: #333333; --green: #22c55e;
+            --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif;
+            --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+        body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+        ul { list-style: none; }
+
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .section { padding: 60px 0; position: relative; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px; border-radius: var(--radius-sm); transition: all var(--transition); white-space: nowrap; }
+        .btn-primary { background: var(--red); color: #fff; box-shadow: 0 0 24px var(--red-glow); }
+        .btn-primary:hover { background: var(--red-bright); transform: translateY(-2px); }
+        .btn-outline { background: transparent; color: var(--text-primary); border: 2px solid var(--border-bright); }
+        .btn-outline:hover { border-color: var(--red); color: var(--red); }
+        .btn-disabled { background: var(--bg-card); color: var(--text-muted); border: 2px solid var(--border); cursor: not-allowed; }
+
+        .preview-notice { background: linear-gradient(90deg, #4a0a0a, #2a0808); border-bottom: 1px solid rgba(225, 6, 0, 0.3); padding: 10px 16px; text-align: center; font-size: 13px; color: #ffb3b3; }
+
+        .nav { position: sticky; top: 0; z-index: 1000; background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-mark { width: 42px; height: 42px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 22px; color: #fff; }
+        .logo-text { display: flex; flex-direction: column; line-height: 1; }
+        .logo-main { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 2px; }
+        .logo-sub { font-family: var(--font-display); font-size: 9px; color: var(--red); letter-spacing: 4px; margin-top: 2px; }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-link { font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); }
+        .nav-link.active, .nav-link:hover { color: #fff; }
+        .nav-toggle { display: none; width: 40px; height: 40px; border: 1px solid var(--border-bright); border-radius: 8px; align-items: center; justify-content: center; }
+
+        .tournament-hero { padding: 60px 0 0; background: radial-gradient(ellipse at 20% 0%, rgba(225, 6, 0, 0.22) 0%, transparent 60%), var(--bg-primary); border-bottom: 1px solid var(--border); }
+        .breadcrumb { display: flex; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        .breadcrumb a:hover { color: var(--red); }
+        .breadcrumb .current { color: #fff; }
+        .hero-grid { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; padding-bottom: 40px; }
+        .hero-badges { display: flex; gap: 10px; margin-bottom: 20px; }
+        .badge { font-family: var(--font-display); font-size: 10px; font-weight: 700; padding: 6px 12px; border-radius: 4px; text-transform: uppercase; }
+        .badge-status-upcoming { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+        .badge-status-live { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+        .badge-game { background: rgba(0,0,0,0.6); color: #fff; border: 1px solid var(--border-bright); }
+        .badge-category { background: rgba(225, 6, 0, 0.12); color: var(--red); border: 1px solid rgba(225, 6, 0, 0.3); }
+        .tournament-hero-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(32px, 6vw, 56px); line-height: 1.05; margin-bottom: 16px; text-transform: uppercase; }
+        .tournament-hero-title .accent { color: var(--red); }
+        .tournament-hero-meta { display: flex; gap: 24px; flex-wrap: wrap; font-size: 14px; color: var(--text-secondary); }
+        .hero-actions { display: flex; flex-direction: column; gap: 12px; min-width: 240px; }
+        .hero-register-note { font-size: 12px; color: var(--text-muted); text-align: center; }
+
+        .quick-stats { background: var(--bg-secondary); border-top: 1px solid var(--border); padding: 24px 0; }
+        .quick-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .quick-stat { text-align: center; border-right: 1px solid var(--border); }
+        .quick-stat:last-child { border-right: none; }
+        .quick-stat-label { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-bottom: 6px; }
+        .quick-stat-value { font-family: var(--font-display); font-weight: 900; font-size: 22px; }
+        .quick-stat-value .accent { color: var(--red); }
+
+        .tabs-wrap { position: sticky; top: 72px; z-index: 50; background: var(--bg-primary); border-bottom: 1px solid var(--border); }
+        .tabs { display: flex; gap: 4px; overflow-x: auto; padding: 8px 0; }
+        .tab { font-family: var(--font-display); font-size: 12px; font-weight: 700; padding: 12px 20px; color: var(--text-secondary); border-radius: var(--radius-sm); }
+        .tab.active { background: var(--red); color: #fff; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .overview-grid { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+        .content-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .content-card-title { font-family: var(--font-display); font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .content-card-title::before { content: ''; width: 4px; height: 20px; background: var(--red); border-radius: 2px; }
+        .content-text { color: var(--text-secondary); font-size: 15px; line-height: 1.75; }
+        
+        .info-list { display: flex; flex-direction: column; gap: 16px; }
+        .info-row { display: flex; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
+        .info-value { font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+        .info-value.accent { color: var(--red); }
+
+        .footer { background: var(--bg-primary); border-top: 1px solid var(--border); padding: 64px 0 32px; margin-top: 40px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+        .footer-heading { font-family: var(--font-display); font-size: 12px; font-weight: 700; margin-bottom: 20px; }
+        .footer-links { display: flex; flex-direction: column; gap: 12px; }
+        .footer-link { font-size: 14px; color: var(--text-secondary); }
+        .footer-bottom { display: flex; justify-content: space-between; padding-top: 32px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; } .nav-toggle { display: flex; }
+            .hero-grid, .overview-grid, .quick-stats-grid { grid-template-columns: 1fr; }
+            .quick-stat { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="preview-notice" id="loadingNotice">
+        ⏳ Loading tournament data from server...
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-mark">B</div>
+                <div class="logo-text">
+                    <span class="logo-main">BCE</span>
+                    <span class="logo-sub">ESPORTS</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="tournaments.html" class="nav-link active">Tournaments</a>
+                <a href="index.html#teams" class="nav-link">Teams</a>
+                <a href="index.html#announcements" class="nav-link">News</a>
+                <a href="index.html#community" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- TOURNAMENT HERO -->
+    <section class="tournament-hero">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> <span class="sep">/</span>
+                <a href="tournaments.html">Tournaments</a> <span class="sep">/</span>
+                <span class="current" id="t-breadcrumb-name">Loading...</span>
+            </div>
+
+            <div class="hero-grid">
+                <div>
+                    <div class="hero-badges">
+                        <span class="badge badge-status-upcoming" id="t-status">Upcoming</span>
+                        <span class="badge badge-game" id="t-game">Game</span>
+                        <span class="badge badge-category" id="t-category">Category</span>
+                    </div>
+                    <h1 class="tournament-hero-title" id="t-name">Loading...</h1>
+                    <div class="tournament-hero-meta">
+                        <span id="t-dates">Dates Loading...</span>
+                        <span id="t-format">Format Loading...</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <a href="#" id="t-register-btn" class="btn btn-primary">Register Team</a>
+                    <div class="hero-register-note">Registration status will be checked</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUICK STATS -->
+    <div class="quick-stats">
+        <div class="container">
+            <div class="quick-stats-grid">
+                <div class="quick-stat">
+                    <div class="quick-stat-label">Prize Pool</div>
+                    <div class="quick-stat-value"><span class="accent" id="t-prize">₹0</span></div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-label">Teams</div>
+                    <div class="quick-stat-value" id="t-teams">0 / 0</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-label">Entry Fee</div>
+                    <div class="quick-stat-value" id="t-fee">₹0</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="quick-stat-label">Format</div>
+                    <div class="quick-stat-value" id="t-quick-format">TBA</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-wrap">
+        <div class="container">
+            <div class="tabs">
+                <button class="tab active" data-tab="overview">Overview</button>
+                <button class="tab" data-tab="schedule">Schedule</button>
+                <button class="tab" data-tab="standings">Standings</button>
+                <button class="tab" data-tab="teams">Teams</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB CONTENT -->
+    <section class="section">
+        <div class="container">
+            
+            <!-- OVERVIEW TAB -->
+            <div class="tab-panel active" data-panel="overview">
+                <div class="overview-grid">
+                    <div>
+                        <div class="content-card">
+                            <h3 class="content-card-title">About This Tournament</h3>
+                            <div class="content-text" id="t-desc">
+                                Loading description from server...
+                            </div>
+                        </div>
+                    </div>
+
+                    <aside>
+                        <div class="content-card">
+                            <h3 class="content-card-title">Key Info</h3>
+                            <div class="info-list">
+                                <div class="info-row"><span class="info-label">Game</span><span class="info-value" id="i-game">-</span></div>
+                                <div class="info-row"><span class="info-label">Format</span><span class="info-value" id="i-format">-</span></div>
+                                <div class="info-row"><span class="info-label">Max Teams</span><span class="info-value" id="i-max">-</span></div>
+                                <div class="info-row"><span class="info-label">Entry Fee</span><span class="info-value accent" id="i-fee">-</span></div>
+                                <div class="info-row"><span class="info-label">Prize Pool</span><span class="info-value accent" id="i-prize">-</span></div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- SCHEDULE TAB (Placeholder) -->
+            <div class="tab-panel" data-panel="schedule">
+                <div class="content-card" style="text-align:center; padding: 50px;">
+                    <h3 style="color:var(--text-muted);">Schedule will be available soon.</h3>
+                </div>
+            </div>
+
+            <!-- STANDINGS TAB (Placeholder) -->
+            <div class="tab-panel" data-panel="standings">
+                <div class="content-card" style="text-align:center; padding: 50px;">
+                    <h3 style="color:var(--text-muted);">Standings will be available once the tournament starts.</h3>
+                </div>
+            </div>
+
+            <!-- TEAMS TAB (Placeholder) -->
+            <div class="tab-panel" data-panel="teams">
+                <div class="content-card" style="text-align:center; padding: 50px;">
+                    <h3 style="color:var(--text-muted);">Team list will be published soon.</h3>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
+                <p>Live Database Connected</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================== -->
+    <!-- JAVASCRIPT: API INTEGRATION -->
+    <!-- ================================================== -->
+    <script>
+        // 1. YAHAN APNA NAYA DEPLOYMENT URL PASTE KARO
+        const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
+
+        // 2. URL se ID nikaalo (e.g. tournament.html?tid=T-2026-0001)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tournamentId = urlParams.get('tid') || urlParams.get('id');
+
+        // Tabs logic
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`.tab-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+            });
+        });
+
+        // 3. API Se Data Fetch Karo
+        async function loadTournamentData() {
+            if (!tournamentId) {
+                document.getElementById('loadingNotice').innerHTML = "⚠️ <strong>Error:</strong> No Tournament ID provided in URL. (Example: ?tid=T-2026-0001)";
+                document.getElementById('loadingNotice').style.background = "#4a0a0a";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}?action=getTournament&id=${tournamentId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const t = result.data;
+                    
+                    // Hide Loading Bar
+                    document.getElementById('loadingNotice').style.display = 'none';
+
+                    // --- HERO SECTION ---
+                    document.getElementById('t-breadcrumb-name').textContent = t.Name;
+                    document.getElementById('t-name').textContent = t.Name;
+                    
+                    // Status Badge
+                    const statusBadge = document.getElementById('t-status');
+                    statusBadge.textContent = t.Status ? t.Status.toUpperCase() : 'UPCOMING';
+                    statusBadge.className = t.Status === 'live' ? 'badge badge-status-live' : 'badge badge-status-upcoming';
+                    
+                    document.getElementById('t-game').textContent = t.GameID || 'Game';
+                    document.getElementById('t-category').textContent = t.Category || 'Esports';
+
+                    // Dates
+                    const start = t.TournamentStartAt ? new Date(t.TournamentStartAt).toLocaleDateString('en-IN', {day:'numeric', month:'short'}) : 'TBA';
+                    const end = t.TournamentEndAt ? new Date(t.TournamentEndAt).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) : 'TBA';
+                    document.getElementById('t-dates').innerHTML = `📅 ${start} – ${end}`;
+                    document.getElementById('t-format').innerHTML = `👥 ${t.TeamFormat || 'Squad'} (${t.RosterSize || 4}v${t.RosterSize || 4})`;
+
+                    // Register Button logic
+                    const regBtn = document.getElementById('t-register-btn');
+                    regBtn.href = `register.html?tid=${t.TournamentID}`;
+                    if (t.Status === 'completed') {
+                        regBtn.textContent = 'Tournament Ended';
+                        regBtn.className = 'btn btn-disabled';
+                        regBtn.removeAttribute('href');
+                    }
+
+                    // --- QUICK STATS ---
+                    document.getElementById('t-prize').textContent = `₹${t.PrizePool || 0}`;
+                    document.getElementById('t-teams').textContent = `0 / ${t.MaxTeams || 0}`; // 0 is registered, updated later
+                    document.getElementById('t-fee').textContent = t.EntryFee > 0 ? `₹${t.EntryFee}` : 'Free';
+                    document.getElementById('t-quick-format').textContent = t.TeamFormat || 'Squad';
+
+                    // --- OVERVIEW TAB ---
+                    // If Description is empty in sheet, show default text
+                    document.getElementById('t-desc').innerHTML = t.Description ? `<p>${t.Description}</p>` : `<p>No description provided for this tournament yet.</p>`;
+
+                    // --- SIDEBAR KEY INFO ---
+                    document.getElementById('i-game').textContent = t.GameID || '-';
+                    document.getElementById('i-format').textContent = t.TeamFormat || '-';
+                    document.getElementById('i-max').textContent = t.MaxTeams || '-';
+                    document.getElementById('i-fee').textContent = t.EntryFee > 0 ? `₹${t.EntryFee}` : 'Free';
+                    document.getElementById('i-prize').textContent = `₹${t.PrizePool || 0}`;
+
+                } else {
+                    document.getElementById('loadingNotice').innerHTML = `⚠️ <strong>API Error:</strong> ${result.message}`;
+                    document.getElementById('loadingNotice').style.background = "#4a0a0a";
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                document.getElementById('loadingNotice').innerHTML = "⚠️ <strong>Network Error:</strong> Could not connect to database.";
+                document.getElementById('loadingNotice').style.background = "#4a0a0a";
+            }
+        }
+
+        // Run function on page load
+        loadTournamentData();
+    </script>
+</body>
+</html>

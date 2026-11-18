@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Same CSS and Head as before -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Announcements — BCE Esports</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS from your original file */
+        :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --bg-card-hover: #1f1f1f; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225, 6, 0, 0.35); --text-primary: #ffffff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333333; --blue: #3b82f6; --amber: #f59e0b; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --transition: 0.3s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+        a { color: inherit; text-decoration: none; } button { cursor: pointer; border: none; background: none; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; } .section { padding: 60px 0; }
+        
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-display); font-size: 13px; font-weight: 700; text-transform: uppercase; padding: 14px 28px; border-radius: var(--radius-sm); }
+        .btn-primary { background: var(--red); color: #fff; }
+        .btn-outline { background: transparent; color: var(--text-primary); border: 2px solid var(--border-bright); }
+
+        .preview-notice { background: linear-gradient(90deg, #4a0a0a, #2a0808); border-bottom: 1px solid rgba(225, 6, 0, 0.3); padding: 10px; text-align: center; font-size: 13px; color: #ffb3b3; }
+        .nav { position: sticky; top: 0; z-index: 1000; background: rgba(10, 10, 10, 0.92); border-bottom: 1px solid var(--border); }
+        .nav-inner { display: flex; justify-content: space-between; height: 72px; align-items: center; }
+        .logo { display: flex; gap: 12px; align-items: center; }
+        .logo-mark { width: 42px; height: 42px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 22px; }
+        .logo-main { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 2px; }
+        .logo-sub { font-family: var(--font-display); font-size: 9px; color: var(--red); letter-spacing: 4px; }
+
+        .page-hero { padding: 100px 24px 80px; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(225, 6, 0, 0.18) 0%, transparent 60%), var(--bg-primary); border-bottom: 1px solid var(--border); }
+        .page-hero-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(36px, 7vw, 68px); text-transform: uppercase; }
+        .page-hero-title .accent { color: var(--red); }
+
+        .filter-bar { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 24px 0; }
+        .filter-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;}
+        .filter-tabs { display: flex; gap: 6px; background: var(--bg-card); padding: 4px; border-radius: var(--radius-sm); }
+        .filter-tab { font-family: var(--font-display); font-size: 11px; padding: 10px 16px; color: var(--text-secondary); border-radius: 4px; }
+        .filter-tab.active { background: var(--red); color: #fff; }
+
+        .featured-card { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 48px; cursor: pointer; }
+        .featured-visual { background: var(--featured-bg, #333); min-height: 400px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 48px; font-weight: 900; text-align:center; color: rgba(255,255,255,0.3); padding: 40px; }
+        .featured-content { padding: 40px; display: flex; flex-direction: column; justify-content: center; }
+        .featured-title { font-family: var(--font-display); font-size: 28px; margin-bottom: 16px; }
+        .featured-excerpt { color: var(--text-secondary); margin-bottom: 24px; }
+
+        .articles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .article-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
+        .article-visual { height: 180px; background: var(--article-bg, #333); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; color: rgba(255,255,255,0.3); text-align:center; padding: 20px;}
+        .article-body { padding: 24px; flex: 1; }
+        .article-title { font-family: var(--font-display); font-size: 18px; margin-bottom: 10px; }
+        
+        .article-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; justify-content: center; padding: 40px; overflow-y: auto; }
+        .article-modal-backdrop.show { display: flex; }
+        .article-modal { background: var(--bg-card); max-width: 800px; width: 100%; border-radius: var(--radius-lg); position: relative; margin: auto; }
+        .modal-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(0,0,0,0.6); color: #fff; border-radius: 50%; font-size: 20px; }
+        .modal-cover { height: 240px; background: #333; border-radius: var(--radius-lg) var(--radius-lg) 0 0; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size: 40px; color:rgba(255,255,255,0.3); }
+        .modal-body { padding: 40px; }
+        .modal-title { font-family: var(--font-display); font-size: 32px; margin-bottom: 20px; }
+        .modal-content { color: var(--text-secondary); line-height: 1.8; }
+
+        @media (max-width: 768px) {
+            .featured-card, .articles-grid { grid-template-columns: 1fr; }
+            .featured-visual { min-height: 200px; }
+            .article-modal-backdrop { padding: 0; }
+            .article-modal { border-radius: 0; min-height: 100vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="preview-notice" id="loadingBanner">⏳ Loading live news from server...</div>
+    <nav class="nav"><div class="container nav-inner"><a href="index.html" class="logo"><div class="logo-mark">B</div><div><span class="logo-main">BCE</span><br><span class="logo-sub">ESPORTS</span></div></a></div></nav>
+
+    <section class="page-hero">
+        <h1 class="page-hero-title">News & <span class="accent">Announcements</span></h1>
+    </section>
+
+    <div class="filter-bar">
+        <div class="container filter-inner">
+            <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-cat="all">All</button>
+                <button class="filter-tab" data-cat="news">News</button>
+                <button class="filter-tab" data-cat="announcement">Announcements</button>
+                <button class="filter-tab" data-cat="update">Updates</button>
+            </div>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div id="featuredContainer"></div>
+            <div class="articles-grid" id="articlesGrid"></div>
+        </div>
+    </section>
+
+    <!-- ARTICLE MODAL -->
+    <div class="article-modal-backdrop" id="articleModal">
+        <div class="article-modal">
+            <button class="modal-close" onclick="closeArticle()">✕</button>
+            <div class="modal-cover" id="modalCover"></div>
+            <div class="modal-body">
+                <h1 class="modal-title" id="modalTitle"></h1>
+                <div class="modal-content" id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec"; // <--- APNA URL YAHAN DAALO
+        let allArticles = [];
+        let activeCategory = 'all';
+
+        async function fetchNews() {
+            try {
+                const res = await fetch(`${API_URL}?action=getAnnouncements`);
+                const json = await res.json();
+                
+                if (json.success) {
+                    document.getElementById('loadingBanner').style.display = 'none';
+                    // Backend data ko frontend format me map karo
+                    allArticles = json.data.map(item => ({
+                        id: item.AnnouncementID,
+                        category: item.Category.toLowerCase(),
+                        featured: item.IsFeatured === true || item.IsFeatured === 'TRUE',
+                        title: item.Title,
+                        excerpt: item.Excerpt,
+                        date: new Date(item.PublishedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+                        readTime: (item.ReadTimeMinutes || 2) + ' min read',
+                        author: { name: item.AuthorName, role: item.AuthorRole, initials: item.AuthorInitials },
+                        coverBg: item.CoverGradient || 'linear-gradient(135deg, #333, #111)',
+                        coverLabel: item.CoverLabel || 'NEWS',
+                        content: item.ContentMarkdown || '<p>No content available.</p>'
+                    }));
+                    render();
+                }
+            } catch (err) {
+                document.getElementById('loadingBanner').textContent = "❌ Network error. Could not load news.";
+                document.getElementById('loadingBanner').style.background = "#4a0a0a";
+            }
+        }
+
+        function render() {
+            const filtered = allArticles.filter(a => activeCategory === 'all' || a.category === activeCategory);
+            
+            // Featured
+            const featured = filtered.find(a => a.featured);
+            const others = featured ? filtered.filter(a => a.id !== featured.id) : filtered;
+
+            const fContainer = document.getElementById('featuredContainer');
+            if (featured) {
+                fContainer.innerHTML = `
+                    <article class="featured-card" onclick="openArticle('${featured.id}')">
+                        <div class="featured-visual" style="--featured-bg: ${featured.coverBg};">${featured.coverLabel}</div>
+                        <div class="featured-content">
+                            <span style="color:var(--red); font-family:var(--font-display); font-size:12px;">${featured.category.toUpperCase()}</span>
+                            <h2 class="featured-title">${featured.title}</h2>
+                            <p class="featured-excerpt">${featured.excerpt}</p>
+                            <div style="font-size:12px; color:var(--text-muted);">${featured.date} • ${featured.author.name}</div>
+                        </div>
+                    </article>
+                `;
+            } else {
+                fContainer.innerHTML = '';
+            }
+
+            // Grid
+            const grid = document.getElementById('articlesGrid');
+            if (others.length === 0) {
+                grid.innerHTML = `<p style="text-align:center; grid-column:1/-1; color:var(--text-muted);">No articles found.</p>`;
+            } else {
+                grid.innerHTML = others.map(a => `
+                    <article class="article-card" onclick="openArticle('${a.id}')">
+                        <div class="article-visual" style="--article-bg: ${a.coverBg};">${a.coverLabel}</div>
+                        <div class="article-body">
+                            <span style="color:var(--red); font-size:10px; font-family:var(--font-display);">${a.category.toUpperCase()}</span>
+                            <h3 class="article-title">${a.title}</h3>
+                            <p style="color:var(--text-secondary); font-size:14px; margin-bottom:10px;">${a.excerpt}</p>
+                        </div>
+                    </article>
+                `).join('');
+            }
+        }
+
+        function openArticle(id) {
+            const a = allArticles.find(x => x.id === id);
+            if (!a) return;
+            document.getElementById('modalCover').style.background = a.coverBg;
+            document.getElementById('modalCover').innerHTML = a.coverLabel;
+            document.getElementById('modalTitle').textContent = a.title;
+            document.getElementById('modalContent').innerHTML = a.content; // HTML content from sheet
+            document.getElementById('articleModal').classList.add('show');
+        }
+
+        function closeArticle() {
+            document.getElementById('articleModal').classList.remove('show');
+        }
+
+        // Filters
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                activeCategory = tab.dataset.cat;
+                render();
+            });
+        });
+
+        window.onload = fetchNews;
+    </script>
+</body>
+</html>
