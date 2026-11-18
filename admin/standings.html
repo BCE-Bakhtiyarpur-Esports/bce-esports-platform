@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Standings — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Tournament Standings</h1>
+        <p>Update points, kills, and ranks for teams.</p>
+      </div>
+
+      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end;">
+        <div class="form-group" style="flex: 1; max-width: 400px; margin: 0;">
+          <label class="form-label">Select Tournament</label>
+          <select id="tournSelect" class="form-select">
+            <option value="">Choose a tournament to load standings...</option>
+          </select>
+        </div>
+        <button id="saveBtn" class="btn btn-primary" style="display: none;">Save Standings</button>
+      </div>
+
+      <div class="table-wrap" id="tableWrap" style="display: none;">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team Name</th>
+              <th>Matches Played</th>
+              <th>Wins</th>
+              <th>Kills</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="standingsBody">
+            <!-- Rows will be generated here -->
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Standings');
+  if (!admin) return;
+
+  let currentData = [];
+
+  try {
+    const tRes = await ADMIN_API.get('getTournaments');
+    if (tRes.success) {
+      const sel = document.getElementById('tournSelect');
+      (tRes.data || []).forEach(t => {
+        sel.innerHTML += `<option value="${t.TournamentID}">${t.Name}</option>`;
+      });
+    }
+  } catch (e) { console.error(e); }
+
+  document.getElementById('tournSelect').addEventListener('change', async (e) => {
+    const tid = e.target.value;
+    if (!tid) {
+      document.getElementById('tableWrap').style.display = 'none';
+      document.getElementById('saveBtn').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('tableWrap').style.display = 'block';
+    document.getElementById('saveBtn').style.display = 'inline-block';
+    const tbody = document.getElementById('standingsBody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading...</td></tr>';
+
+    try {
+      const res = await ADMIN_API.get('admin.getStandings', { tournamentId: tid });
+      if (res.success) {
+        currentData = res.data || [];
+        if (currentData.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:var(--text-muted);">No teams found in this tournament. Add teams in the sheet first.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = currentData.map((s, idx) => `
+          <tr>
+            <td><input type="number" class="form-input rank-input" style="width: 60px;" value="${s.Rank || idx+1}" data-idx="${idx}" data-field="Rank"></td>
+            <td><strong style="color:#fff;">${s.TeamName || s.TeamID}</strong></td>
+            <td><input type="number" class="form-input" style="width: 80px;" value="${s.MatchesPlayed || 0}" data-idx="${idx}" data-field="MatchesPlayed"></td>
+            <td><input type="number" class="form-input" style="width: 80px;" value="${s.Wins || 0}" data-idx="${idx}" data-field="Wins"></td>
+            <td><input type="number" class="form-input" style="width: 80px;" value="${s.Kills || 0}" data-idx="${idx}" data-field="Kills"></td>
+            <td><input type="number" class="form-input" style="width: 80px;" value="${s.Points || 0}" data-idx="${idx}" data-field="Points"></td>
+          </tr>
+        `).join('');
+
+      }
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color: red; text-align: center;">Error loading</td></tr>';
+    }
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const tid = document.getElementById('tournSelect').value;
+    if (!tid) return;
+
+    // Collect all inputs
+    const inputs = document.querySelectorAll('.form-input[data-idx]');
+    inputs.forEach(input => {
+      const idx = input.getAttribute('data-idx');
+      const field = input.getAttribute('data-field');
+      currentData[idx][field] = Number(input.value);
+    });
+
+    // Attach TournamentID to all
+    currentData.forEach(s => s.TournamentID = tid);
+
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = 'Saving...';
+    btn.disabled = true;
+
+    try {
+      const res = await ADMIN_API.post('admin.saveStandings', { tournamentId: tid, data: currentData });
+      if (res.success) {
+        alert('Standings updated successfully!');
+      } else {
+        alert(res.message);
+      }
+    } catch (e) { alert('Network Error'); }
+    finally {
+      btn.textContent = 'Save Standings';
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

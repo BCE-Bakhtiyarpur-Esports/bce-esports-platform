@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  .gallery-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .gallery-thumb { height: 160px; background: #000; display: flex; align-items: center; justify-content: center; color: var(--text-muted); position: relative; }
+  .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .gallery-info { padding: 16px; }
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+        <div>
+          <h1>Media Gallery</h1>
+          <p>Manage photos and videos from events.</p>
+        </div>
+        <button onclick="openGalModal()" class="btn btn-primary">＋ Add Media</button>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid">
+        <div style="grid-column: 1/-1; text-align: center; padding: 30px;">Loading media...</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="galModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="galModalTitle">Add Gallery Item</h3>
+      <button class="modal-close" onclick="document.getElementById('galModal').classList.remove('open')">&times;</button>
+    </div>
+    <form id="galForm" style="display: flex; flex-direction: column; gap: 16px;">
+      <input type="hidden" id="galId">
+      <div class="form-group">
+        <label class="form-label">Media Type</label>
+        <select id="galType" class="form-select">
+          <option value="photo">Photo (Image URL)</option>
+          <option value="video">Video (YouTube Embed URL)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Media URL *</label>
+        <input type="url" id="galUrl" class="form-input" required placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Caption / Title</label>
+        <input type="text" id="galTitle" class="form-input" placeholder="e.g. BGMI Finals 2026">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Link Tournament ID (Optional)</label>
+        <input type="text" id="galTourn" class="form-input" placeholder="TRN-12345">
+      </div>
+      <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+        <input type="checkbox" id="galPublished" checked style="width: auto;">
+        <label class="form-label" style="margin: 0;">Published</label>
+      </div>
+      <button type="submit" id="galSaveBtn" class="btn btn-primary">Save Media</button>
+    </form>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Content / Gallery');
+  if (!admin) return;
+
+  let allMedia = [];
+
+  async function loadData() {
+    try {
+      const res = await ADMIN_API.get('admin.getGallery');
+      if (res.success) {
+        allMedia = res.data || [];
+        render();
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  function render() {
+    const grid = document.getElementById('galleryGrid');
+    if (allMedia.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color:var(--text-muted);">No media found.</div>';
+      return;
+    }
+
+    grid.innerHTML = allMedia.map(m => {
+      const isVideo = String(m.Type).toLowerCase() === 'video';
+      const isPub = m.IsPublished === true || String(m.IsPublished).toUpperCase() === 'TRUE';
+      return `
+        <div class="gallery-card">
+          <div class="gallery-thumb">
+            ${isVideo ? '<span style="font-size: 30px;">▶️ Video</span>' : `<img src="${m.MediaURL || m.ThumbnailURL}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxNzE3MTciLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+';" />`}
+            ${!isPub ? '<span class="badge badge-inactive" style="position: absolute; top: 8px; right: 8px;">Hidden</span>' : ''}
+          </div>
+          <div class="gallery-info">
+            <div style="font-weight: 600; color: #fff; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.Title || 'Untitled'}</div>
+            <div style="display: flex; gap: 8px;">
+              <button onclick='editGal(${JSON.stringify(m).replace(/'/g, "&#39;")})' class="btn btn-outline btn-sm" style="flex: 1;">Edit</button>
+              <button onclick="deleteGal('${m.GalleryID}')" class="btn btn-danger btn-sm">Del</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  loadData();
+
+  window.openGalModal = () => {
+    document.getElementById('galForm').reset();
+    document.getElementById('galId').value = '';
+    document.getElementById('galModalTitle').textContent = 'Add Gallery Item';
+    document.getElementById('galModal').classList.add('open');
+  };
+
+  window.editGal = (m) => {
+    document.getElementById('galId').value = m.GalleryID;
+    document.getElementById('galType').value = m.Type || 'photo';
+    document.getElementById('galUrl').value = m.MediaURL || '';
+    document.getElementById('galTitle').value = m.Title || '';
+    document.getElementById('galTourn').value = m.TournamentID || '';
+    document.getElementById('galPublished').checked = (m.IsPublished === true || String(m.IsPublished).toUpperCase() === 'TRUE');
+    
+    document.getElementById('galModalTitle').textContent = 'Edit Gallery Item';
+    document.getElementById('galModal').classList.add('open');
+  };
+
+  window.deleteGal = async (id) => {
+    if (!confirm('Delete this media?')) return;
+    try {
+      const res = await ADMIN_API.post('admin.deleteGalleryItem', { galleryId: id });
+      if (res.success) loadData();
+      else alert(res.message);
+    } catch (e) { alert('Error'); }
+  };
+
+  document.getElementById('galForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('galSaveBtn');
+    btn.disabled = true;
+    
+    const id = document.getElementById('galId').value;
+    const isEdit = id !== '';
+
+    const data = {
+      Type: document.getElementById('galType').value,
+      MediaURL: document.getElementById('galUrl').value,
+      Title: document.getElementById('galTitle').value,
+      TournamentID: document.getElementById('galTourn').value,
+      IsPublished: document.getElementById('galPublished').checked ? 'TRUE' : 'FALSE'
+    };
+
+    if (isEdit) data.GalleryID = id;
+
+    try {
+      const action = isEdit ? 'admin.updateGalleryItem' : 'admin.createGalleryItem';
+      const res = await ADMIN_API.post(action, { data });
+      if (res.success) {
+        document.getElementById('galModal').classList.remove('open');
+        loadData();
+      } else alert(res.message);
+    } catch (err) { alert('Error'); }
+    finally { btn.disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

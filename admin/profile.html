@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>My Profile</h1>
+        <p>Manage your account settings and password.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+        
+        <!-- Account Info -->
+        <div class="dashboard-card">
+          <h2>Account Information</h2>
+          <div class="list-row">
+            <strong>Role</strong>
+            <span id="pRole" class="badge badge-active">Super Admin</span>
+          </div>
+          <div class="list-row">
+            <strong>Email</strong>
+            <span id="pEmail">-</span>
+          </div>
+          <div class="list-row">
+            <strong>Display Name</strong>
+            <span id="pName">-</span>
+          </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="dashboard-card">
+          <h2>Change Password</h2>
+          <form id="passForm" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input type="password" id="oldPass" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password (Min 8 chars)</label>
+              <input type="password" id="newPass" class="form-input" required minlength="8">
+            </div>
+            <button type="submit" id="passBtn" class="btn btn-primary">Update Password</button>
+          </form>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('My Profile');
+  if (!admin) return;
+
+  // Load admin data from local storage
+  document.getElementById('pRole').textContent = admin.Role || 'Admin';
+  document.getElementById('pEmail').textContent = admin.Email || '-';
+  document.getElementById('pName').textContent = admin.DisplayName || admin.Email || '-';
+
+  // Handle Password Change
+  document.getElementById('passForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('passBtn');
+    const oldP = document.getElementById('oldPass').value;
+    const newP = document.getElementById('newPass').value;
+
+    btn.disabled = true;
+    btn.textContent = 'Updating...';
+
+    try {
+      const res = await ADMIN_API.post('admin.changePassword', { 
+        currentPassword: oldP, 
+        newPassword: newP 
+      });
+
+      if (res.success) {
+        alert('Password updated successfully! Please login again.');
+        ADMIN_API.clearToken();
+        window.location.href = 'login.html';
+      } else {
+        alert(res.message || 'Failed to update password.');
+      }
+    } catch (err) {
+      alert('Network error.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Update Password';
+    }
+  });
+})();
+</script>
+</body>
+</html>

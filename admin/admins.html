@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Management — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+        <div>
+          <h1>System Admins</h1>
+          <p>Manage who has access to this dashboard.</p>
+        </div>
+        <button onclick="openAdminModal()" class="btn btn-primary">＋ Add Admin</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name / Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminsBody">
+            <tr><td colspan="4" style="text-align: center; padding: 30px;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="adminModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Create New Admin</h3>
+      <button class="modal-close" onclick="document.getElementById('adminModal').classList.remove('open')">&times;</button>
+    </div>
+    <form id="adminForm" style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input type="text" id="aName" class="form-input" required placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="aEmail" class="form-input" required placeholder="admin@bce.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select id="aRole" class="form-select">
+          <option value="Admin">Admin (Full access except settings)</option>
+          <option value="Moderator">Moderator (View only)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password (Min 8 chars)</label>
+        <input type="password" id="aPass" class="form-input" required minlength="8">
+      </div>
+      <button type="submit" id="aSaveBtn" class="btn btn-primary">Create Admin</button>
+    </form>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('System / Admins');
+  if (!admin) return;
+
+  // If not Super Admin, block access
+  if (admin.Role !== 'Super Admin') {
+    document.querySelector('.admin-content').innerHTML = '<div style="padding: 40px; text-align: center; color: #f87171;"><h1>Access Denied</h1><p>Only Super Admin can view this page.</p></div>';
+    return;
+  }
+
+  async function loadData() {
+    try {
+      const res = await ADMIN_API.get('admin.getAdmins');
+      const tbody = document.getElementById('adminsBody');
+      if (res.success && res.data.length > 0) {
+        tbody.innerHTML = res.data.map(a => `
+          <tr>
+            <td><strong>${a.DisplayName || 'Admin'}</strong><br><small style="color:var(--text-muted);">${a.Email}</small></td>
+            <td><span class="badge badge-upcoming">${a.Role}</span></td>
+            <td><span class="badge badge-${String(a.Status).toLowerCase() === 'active' ? 'active' : 'inactive'}">${a.Status}</span></td>
+            <td>
+              <button onclick="resetPass('${a.AdminID}', '${a.Email}')" class="btn btn-outline btn-sm">Reset Pass</button>
+            </td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No admins found.</td></tr>';
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  loadData();
+
+  window.openAdminModal = () => document.getElementById('adminModal').classList.add('open');
+
+  window.resetPass = async (id, email) => {
+    const newPass = prompt(`Enter new password for ${email} (min 8 chars):`);
+    if (!newPass || newPass.length < 8) return alert('Password too short.');
+    try {
+      const res = await ADMIN_API.post('admin.resetAdminPassword', { adminId: id, newPassword: newPass });
+      if (res.success) alert('Password reset successfully.');
+      else alert(res.message);
+    } catch (e) { alert('Error'); }
+  };
+
+  document.getElementById('adminForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('aSaveBtn');
+    btn.disabled = true;
+
+    const data = {
+      displayName: document.getElementById('aName').value,
+      email: document.getElementById('aEmail').value,
+      role: document.getElementById('aRole').value,
+      password: document.getElementById('aPass').value
+    };
+
+    try {
+      const res = await ADMIN_API.post('admin.createAdmin', data);
+      if (res.success) {
+        document.getElementById('adminModal').classList.remove('open');
+        document.getElementById('adminForm').reset();
+        loadData();
+      } else alert(res.message);
+    } catch (err) { alert('Error'); }
+    finally { btn.disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results Management — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  @media (max-width: 768px) {
+    .responsive-table thead { display: none; }
+    .responsive-table tr { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; padding: 12px; }
+    .responsive-table td { display: flex; justify-content: space-between; border: none; padding: 6px 0; font-size: 14px; }
+    .responsive-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+  }
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      
+      <div class="page-header">
+        <h1>Match Results</h1>
+        <p>Enter scores and declare winners.</p>
+      </div>
+
+      <div class="dashboard-card" style="margin-bottom: 24px;">
+        <label class="form-label">Select Tournament to load matches</label>
+        <select id="tournSelect" class="form-select" style="max-width: 400px;">
+          <option value="">Choose tournament...</option>
+        </select>
+      </div>
+
+      <div class="table-wrap" id="tableWrap" style="display: none;">
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th>Match ID / Round</th>
+              <th>Matchup</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="matchesBody">
+            <!-- Matches load here -->
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Result Modal -->
+<div id="resultModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Enter Result</h3>
+      <button class="modal-close" onclick="document.getElementById('resultModal').classList.remove('open')">&times;</button>
+    </div>
+    <form id="resultForm" style="display: flex; flex-direction: column; gap: 16px;">
+      <input type="hidden" id="rMatchId">
+      <input type="hidden" id="rTournId">
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-group">
+          <label class="form-label">Team A ID (or Name)</label>
+          <input type="text" id="rTeamA" class="form-input" required placeholder="e.g. TM-123">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team A Score</label>
+          <input type="number" id="rScoreA" class="form-input" required value="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team B ID (or Name)</label>
+          <input type="text" id="rTeamB" class="form-input" required placeholder="e.g. TM-456">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Team B Score</label>
+          <input type="number" id="rScoreB" class="form-input" required value="0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Winning Team</label>
+        <select id="rWinner" class="form-select" required>
+          <option value="">Select Winner...</option>
+          <option value="A">Team A</option>
+          <option value="B">Team B</option>
+          <option value="Draw">Draw / Tie</option>
+        </select>
+      </div>
+
+      <button type="submit" id="rSaveBtn" class="btn btn-primary">Save Result</button>
+    </form>
+  </div>
+</div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Results');
+  if (!admin) return;
+
+  let allMatches = [];
+
+  // Load Tournaments
+  try {
+    const tRes = await ADMIN_API.get('getTournaments');
+    if (tRes.success) {
+      const sel = document.getElementById('tournSelect');
+      (tRes.data || []).forEach(t => sel.innerHTML += `<option value="${t.TournamentID}">${t.Name}</option>`);
+    }
+  } catch (e) { console.error(e); }
+
+  document.getElementById('tournSelect').addEventListener('change', async (e) => {
+    const tid = e.target.value;
+    if (!tid) { document.getElementById('tableWrap').style.display = 'none'; return; }
+    
+    document.getElementById('tableWrap').style.display = 'block';
+    const tbody = document.getElementById('matchesBody');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Loading...</td></tr>';
+
+    try {
+      const res = await ADMIN_API.get('admin.getMatches', { tournamentId: tid });
+      if (res.success) {
+        allMatches = res.data || [];
+        if (allMatches.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color:var(--text-muted);">No matches scheduled for this tournament.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = allMatches.map(m => `
+          <tr>
+            <td data-label="Match / Round"><strong>${m.MatchID}</strong><br><small>${m.Round || '-'}</small></td>
+            <td data-label="Matchup">${m.TeamAID || 'TBD'} vs ${m.TeamBID || 'TBD'}</td>
+            <td data-label="Score">${m.TeamAScore || 0} - ${m.TeamBScore || 0}</td>
+            <td data-label="Status"><span class="badge badge-${String(m.Status).toLowerCase()}">${m.Status}</span></td>
+            <td data-label="Actions">
+              <button onclick='openResultModal(${JSON.stringify(m).replace(/'/g, "&#39;")})' class="btn btn-primary btn-sm">Enter Result</button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    } catch (err) { tbody.innerHTML = '<tr><td colspan="5" style="color:red;">Error loading</td></tr>'; }
+  });
+
+  window.openResultModal = (m) => {
+    document.getElementById('rMatchId').value = m.MatchID;
+    document.getElementById('rTournId').value = m.TournamentID;
+    document.getElementById('rTeamA').value = m.TeamAID || '';
+    document.getElementById('rTeamB').value = m.TeamBID || '';
+    document.getElementById('rScoreA').value = m.TeamAScore || 0;
+    document.getElementById('rScoreB').value = m.TeamBScore || 0;
+    document.getElementById('rWinner').value = m.WinnerTeamID === m.TeamAID ? 'A' : (m.WinnerTeamID === m.TeamBID ? 'B' : '');
+    document.getElementById('resultModal').classList.add('open');
+  };
+
+  document.getElementById('resultForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('rSaveBtn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+
+    const teamA = document.getElementById('rTeamA').value;
+    const teamB = document.getElementById('rTeamB').value;
+    const winner = document.getElementById('rWinner').value;
+
+    const data = {
+      MatchID: document.getElementById('rMatchId').value,
+      TournamentID: document.getElementById('rTournId').value,
+      TeamAID: teamA,
+      TeamBID: teamB,
+      TeamAScore: document.getElementById('rScoreA').value,
+      TeamBScore: document.getElementById('rScoreB').value,
+      WinnerTeamID: winner === 'A' ? teamA : (winner === 'B' ? teamB : 'Draw'),
+      Status: 'completed',
+      MatchDate: new Date().toISOString()
+    };
+
+    try {
+      const res = await ADMIN_API.post('admin.saveResult', { data });
+      if (res.success) {
+        // Also update match status to completed
+        await ADMIN_API.post('admin.updateMatch', { data: { MatchID: data.MatchID, Status: 'completed' } });
+        document.getElementById('resultModal').classList.remove('open');
+        document.getElementById('tournSelect').dispatchEvent(new Event('change'));
+      } else alert(res.message);
+    } catch (err) { alert('Error'); }
+    finally { btn.disabled = false; btn.textContent = 'Save Result'; }
+  });
+})();
+</script>
+</body>
+</html>
