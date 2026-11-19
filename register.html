@@ -7,37 +7,53 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS same as your previous file */
-        :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --bg-card-hover: #1f1f1f; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225, 6, 0, 0.35); --text-primary: #ffffff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333333; --green: #22c55e; --red-error: #ef4444; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; --transition: 0.3s; }
+        :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225,6,0,.35); --text-primary: #fff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333; --green: #22c55e; --cyan: #22d3ee; --red-error: #ef4444; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-body); background-color: var(--bg-primary); color: var(--text-primary); font-size: 16px; line-height: 1.6; }
-        a { color: inherit; text-decoration: none; } button { cursor: pointer; border: none; background: none; color: inherit; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; } .section { padding: 60px 0; }
-        
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px; border-radius: var(--radius-sm); transition: all var(--transition); white-space: nowrap; }
+        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); font-size: 16px; line-height: 1.6; }
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; border: none; background: none; color: inherit; font-family: inherit; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+        .section { padding: 60px 0; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px; border-radius: var(--radius-sm); transition: all .3s; white-space: nowrap; }
         .btn-primary { background: var(--red); color: #fff; box-shadow: 0 0 24px var(--red-glow); }
-        .btn-primary:hover { background: var(--red-bright); transform: translateY(-2px); }
+        .btn-primary:hover { background: var(--red-bright); }
         .btn-outline { border: 2px solid var(--border-bright); }
         .btn-outline:hover { border-color: var(--red); color: var(--red); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
 
-        .preview-notice { background: linear-gradient(90deg, #4a0a0a, #2a0808); border-bottom: 1px solid rgba(225, 6, 0, 0.3); padding: 10px; text-align: center; font-size: 13px; color: #ffb3b3; }
-        .nav { position: sticky; top: 0; z-index: 1000; background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(10,10,10,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .loading-overlay.active { display: flex; }
+        .spinner { width: 54px; height: 54px; border: 4px solid rgba(225,6,0,.2); border-top-color: var(--red); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loadingMessage { font-family: var(--font-display); color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; font-size: 13px; }
+
+        .error-panel { display: none; max-width: 640px; margin: 60px auto; background: var(--bg-card); border: 2px solid rgba(239,68,68,.4); border-radius: var(--radius-lg); padding: 40px 28px; text-align: center; }
+        .error-panel.active { display: block; }
+        .error-icon { font-size: 48px; margin-bottom: 16px; }
+        .error-title { font-family: var(--font-display); font-size: 18px; color: #f87171; margin-bottom: 12px; text-transform: uppercase; }
+        .error-message { color: var(--text-secondary); margin-bottom: 20px; white-space: pre-wrap; text-align: left; font-size: 14px; }
+        .error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .nav { position: sticky; top: 0; z-index: 1000; background: rgba(10,10,10,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
         .nav-inner { display: flex; justify-content: space-between; height: 72px; align-items: center; }
         .logo { display: flex; align-items: center; gap: 12px; }
         .logo-mark { width: 42px; height: 42px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 22px; }
         .logo-main { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 2px; }
         .logo-sub { font-family: var(--font-display); font-size: 9px; color: var(--red); letter-spacing: 4px; }
-        .nav-links { display: flex; gap: 24px; } .nav-link { font-size: 14px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-link { font-size: 14px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); }
 
-        .tournament-strip { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 20px 0; }
-        .tournament-strip-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .strip { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 20px 0; }
+        .strip-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .strip-label { font-family: var(--font-display); font-size: 10px; color: var(--red); }
         .strip-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
-        .strip-meta { display: flex; gap: 24px; font-size: 13px; color: var(--text-secondary); }
+        .strip-meta { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; align-items: center; }
         .strip-back { font-family: var(--font-display); font-size: 11px; color: var(--text-secondary); }
+        .scope-badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
+        .scope-badge.public { background: rgba(34,211,238,.12); color: var(--cyan); border: 1px solid rgba(34,211,238,.35); }
+        .scope-badge.intra { background: rgba(225,6,0,.12); color: var(--red); border: 1px solid rgba(225,6,0,.35); }
 
-        .page-hero { padding: 60px 24px 40px; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(225, 6, 0, 0.15) 0%, transparent 60%), var(--bg-primary); }
+        .page-hero { padding: 60px 24px 40px; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(225,6,0,.15) 0%, transparent 60%); }
         .page-hero-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(28px, 5vw, 44px); text-transform: uppercase; }
         .page-hero-title .accent { color: var(--red); }
 
@@ -50,57 +66,107 @@
         .progress-label { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 8px; text-transform: uppercase; }
         .progress-step.completed .progress-label, .progress-step.current .progress-label { color: #fff; }
         .progress-line { position: absolute; top: 20px; left: 12.5%; right: 12.5%; height: 2px; background: var(--border); z-index: 1; }
-        .progress-line-fill { height: 100%; background: var(--red); width: 0; transition: width 0.4s; }
+        .progress-line-fill { height: 100%; background: var(--red); width: 0; transition: width .4s; }
 
-        .step-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; margin-bottom: 24px; }
-        .step-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3vw, 28px); text-transform: uppercase; margin-bottom: 10px; }
-        
+        .step-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .step-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3vw, 28px); text-transform: uppercase; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         .form-group.full { grid-column: 1 / -1; }
         .form-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); }
         .form-label .req { color: var(--red); }
-        .form-input { width: 100%; font-size: 15px; background: var(--bg-primary); border: 1px solid var(--border-bright); border-radius: var(--radius-sm); padding: 12px 16px; color: #fff; }
-        .form-input:focus { outline: none; border-color: var(--red); }
+        .form-input { width: 100%; font-size: 15px; background: var(--bg-primary); border: 1px solid var(--border-bright); border-radius: var(--radius-sm); padding: 12px 16px; color: #fff; font-family: inherit; transition: all 0.3s; }
+        .form-input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 10px rgba(225,6,0,0.2); }
         .form-error { font-size: 12px; color: var(--red-error); display: none; }
         .form-error.show { display: block; }
 
-        .roster-item { display: grid; grid-template-columns: auto 1fr 1fr; gap: 16px; align-items: end; padding: 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; }
-        .roster-index { width: 40px; height: 40px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; color: var(--red); }
+        .intra-banner { display: none; background: linear-gradient(135deg, rgba(225,6,0,.15), rgba(225,6,0,.05)); border: 1px solid rgba(225,6,0,.4); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; }
+        .intra-banner.show { display: block; }
+        .intra-banner-title { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+        .intra-banner-title strong { color: var(--red); }
+        .intra-banner-desc { font-size: 13px; color: var(--text-secondary); }
 
-        .sub-toggle { display: flex; gap: 12px; padding: 16px; background: var(--bg-secondary); border: 1px dashed var(--border-bright); border-radius: var(--radius-md); cursor: pointer; margin-top: 20px; }
+        .player-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px; }
+        .player-block-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .player-badge { width: 44px; height: 44px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; color: var(--red); flex-shrink: 0; font-size: 16px; }
+        .player-title { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 15px; letter-spacing: .5px; }
+        .player-subtitle { font-size: 12px; color: var(--text-muted); }
+        
+        .student-fields { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-bright); }
+        .student-fields.show { display: block; }
+        .student-fields-header { font-family: var(--font-display); font-size: 11px; color: var(--cyan); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+
+        .id-upload { border: 2px dashed var(--border-bright); border-radius: var(--radius-sm); padding: 24px; text-align: center; cursor: pointer; background: var(--bg-primary); transition: all .3s; }
+        .id-upload:hover { border-color: var(--cyan); }
+        .id-upload.has-file { border-color: var(--green); background: rgba(34,197,94,.05); }
+        .id-upload input { display: none; }
+        .id-upload-icon { font-size: 28px; margin-bottom: 6px; }
+        .id-upload-text { font-size: 13px; color: var(--text-muted); }
+        .id-upload.has-file .id-upload-text { color: var(--green); }
+
+        .sub-toggle { display: flex; gap: 12px; padding: 16px; background: var(--bg-secondary); border: 1px dashed var(--border-bright); border-radius: var(--radius-md); cursor: pointer; margin-top: 20px; align-items: center; }
         .sub-toggle input { display: none; }
-        .sub-toggle-check { width: 22px; height: 22px; border: 2px solid var(--border-bright); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+        .sub-toggle-check { width: 22px; height: 22px; border: 2px solid var(--border-bright); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .sub-toggle input:checked + .sub-toggle-check { background: var(--red); border-color: var(--red); }
-        .sub-form { display: none; margin-top: 12px; } .sub-form.show { display: block; }
+        .sub-form { display: none; margin-top: 16px; } .sub-form.show { display: block; }
+
+        .payment-info { background: rgba(225,6,0,.08); border: 1px solid rgba(225,6,0,.3); padding: 24px; border-radius: var(--radius-md); margin-bottom: 24px; }
+        .payment-info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .payment-info-row:last-child { border: none; }
+        .free-banner { display: none; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.35); padding: 20px; border-radius: var(--radius-md); margin-bottom: 24px; text-align: center; }
+        .free-banner.active { display: block; }
+        .free-banner-title { font-family: var(--font-display); color: var(--green); font-weight: 700; font-size: 15px; }
 
         .upload-zone { border: 2px dashed var(--border-bright); border-radius: var(--radius-md); padding: 40px; text-align: center; cursor: pointer; background: var(--bg-secondary); }
         .upload-zone.has-file { border-color: var(--green); }
         .upload-zone input { display: none; }
 
-        .payment-info { background: rgba(225, 6, 0, 0.08); border: 1px solid rgba(225, 6, 0, 0.3); padding: 20px; border-radius: var(--radius-md); margin-bottom: 24px; }
-        .payment-info-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
-
         .review-block { background: var(--bg-secondary); border: 1px solid var(--border); padding: 24px; border-radius: var(--radius-md); margin-bottom: 16px; }
-        .review-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .agree-box { display: flex; gap: 14px; padding: 20px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 24px; cursor: pointer; }
-        .agree-box input { display: none; }
-        .agree-check { width: 22px; height: 22px; border: 2px solid var(--border-bright); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-        .agree-box input:checked + .agree-check { background: var(--red); border-color: var(--red); }
+        .review-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; gap: 12px; }
+        .review-row:last-child { border-bottom: none; }
+        .review-verify-block { background: rgba(34,211,238,.05); border: 1px solid rgba(34,211,238,.3); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; }
+        .review-verify-title { font-family: var(--font-display); font-size: 12px; color: var(--cyan); font-weight: 700; margin-bottom: 10px; }
+        .review-verify-row { font-size: 13px; padding: 8px 0; color: var(--text-secondary); border-bottom: 1px dashed rgba(255,255,255,.05); }
+        .review-verify-row:last-child { border-bottom: none; }
+        .review-verify-row strong { color: #fff; }
 
-        .step-nav { display: flex; justify-content: space-between; margin-top: 8px; }
-        .success-panel { display: none; text-align: center; padding: 60px 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+        .agree-box { display: flex; gap: 14px; padding: 20px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 24px; cursor: pointer; align-items: center; }
+        .agree-box input { width: 20px; height: 20px; accent-color: var(--red); cursor: pointer; }
+
+        .step-nav { display: flex; justify-content: space-between; margin-top: 24px; }
+
+        .success-panel { display: none; text-align: center; padding: 60px 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 0 40px rgba(34,197,94,0.1); }
         .success-panel.show { display: block; }
-        .success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(34, 197, 94, 0.15); border: 2px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
-        .success-id-box { background: var(--bg-secondary); padding: 16px 28px; border-radius: var(--radius-md); display: inline-block; margin-bottom: 32px; }
-        .success-id-value { font-family: var(--font-display); font-weight: 900; font-size: 20px; color: var(--red); }
+        .success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(34,197,94,.15); border: 2px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+        .success-id-box { background: var(--bg-secondary); padding: 20px 32px; border-radius: var(--radius-md); display: inline-block; margin-bottom: 32px; border: 1px solid var(--green); }
+        .success-id-value { font-family: var(--font-display); font-weight: 900; font-size: 24px; color: var(--green); }
 
-        @media (max-width: 768px) { .form-grid, .roster-item { grid-template-columns: 1fr; } .nav-links { display: none; } }
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .step-card { padding: 24px; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- NAV -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loadingMessage">Loading tournament...</div>
+</div>
+
+<div id="errorPanel" class="error-panel">
+    <div class="error-icon">⚠️</div>
+    <h2 id="errorTitle" class="error-title">Error</h2>
+    <p id="errorMessage" class="error-message"></p>
+    <div class="error-actions">
+        <button class="btn btn-primary" onclick="retryLoad()">Retry</button>
+        <a href="tournaments.html" class="btn btn-outline">All Tournaments</a>
+    </div>
+</div>
+
+<div id="mainContent" style="display:none;">
     <nav class="nav">
         <div class="container nav-inner">
             <a href="index.html" class="logo">
@@ -117,27 +183,25 @@
         </div>
     </nav>
 
-    <!-- TOURNAMENT STRIP -->
-    <div class="tournament-strip">
-        <div class="container tournament-strip-inner">
-            <div class="strip-info">
+    <div class="strip">
+        <div class="container strip-inner">
+            <div>
                 <span class="strip-label">Registering For</span>
-                <span class="strip-title" id="strip-title">Loading...</span>
+                <div class="strip-title" id="strip-title">Loading...</div>
                 <div class="strip-meta">
-                    <span id="strip-dates">Dates Loading...</span>
-                    <span id="strip-format">Format Loading...</span>
+                    <span id="strip-dates"></span>
+                    <span id="strip-format"></span>
+                    <span id="strip-scope"></span>
                 </div>
             </div>
-            <a href="tournaments.html" class="strip-back" id="back-link">← Back to Tournaments</a>
+            <a href="tournaments.html" class="strip-back" id="back-link">← Back</a>
         </div>
     </div>
 
-    <!-- HERO -->
     <section class="page-hero">
         <h1 class="page-hero-title">Team <span class="accent">Registration</span></h1>
     </section>
 
-    <!-- PROGRESS BAR -->
     <div class="progress-wrap">
         <div class="container">
             <div class="progress">
@@ -150,9 +214,9 @@
         </div>
     </div>
 
-    <!-- FORM -->
     <section class="section">
         <div class="container">
+
             <!-- STEP 1 -->
             <div class="step-card" id="step1">
                 <h2 class="step-title">Captain Details</h2>
@@ -165,12 +229,12 @@
                     <div class="form-group">
                         <label class="form-label">Email <span class="req">*</span></label>
                         <input type="email" id="captainEmail" class="form-input" placeholder="you@gmail.com">
-                        <div class="form-error" id="err-captainEmail">Enter a valid email address.</div>
+                        <div class="form-error" id="err-captainEmail">Enter a valid email.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Phone <span class="req">*</span></label>
-                        <input type="tel" id="captainPhone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
-                        <div class="form-error" id="err-captainPhone">Enter a valid 10-digit number.</div>
+                        <input type="tel" id="captainPhone" class="form-input" placeholder="10-digit mobile" maxlength="10">
+                        <div class="form-error" id="err-captainPhone">Enter valid 10-digit number.</div>
                     </div>
                     <div class="form-group full">
                         <label class="form-label">Discord Username (optional)</label>
@@ -186,7 +250,13 @@
             <!-- STEP 2 -->
             <div class="step-card" id="step2" style="display:none;">
                 <h2 class="step-title">Team & Roster</h2>
-                <div class="form-grid">
+
+                <div class="intra-banner" id="intraBanner">
+                    <div class="intra-banner-title">🎓 Intra-College Tournament</div>
+                    <div class="intra-banner-desc">Every player must provide <strong>Real Name, Roll Number, College Name, Branch, Year</strong> and upload their <strong>ID Card</strong>.</div>
+                </div>
+
+                <div class="form-grid" style="margin-bottom:24px;">
                     <div class="form-group">
                         <label class="form-label">Team Name <span class="req">*</span></label>
                         <input type="text" id="teamName" class="form-input" placeholder="e.g. BCE Vipers">
@@ -199,42 +269,16 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 32px;">
-                    <h3 style="margin-bottom: 12px;">Main Roster (4 Players)</h3>
-                    <div class="roster-item">
-                        <div class="roster-index">P1</div>
-                        <div class="form-group"><label class="form-label">Player 1 IGN (Captain) <span class="req">*</span></label><input type="text" id="roster1" class="form-input"><div class="form-error" id="err-roster1">Required.</div></div>
-                        <div class="form-group"><label class="form-label">Role</label><select id="roster1role" class="form-input"><option value="IGL">IGL</option><option value="Assaulter">Assaulter</option><option value="Sniper">Sniper</option><option value="Support">Support</option></select></div>
-                    </div>
-                    <div class="roster-item">
-                        <div class="roster-index">P2</div>
-                        <div class="form-group"><label class="form-label">Player 2 IGN <span class="req">*</span></label><input type="text" id="roster2" class="form-input"><div class="form-error" id="err-roster2">Required.</div></div>
-                        <div class="form-group"><label class="form-label">Role</label><select id="roster2role" class="form-input"><option value="Assaulter">Assaulter</option><option value="IGL">IGL</option><option value="Sniper">Sniper</option><option value="Support">Support</option></select></div>
-                    </div>
-                    <div class="roster-item">
-                        <div class="roster-index">P3</div>
-                        <div class="form-group"><label class="form-label">Player 3 IGN <span class="req">*</span></label><input type="text" id="roster3" class="form-input"><div class="form-error" id="err-roster3">Required.</div></div>
-                        <div class="form-group"><label class="form-label">Role</label><select id="roster3role" class="form-input"><option value="Sniper">Sniper</option><option value="IGL">IGL</option><option value="Assaulter">Assaulter</option><option value="Support">Support</option></select></div>
-                    </div>
-                    <div class="roster-item">
-                        <div class="roster-index">P4</div>
-                        <div class="form-group"><label class="form-label">Player 4 IGN <span class="req">*</span></label><input type="text" id="roster4" class="form-input"><div class="form-error" id="err-roster4">Required.</div></div>
-                        <div class="form-group"><label class="form-label">Role</label><select id="roster4role" class="form-input"><option value="Support">Support</option><option value="IGL">IGL</option><option value="Assaulter">Assaulter</option><option value="Sniper">Sniper</option></select></div>
-                    </div>
+                <h3 style="margin-bottom:12px;font-family:'Orbitron',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:1px;">Main Roster (4 Players)</h3>
 
-                    <label class="sub-toggle">
-                        <input type="checkbox" id="subCheckbox">
-                        <div class="sub-toggle-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                        <div class="sub-toggle-text">Add a substitute player (optional)</div>
-                    </label>
-                    <div class="sub-form" id="subForm">
-                        <div class="roster-item" style="border-color:var(--red);">
-                            <div class="roster-index">SUB</div>
-                            <div class="form-group"><label class="form-label">Sub IGN</label><input type="text" id="subIgn" class="form-input"><div class="form-error" id="err-subIgn">Required.</div></div>
-                            <div class="form-group"><label class="form-label">Role</label><select id="subRole" class="form-input"><option value="Sub">Substitute</option><option value="IGL">IGL</option><option value="Assaulter">Assaulter</option><option value="Sniper">Sniper</option><option value="Support">Support</option></select></div>
-                        </div>
-                    </div>
-                </div>
+                <div id="rosterContainer"></div>
+
+                <label class="sub-toggle">
+                    <input type="checkbox" id="subCheckbox" onchange="toggleSub()">
+                    <div class="sub-toggle-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div>Add a substitute player (optional)</div>
+                </label>
+                <div class="sub-form" id="subForm"></div>
 
                 <div class="step-nav" style="margin-top:24px;">
                     <button class="btn btn-outline" onclick="goToStep(1)">← Back</button>
@@ -244,24 +288,29 @@
 
             <!-- STEP 3 -->
             <div class="step-card" id="step3" style="display:none;">
-                <h2 class="step-title">Payment Proof</h2>
-                <div class="payment-info">
-                    <div class="payment-info-row"><span>Amount</span><span id="pay-amount">₹100</span></div>
-                    <div class="payment-info-row"><span>UPI ID</span><span>bce.esports@upi</span></div>
+                <h2 class="step-title">Payment</h2>
+                <div class="free-banner" id="freeBanner">
+                    <div class="free-banner-title">✓ This tournament is FREE</div>
                 </div>
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label class="form-label">UPI UTR <span class="req">*</span></label>
-                        <input type="text" id="utr" class="form-input" placeholder="12-digit UTR">
-                        <div class="form-error" id="err-utr">Enter valid UTR.</div>
+                <div id="paymentFields">
+                    <div class="payment-info">
+                        <div class="payment-info-row"><span>Amount</span><span id="pay-amount">₹0</span></div>
+                        <div class="payment-info-row"><span>UPI ID</span><span>bce.esports@upi</span></div>
                     </div>
-                    <div class="form-group full">
-                        <label class="form-label">Screenshot <span class="req">*</span></label>
-                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('screenshotInput').click()">
-                            <input type="file" id="screenshotInput" accept="image/*">
-                            <div style="font-size:36px;">📸</div>
-                            <div id="uploadTitle">Click to upload</div>
-                            <div class="form-error" id="err-screenshot" style="display:none; color:red; margin-top:10px;">Screenshot required.</div>
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label class="form-label">UPI UTR / Ref No. <span class="req">*</span></label>
+                            <input type="text" id="utr" class="form-input" placeholder="Enter UTR or Reference Number">
+                            <div class="form-error" id="err-utr">UTR is required.</div>
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Screenshot <span class="req">*</span></label>
+                            <div class="upload-zone" id="uploadZone" onclick="document.getElementById('screenshotInput').click()">
+                                <input type="file" id="screenshotInput" accept="image/*">
+                                <div style="font-size:36px;">📸</div>
+                                <div id="uploadTitle">Click to upload</div>
+                                <div class="form-error" id="err-screenshot" style="color:red;margin-top:10px;">Screenshot required.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -275,20 +324,21 @@
             <div class="step-card" id="step4" style="display:none;">
                 <h2 class="step-title">Review & Submit</h2>
                 <div class="review-block">
-                    <div class="review-row"><span>Captain Name</span><span id="revCaptainName">—</span></div>
+                    <div class="review-row"><span>Captain</span><span id="revCaptainName">—</span></div>
                     <div class="review-row"><span>Email</span><span id="revCaptainEmail">—</span></div>
                     <div class="review-row"><span>Team</span><span id="revTeamName">—</span></div>
                     <div class="review-row"><span>Roster</span><span id="revRoster">—</span></div>
-                    <div class="review-row"><span>UTR</span><span id="revUtr">—</span></div>
+                    <div class="review-row" id="revUtrRow"><span>UTR</span><span id="revUtr">—</span></div>
                 </div>
-
+                <div class="review-verify-block" id="revVerifyBlock" style="display:none;">
+                    <div class="review-verify-title">🎓 Student Verification</div>
+                    <div id="revVerifyList"></div>
+                </div>
                 <label class="agree-box">
                     <input type="checkbox" id="agreeCheckbox">
-                    <div class="agree-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <div class="agree-text">I confirm all information is accurate.</div>
+                    <div>I confirm all information is accurate.</div>
                 </label>
                 <div class="form-error" id="err-agree" style="margin-bottom:16px;">You must accept.</div>
-
                 <div class="step-nav">
                     <button class="btn btn-outline" onclick="goToStep(3)">← Back</button>
                     <button class="btn btn-primary" id="submitBtn" onclick="submitRegistration()">Submit Registration</button>
@@ -298,181 +348,514 @@
             <!-- SUCCESS -->
             <div class="success-panel" id="successPanel">
                 <div class="success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <h2 class="success-title">Registration Submitted</h2>
+                <h2 style="font-family:'Orbitron';margin-bottom:16px;">Registration Submitted</h2>
                 <div class="success-id-box">
-                    <div class="success-id-label">Your Registration ID</div>
-                    <div class="success-id-value" id="regIdDisplay">R-2026-00001</div>
+                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Your Registration ID</div>
+                    <div class="success-id-value" id="regIdDisplay">—</div>
                 </div>
-                <div class="success-actions"><a href="index.html" class="btn btn-primary">Back to Home</a></div>
+                <div style="margin-top:24px;">
+                    <a href="registration-status.html" class="btn btn-outline" style="margin-right:12px;">Check Status</a>
+                    <a href="index.html" class="btn btn-primary">Back to Home</a>
+                </div>
             </div>
 
         </div>
     </section>
+</div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec"; // <--- APNA URL YAHAN DAALO
-        const urlParams = new URLSearchParams(window.location.search);
-        const tournamentId = urlParams.get('tid') || urlParams.get('id');
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
+const urlParams = new URLSearchParams(window.location.search);
+const tournamentId = urlParams.get('tid') || urlParams.get('id') || '';
 
-        const state = {
-            captain: {}, team: {}, roster: [], substitute: null, payment: { utr: '', fileBase64: '', fileName: '', mimeType: '' }
+let tournament = null;
+let isIntra = false;
+let paymentRequired = false;
+let currentStep = 1;
+
+const state = {
+    captain: {},
+    team: {},
+    roster: [],
+    substitute: null,
+    payment: { utr: '', fileBase64: '', fileName: '', mimeType: '' },
+    idCards: {}
+};
+
+function esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showLoading(msg) { document.getElementById('loadingMessage').textContent = msg || 'Loading...'; document.getElementById('loadingOverlay').classList.add('active'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+function showError(title, msg) {
+    hideLoading();
+    document.getElementById('errorPanel').classList.add('active');
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('errorTitle').textContent = title;
+    document.getElementById('errorMessage').textContent = msg || '';
+}
+
+async function fetchJSON(url, opts) {
+    opts = opts || {};
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
+    try {
+        const res = await fetch(url, { method: opts.method || 'GET', body: opts.body, headers: opts.headers || {}, mode: 'cors', credentials: 'omit', signal: controller.signal });
+        clearTimeout(timer);
+        const text = await res.text();
+        if (text.trim().startsWith('<')) throw new Error('Server returned HTML. Deployment not public or wrong URL.');
+        try { return JSON.parse(text); } catch (e) { throw new Error('Invalid JSON: ' + text.substring(0, 200)); }
+    } catch (e) {
+        clearTimeout(timer);
+        if (e.name === 'AbortError') throw new Error('Request timed out (30s). Please retry.');
+        throw e;
+    }
+}
+
+async function loadTournament() {
+    if (!tournamentId) {
+        showError('Missing Tournament ID', 'URL me ?tid=XXXX hona chahiye.\nExample: register.html?tid=TRN-XXXX');
+        return;
+    }
+    showLoading('Loading tournament...');
+    try {
+        const json = await fetchJSON(API_URL + '?action=getTournament&id=' + encodeURIComponent(tournamentId));
+        if (!json.success) throw new Error(json.message || 'getTournament failed');
+        if (!json.data) throw new Error('Tournament not found: ' + tournamentId);
+        
+        tournament = json.data;
+        
+        // Determine scope
+        const scopeRaw = String(tournament.Scope || '').trim();
+        const collegeRaw = String(tournament.CollegeName || '').trim();
+        isIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
+        paymentRequired = (Number(tournament.EntryFee) || 0) > 0;
+        
+        // Strip
+        document.getElementById('strip-title').textContent = tournament.Name || 'Tournament';
+        document.getElementById('strip-format').textContent = '👥 ' + (tournament.TeamFormat || 'Squad');
+        document.getElementById('strip-dates').textContent = tournament.TournamentStartAt ? '📅 ' + new Date(tournament.TournamentStartAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : '';
+        document.getElementById('back-link').href = 'tournament.html?tid=' + tournament.TournamentID;
+        
+        const scopeBadge = document.getElementById('strip-scope');
+        if (isIntra) {
+            scopeBadge.innerHTML = '<span class="scope-badge intra">🎓 Intra College</span>';
+            document.getElementById('intraBanner').classList.add('show');
+        } else {
+            scopeBadge.innerHTML = '<span class="scope-badge public">🌐 Public</span>';
+        }
+        
+        // Payment UI
+        if (paymentRequired) {
+            document.getElementById('pay-amount').textContent = '₹' + tournament.EntryFee;
+        } else {
+            document.getElementById('freeBanner').classList.add('active');
+            document.getElementById('paymentFields').style.display = 'none';
+            document.getElementById('revUtrRow').style.display = 'none';
+        }
+        
+        // Render roster
+        renderRoster();
+        
+        hideLoading();
+        document.getElementById('mainContent').style.display = 'block';
+    } catch (e) {
+        showError('Cannot Load Tournament', e.message);
+    }
+}
+
+function renderRoster() {
+    const players = ['P1', 'P2', 'P3', 'P4'];
+    
+    document.getElementById('rosterContainer').innerHTML = players.map((slot, i) => {
+        const n = i + 1;
+        const titles = ['Player 1 (Captain)', 'Player 2', 'Player 3', 'Player 4'];
+        return `
+            <div class="player-block">
+                <div class="player-block-header">
+                    <div class="player-badge">${slot}</div>
+                    <div>
+                        <div class="player-title">${titles[i]}</div>
+                        <div class="player-subtitle">${isIntra ? 'Student verification required' : 'In-game name required'}</div>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">IGN / Game UID <span class="req">*</span></label>
+                        <input type="text" id="roster${n}" class="form-input" placeholder="In-game name / UID">
+                        <div class="form-error" id="err-roster${n}">Required.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select id="roster${n}role" class="form-input">
+                            <option value="IGL">IGL</option>
+                            <option value="Assaulter">Assaulter</option>
+                            <option value="Sniper">Sniper</option>
+                            <option value="Support">Support</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="student-fields ${isIntra ? 'show' : ''}" id="studentFields${n}">
+                    <div class="student-fields-header">🎓 Student Details</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Real Name <span class="req">*</span></label>
+                            <input type="text" id="v${n}realName" class="form-input" placeholder="As per ID card">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Roll Number <span class="req">*</span></label>
+                            <input type="text" id="v${n}rollNumber" class="form-input" placeholder="e.g. 21BCE1234">
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">College Name <span class="req">*</span></label>
+                            <input type="text" id="v${n}collegeName" class="form-input" placeholder="Enter your college name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Branch <span class="req">*</span></label>
+                            <input type="text" id="v${n}branch" class="form-input" placeholder="e.g. CSE, ECE, ME">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year <span class="req">*</span></label>
+                            <select id="v${n}year" class="form-input">
+                                <option value="">Select...</option>
+                                <option value="1st">1st Year</option>
+                                <option value="2nd">2nd Year</option>
+                                <option value="3rd">3rd Year</option>
+                                <option value="4th">4th Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">ID Card Photo <span class="req">*</span></label>
+                            <div class="id-upload" id="v${n}uploadBox" onclick="document.getElementById('v${n}idCard').click()">
+                                <input type="file" id="v${n}idCard" accept="image/*" onchange="handleIdUpload(event, ${n})">
+                                <div class="id-upload-icon">🪪</div>
+                                <div class="id-upload-text" id="v${n}uploadText">Click to upload (max 2 MB)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-error" id="err-v${n}">Complete all student fields + upload ID.</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderSubForm() {
+    document.getElementById('subForm').innerHTML = `
+        <div class="player-block" style="border-color:var(--red);">
+            <div class="player-block-header">
+                <div class="player-badge">SUB</div>
+                <div>
+                    <div class="player-title">Substitute Player</div>
+                    <div class="player-subtitle">${isIntra ? 'Student verification required' : 'In-game name required'}</div>
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">IGN / Game UID <span class="req">*</span></label>
+                    <input type="text" id="subIgn" class="form-input" placeholder="In-game name / UID">
+                    <div class="form-error" id="err-subIgn">Required.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select id="subRole" class="form-input">
+                        <option value="Sub">Substitute</option>
+                        <option value="IGL">IGL</option>
+                        <option value="Assaulter">Assaulter</option>
+                        <option value="Sniper">Sniper</option>
+                        <option value="Support">Support</option>
+                    </select>
+                </div>
+            </div>
+            <div class="student-fields ${isIntra ? 'show' : ''}" id="studentFieldssub">
+                <div class="student-fields-header">🎓 Student Details</div>
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label">Real Name <span class="req">*</span></label><input type="text" id="vsubrealName" class="form-input" placeholder="As per ID card"></div>
+                    <div class="form-group"><label class="form-label">Roll Number <span class="req">*</span></label><input type="text" id="vsubrollNumber" class="form-input" placeholder="e.g. 21BCE1234"></div>
+                    <div class="form-group full"><label class="form-label">College Name <span class="req">*</span></label><input type="text" id="vsubcollegeName" class="form-input" placeholder="Enter your college name"></div>
+                    <div class="form-group"><label class="form-label">Branch <span class="req">*</span></label><input type="text" id="vsubbranch" class="form-input" placeholder="e.g. CSE"></div>
+                    <div class="form-group"><label class="form-label">Year <span class="req">*</span></label>
+                        <select id="vsubyear" class="form-input">
+                            <option value="">Select...</option>
+                            <option value="1st">1st Year</option>
+                            <option value="2nd">2nd Year</option>
+                            <option value="3rd">3rd Year</option>
+                            <option value="4th">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">ID Card Photo <span class="req">*</span></label>
+                        <div class="id-upload" id="vsubuploadBox" onclick="document.getElementById('vsubidCard').click()">
+                            <input type="file" id="vsubidCard" accept="image/*" onchange="handleIdUpload(event, 'sub')">
+                            <div class="id-upload-icon">🪪</div>
+                            <div class="id-upload-text" id="vsubuploadText">Click to upload (max 2 MB)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-error" id="err-vsub">Complete all student fields + upload ID.</div>
+            </div>
+        </div>
+    `;
+}
+
+window.toggleSub = function() {
+    const checked = document.getElementById('subCheckbox').checked;
+    const subForm = document.getElementById('subForm');
+    if (checked) { renderSubForm(); subForm.classList.add('show'); }
+    else subForm.classList.remove('show');
+};
+
+window.handleIdUpload = function(evt, key) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('ID card must be under 2 MB'); evt.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        state.idCards[key] = { base64: e.target.result.split(',')[1], fileName: file.name, mimeType: file.type };
+        const box = document.getElementById('v' + key + 'uploadBox');
+        const text = document.getElementById('v' + key + 'uploadText');
+        if (box) box.classList.add('has-file');
+        if (text) text.textContent = '✓ ' + file.name;
+    };
+    reader.readAsDataURL(file);
+};
+
+window.goToStep = function(target) {
+    if (target > currentStep) {
+        if (currentStep === 1 && !validateStep1()) return;
+        if (currentStep === 2 && !validateStep2()) return;
+        if (currentStep === 3 && !validateStep3()) return;
+    }
+    captureStep();
+    for (let i = 1; i <= 4; i++) document.getElementById('step' + i).style.display = (i === target) ? 'block' : 'none';
+    currentStep = target;
+    document.getElementById('progressFill').style.width = ((currentStep - 1) / 3) * 100 + '%';
+    if (target === 4) renderReview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function captureStep() {
+    if (currentStep === 1) {
+        state.captain = {
+            name: document.getElementById('captainName').value.trim(),
+            email: document.getElementById('captainEmail').value.trim(),
+            phone: document.getElementById('captainPhone').value.trim(),
+            discord: document.getElementById('captainDiscord').value.trim()
         };
-        let currentStep = 1;
-
-        // Fetch Tournament Details
-        async function loadTournament() {
-            if (!tournamentId) return alert("No Tournament ID found in URL");
-            try {
-                const res = await fetch(`${API_URL}?action=getTournament&id=${tournamentId}`);
-                const json = await res.json();
-                if (json.success && json.data) {
-                    const t = json.data;
-                    document.getElementById('strip-title').textContent = t.Name;
-                    document.getElementById('strip-format').textContent = t.TeamFormat || 'Squad';
-                    document.getElementById('pay-amount').textContent = t.EntryFee > 0 ? `₹${t.EntryFee}` : 'Free';
-                    document.getElementById('back-link').href = `tournament.html?tid=${t.TournamentID}`;
-                }
-            } catch (e) { console.error("Error loading tournament", e); }
-        }
-
-        // Navigation
-        function goToStep(target) {
-            if (target > currentStep) {
-                if (currentStep === 1 && !validateStep1()) return;
-                if (currentStep === 2 && !validateStep2()) return;
-                if (currentStep === 3 && !validateStep3()) return;
+    }
+    if (currentStep === 2) {
+        state.team = { name: document.getElementById('teamName').value.trim(), tag: document.getElementById('teamTag').value.trim().toUpperCase() };
+        state.roster = [1,2,3,4].map(i => {
+            const r = { ign: document.getElementById('roster' + i).value.trim(), role: document.getElementById('roster' + i + 'role').value };
+            if (isIntra) {
+                r.realName = document.getElementById('v' + i + 'realName').value.trim();
+                r.rollNumber = document.getElementById('v' + i + 'rollNumber').value.trim();
+                r.collegeName = document.getElementById('v' + i + 'collegeName').value.trim();
+                r.branch = document.getElementById('v' + i + 'branch').value.trim();
+                r.year = document.getElementById('v' + i + 'year').value;
+                const card = state.idCards[i] || {};
+                r.idCardBase64 = card.base64 || '';
+                r.idCardFileName = card.fileName || '';
+                r.idCardMimeType = card.mimeType || '';
             }
-            captureStep();
-            for (let i = 1; i <= 4; i++) document.getElementById('step' + i).style.display = (i === target) ? 'block' : 'none';
-            currentStep = target;
-            document.getElementById('progressFill').style.width = ((currentStep - 1) / 3) * 100 + '%';
-            if (target === 4) renderReview();
+            return r;
+        });
+        state.substitute = null;
+        if (document.getElementById('subCheckbox').checked) {
+            const s = { ign: document.getElementById('subIgn').value.trim(), role: document.getElementById('subRole').value };
+            if (isIntra) {
+                s.realName = document.getElementById('vsubrealName').value.trim();
+                s.rollNumber = document.getElementById('vsubrollNumber').value.trim();
+                s.collegeName = document.getElementById('vsubcollegeName').value.trim();
+                s.branch = document.getElementById('vsubbranch').value.trim();
+                s.year = document.getElementById('vsubyear').value;
+                const card = state.idCards['sub'] || {};
+                s.idCardBase64 = card.base64 || '';
+                s.idCardFileName = card.fileName || '';
+                s.idCardMimeType = card.mimeType || '';
+            }
+            state.substitute = s;
+        }
+    }
+    if (currentStep === 3) {
+        state.payment.utr = document.getElementById('utr').value.trim();
+    }
+}
+
+function validateStep1() {
+    let ok = true;
+    if (document.getElementById('captainName').value.length < 2) { document.getElementById('err-captainName').classList.add('show'); ok = false; } else document.getElementById('err-captainName').classList.remove('show');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('captainEmail').value)) { document.getElementById('err-captainEmail').classList.add('show'); ok = false; } else document.getElementById('err-captainEmail').classList.remove('show');
+    if (document.getElementById('captainPhone').value.length !== 10) { document.getElementById('err-captainPhone').classList.add('show'); ok = false; } else document.getElementById('err-captainPhone').classList.remove('show');
+    return ok;
+}
+
+function validateStep2() {
+    let ok = true;
+    if (document.getElementById('teamName').value.length < 3) { document.getElementById('err-teamName').classList.add('show'); ok = false; } else document.getElementById('err-teamName').classList.remove('show');
+    if (document.getElementById('teamTag').value.length < 2) { document.getElementById('err-teamTag').classList.add('show'); ok = false; } else document.getElementById('err-teamTag').classList.remove('show');
+    
+    for (let i = 1; i <= 4; i++) {
+        if (document.getElementById('roster' + i).value.length < 2) { document.getElementById('err-roster' + i).classList.add('show'); ok = false; } else document.getElementById('err-roster' + i).classList.remove('show');
+        
+        if (isIntra) {
+            const real = document.getElementById('v' + i + 'realName').value.trim();
+            const roll = document.getElementById('v' + i + 'rollNumber').value.trim();
+            const college = document.getElementById('v' + i + 'collegeName').value.trim();
+            const branch = document.getElementById('v' + i + 'branch').value.trim();
+            const year = document.getElementById('v' + i + 'year').value;
+            const card = state.idCards[i];
+            const errEl = document.getElementById('err-v' + i);
+            if (!real || !roll || !college || !branch || !year || !card) {
+                errEl.classList.add('show'); ok = false;
+            } else {
+                errEl.classList.remove('show');
+            }
+        }
+    }
+    
+    const subChecked = document.getElementById('subCheckbox').checked;
+    if (subChecked) {
+        if (document.getElementById('subIgn').value.length < 2) { document.getElementById('err-subIgn').classList.add('show'); ok = false; } else document.getElementById('err-subIgn').classList.remove('show');
+        if (isIntra) {
+            const real = document.getElementById('vsubrealName').value.trim();
+            const roll = document.getElementById('vsubrollNumber').value.trim();
+            const college = document.getElementById('vsubcollegeName').value.trim();
+            const branch = document.getElementById('vsubbranch').value.trim();
+            const year = document.getElementById('vsubyear').value;
+            const card = state.idCards['sub'];
+            const errEl = document.getElementById('err-vsub');
+            if (!real || !roll || !college || !branch || !year || !card) { errEl.classList.add('show'); ok = false; }
+            else errEl.classList.remove('show');
+        }
+    }
+    return ok;
+}
+
+function validateStep3() {
+    if (!paymentRequired) return true;
+    let ok = true;
+    // Strict length validation removed
+    if (!document.getElementById('utr').value.trim()) { document.getElementById('err-utr').classList.add('show'); ok = false; } else document.getElementById('err-utr').classList.remove('show');
+    if (!state.payment.fileBase64) { document.getElementById('err-screenshot').style.display = 'block'; ok = false; } else document.getElementById('err-screenshot').style.display = 'none';
+    return ok;
+}
+
+document.getElementById('screenshotInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) { alert('Max 3 MB'); return; }
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        state.payment.fileBase64 = evt.target.result.split(',')[1];
+        state.payment.fileName = file.name;
+        state.payment.mimeType = file.type;
+        document.getElementById('uploadZone').classList.add('has-file');
+        document.getElementById('uploadTitle').textContent = '✓ ' + file.name;
+        document.getElementById('err-screenshot').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+});
+
+function renderReview() {
+    document.getElementById('revCaptainName').textContent = state.captain.name;
+    document.getElementById('revCaptainEmail').textContent = state.captain.email;
+    document.getElementById('revTeamName').textContent = state.team.name + ' (' + state.team.tag + ')';
+    let str = state.roster.map(p => p.ign).join(', ');
+    if (state.substitute) str += ' + Sub: ' + state.substitute.ign;
+    document.getElementById('revRoster').textContent = str;
+    document.getElementById('revUtr').textContent = paymentRequired ? (state.payment.utr || '—') : 'FREE';
+    
+    if (isIntra) {
+        document.getElementById('revVerifyBlock').style.display = 'block';
+        const rows = state.roster.map((p, i) => `
+            <div class="review-verify-row">
+                <strong>P${i+1} ${esc(p.ign)}</strong> — ${esc(p.realName)} · Roll: ${esc(p.rollNumber)} · ${esc(p.collegeName)} · ${esc(p.branch)} · ${esc(p.year)} Year · 🪪
+            </div>
+        `);
+        if (state.substitute) {
+            rows.push(`<div class="review-verify-row"><strong>SUB ${esc(state.substitute.ign)}</strong> — ${esc(state.substitute.realName)} · Roll: ${esc(state.substitute.rollNumber)} · ${esc(state.substitute.collegeName)} · ${esc(state.substitute.branch)} · ${esc(state.substitute.year)} Year · 🪪</div>`);
+        }
+        document.getElementById('revVerifyList').innerHTML = rows.join('');
+    } else {
+        document.getElementById('revVerifyBlock').style.display = 'none';
+    }
+}
+
+window.submitRegistration = async function() {
+    if (!document.getElementById('agreeCheckbox').checked) {
+        document.getElementById('err-agree').classList.add('show');
+        return;
+    }
+    document.getElementById('err-agree').classList.remove('show');
+    
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    showLoading('Submitting registration...');
+    
+    const verification = [];
+    if (isIntra) {
+        state.roster.forEach((p, i) => {
+            verification.push({
+                slot: 'P' + (i + 1),
+                ign: p.ign, realName: p.realName, collegeName: p.collegeName, rollNumber: p.rollNumber,
+                branch: p.branch, year: p.year,
+                idCardBase64: p.idCardBase64, idCardFileName: p.idCardFileName, idCardMimeType: p.idCardMimeType
+            });
+        });
+        if (state.substitute) {
+            verification.push({
+                slot: 'SUB',
+                ign: state.substitute.ign, realName: state.substitute.realName, collegeName: state.substitute.collegeName, rollNumber: state.substitute.rollNumber,
+                branch: state.substitute.branch, year: state.substitute.year,
+                idCardBase64: state.substitute.idCardBase64, idCardFileName: state.substitute.idCardFileName, idCardMimeType: state.substitute.idCardMimeType
+            });
+        }
+    }
+    
+    const payload = {
+        action: 'submitRegistration',
+        tid: tournamentId,
+        captain: state.captain,
+        team: state.team,
+        roster: state.roster.map(p => ({ ign: p.ign, role: p.role })),
+        substitute: state.substitute ? { ign: state.substitute.ign, role: state.substitute.role } : null,
+        verification: verification,
+        payment: paymentRequired ? {
+            utr: state.payment.utr, fileBase64: state.payment.fileBase64, fileName: state.payment.fileName, mimeType: state.payment.mimeType,
+            amount: Number(tournament.EntryFee) || 0
+        } : null
+    };
+    
+    try {
+        const json = await fetchJSON(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+        hideLoading();
+        if (json.success) {
+            document.getElementById('step4').style.display = 'none';
+            document.querySelector('.progress-wrap').style.display = 'none';
+            document.getElementById('regIdDisplay').textContent = json.data.registrationId;
+            document.getElementById('successPanel').classList.add('show');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            alert('❌ ' + (json.message || 'Submission failed'));
+            btn.disabled = false;
+            btn.textContent = 'Submit Registration';
         }
+    } catch (e) {
+        hideLoading();
+        alert('❌ ' + e.message);
+        btn.disabled = false;
+        btn.textContent = 'Submit Registration';
+    }
+};
 
-        function captureStep() {
-            if (currentStep === 1) {
-                state.captain = { name: document.getElementById('captainName').value.trim(), email: document.getElementById('captainEmail').value.trim(), phone: document.getElementById('captainPhone').value.trim(), discord: document.getElementById('captainDiscord').value.trim() };
-            }
-            if (currentStep === 2) {
-                state.team = { name: document.getElementById('teamName').value.trim(), tag: document.getElementById('teamTag').value.trim().toUpperCase() };
-                state.roster = [
-                    { ign: document.getElementById('roster1').value.trim(), role: document.getElementById('roster1role').value },
-                    { ign: document.getElementById('roster2').value.trim(), role: document.getElementById('roster2role').value },
-                    { ign: document.getElementById('roster3').value.trim(), role: document.getElementById('roster3role').value },
-                    { ign: document.getElementById('roster4').value.trim(), role: document.getElementById('roster4role').value }
-                ];
-                state.substitute = document.getElementById('subCheckbox').checked ? { ign: document.getElementById('subIgn').value.trim(), role: document.getElementById('subRole').value } : null;
-            }
-            if (currentStep === 3) {
-                state.payment.utr = document.getElementById('utr').value.trim();
-            }
-        }
+window.retryLoad = function() { document.getElementById('errorPanel').classList.remove('active'); loadTournament(); };
 
-        function validateStep1() {
-            let ok = true;
-            if (document.getElementById('captainName').value.length < 2) { document.getElementById('err-captainName').classList.add('show'); ok = false; } else document.getElementById('err-captainName').classList.remove('show');
-            const email = document.getElementById('captainEmail').value;
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('err-captainEmail').classList.add('show'); ok = false; } else document.getElementById('err-captainEmail').classList.remove('show');
-            if (document.getElementById('captainPhone').value.length !== 10) { document.getElementById('err-captainPhone').classList.add('show'); ok = false; } else document.getElementById('err-captainPhone').classList.remove('show');
-            return ok;
-        }
-        function validateStep2() {
-            let ok = true;
-            if (document.getElementById('teamName').value.length < 3) { document.getElementById('err-teamName').classList.add('show'); ok = false; } else document.getElementById('err-teamName').classList.remove('show');
-            if (document.getElementById('teamTag').value.length < 2) { document.getElementById('err-teamTag').classList.add('show'); ok = false; } else document.getElementById('err-teamTag').classList.remove('show');
-            for(let i=1; i<=4; i++) {
-                if (document.getElementById('roster'+i).value.length < 2) { document.getElementById('err-roster'+i).classList.add('show'); ok = false; } else document.getElementById('err-roster'+i).classList.remove('show');
-            }
-            if (document.getElementById('subCheckbox').checked && document.getElementById('subIgn').value.length < 2) { document.getElementById('err-subIgn').classList.add('show'); ok = false; } else document.getElementById('err-subIgn').classList.remove('show');
-            return ok;
-        }
-        function validateStep3() {
-            let ok = true;
-            if (document.getElementById('utr').value.length < 8) { document.getElementById('err-utr').classList.add('show'); ok = false; } else document.getElementById('err-utr').classList.remove('show');
-            if (!state.payment.fileBase64) { document.getElementById('err-screenshot').style.display = 'block'; ok = false; } else document.getElementById('err-screenshot').style.display = 'none';
-            return ok;
-        }
-
-        // File Upload Logic
-        document.getElementById('screenshotInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.size > 3 * 1024 * 1024) return alert('Max 3 MB allowed');
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                state.payment.fileBase64 = evt.target.result.split(',')[1];
-                state.payment.fileName = file.name;
-                state.payment.mimeType = file.type;
-                document.getElementById('uploadZone').classList.add('has-file');
-                document.getElementById('uploadTitle').textContent = "✓ " + file.name;
-                document.getElementById('err-screenshot').style.display = 'none';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Sub Toggle
-        document.getElementById('subCheckbox').addEventListener('change', function() {
-            document.getElementById('subForm').classList.toggle('show', this.checked);
-        });
-
-        function renderReview() {
-            document.getElementById('revCaptainName').textContent = state.captain.name;
-            document.getElementById('revCaptainEmail').textContent = state.captain.email;
-            document.getElementById('revTeamName').textContent = state.team.name + " (" + state.team.tag + ")";
-            let rosterStr = state.roster.map(p => p.ign).join(', ');
-            if(state.substitute) rosterStr += " + Sub: " + state.substitute.ign;
-            document.getElementById('revRoster').textContent = rosterStr;
-            document.getElementById('revUtr').textContent = state.payment.utr;
-        }
-
-        // Submit API
-        async function submitRegistration() {
-            if (!document.getElementById('agreeCheckbox').checked) return document.getElementById('err-agree').classList.add('show');
-            document.getElementById('err-agree').classList.remove('show');
-            
-            const btn = document.getElementById('submitBtn');
-            btn.textContent = "Submitting...";
-            btn.disabled = true;
-
-            const payload = {
-                action: 'submitRegistration',
-                tid: tournamentId,
-                captain: state.captain,
-                team: state.team,
-                roster: state.roster,
-                substitute: state.substitute,
-                payment: state.payment
-            };
-
-            try {
-                // text/plain header API ke CORS issue ko bypass karta hai
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' } 
-                });
-                const json = await res.json();
-                
-                if (json.success) {
-                    document.getElementById('step4').style.display = 'none';
-                    document.querySelector('.progress-wrap').style.display = 'none';
-                    document.getElementById('regIdDisplay').textContent = json.data.registrationId;
-                    document.getElementById('successPanel').classList.add('show');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else {
-                    alert("Error: " + json.message);
-                    btn.textContent = "Submit Registration";
-                    btn.disabled = false;
-                }
-            } catch(e) {
-                alert("Network error. Please try again.");
-                btn.textContent = "Submit Registration";
-                btn.disabled = false;
-            }
-        }
-
-        window.onload = loadTournament;
-    </script>
+(function boot() {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTournament);
+    else loadTournament();
+})();
+</script>
 </body>
 </html>

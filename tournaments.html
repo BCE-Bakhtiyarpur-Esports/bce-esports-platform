@@ -22,6 +22,7 @@
             --red: #e10600;
             --red-bright: #ff2020;
             --red-glow: rgba(225, 6, 0, 0.35);
+            --cyan: #22d3ee;
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
             --text-muted: #6b6b6b;
@@ -92,7 +93,7 @@
         .logo-text { display: flex; flex-direction: column; line-height: 1; }
         .logo-main { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 2px; color: #fff; }
         .logo-sub { font-family: var(--font-display); font-size: 9px; font-weight: 500; letter-spacing: 4px; color: var(--red); margin-top: 2px; }
-        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links { display: flex; align-items: center; gap: 24px; }
         .nav-link {
             font-size: 14px; font-weight: 600; letter-spacing: 1.5px;
             text-transform: uppercase; color: var(--text-secondary);
@@ -255,6 +256,14 @@
             background: rgba(0,0,0,0.7); color: #fff; padding: 6px 12px;
             border-radius: 4px; border: 1px solid var(--border-bright); z-index: 2;
         }
+        .scope-badge {
+            position: absolute; bottom: 16px; left: 16px;
+            font-family: var(--font-display); font-size: 9px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            padding: 5px 10px; border-radius: 4px; z-index: 2;
+        }
+        .scope-badge.public { background: rgba(34,211,238,0.15); color: var(--cyan); border: 1px solid rgba(34,211,238,0.4); }
+        .scope-badge.intra { background: rgba(225,6,0,0.2); color: #ff5050; border: 1px solid rgba(225,6,0,0.5); }
         .tournament-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
         .tournament-category {
             font-family: var(--font-display); font-size: 10px; font-weight: 700;
@@ -336,6 +345,8 @@
             .filter-search { max-width: 100%; justify-self: stretch; }
             .filter-select { width: 100%; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+            .nav-links { gap: 18px; }
+            .nav-link { font-size: 12px; letter-spacing: 1px; }
         }
         @media (max-width: 768px) {
             .section { padding: 60px 0; }
@@ -346,7 +357,7 @@
                 flex-direction: column; align-items: stretch; gap: 0; padding: 16px;
             }
             .nav-links.active { display: flex; }
-            .nav-link { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+            .nav-link { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
             .nav-link::after { display: none; }
             .nav-cta { margin-left: 0; margin-top: 8px; }
             .nav-cta .btn { width: 100%; }
@@ -387,6 +398,7 @@
                 <a href="results.html" class="nav-link">Results</a>
                 <a href="news.html" class="nav-link">News</a>
                 <a href="contact.html" class="nav-link">Contact</a>
+                <a href="registration-status.html" class="nav-link">Registration Status</a>
                 <a href="register.html" class="nav-cta btn btn-primary btn-sm">Register</a>
             </div>
 
@@ -461,11 +473,11 @@
         <div class="container">
             <h2 class="cta-title">Can't Find the Right <span class="accent">Tournament?</span></h2>
             <p class="cta-desc">
-                More events are always being added. Join our community to get notified the moment a new tournament opens for registration.
+                More events are always being added. Join our community to get notified the moment a new tournament opens for registration — or check the status of an existing registration anytime.
             </p>
             <div class="cta-buttons">
                 <a href="index.html#community" class="btn btn-primary">Join Community</a>
-                <a href="news.html" class="btn btn-outline">View Announcements</a>
+                <a href="registration-status.html" class="btn btn-outline">Check Registration Status</a>
             </div>
         </div>
     </section>
@@ -490,6 +502,7 @@
                     <div class="footer-links">
                         <a href="about.html" class="footer-link">About Us</a>
                         <a href="tournaments.html" class="footer-link">Tournaments</a>
+                        <a href="registration-status.html" class="footer-link">Check Status</a>
                         <a href="teams.html" class="footer-link">Teams</a>
                         <a href="results.html" class="footer-link">Results</a>
                     </div>
@@ -523,7 +536,6 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 
-        // ==== MOBILE MENU ====
         const navToggle = document.getElementById('navToggle');
         const navLinks = document.getElementById('navLinks');
         if (navToggle && navLinks) {
@@ -533,13 +545,11 @@
             });
         }
 
-        // ==== STATE ====
         let tournaments = [];
         let activeStatus = 'all';
         let activeGame = 'all';
         let searchTerm = '';
 
-        // ==== DOM ====
         const grid = document.getElementById('tournamentsGrid');
         const visibleCountEl = document.getElementById('visibleCount');
         const totalCountEl = document.getElementById('totalCount');
@@ -552,7 +562,6 @@
         const resetBtn = document.getElementById('resetFilters');
         const filterTabs = document.querySelectorAll('.filter-tab');
 
-        // ==== HELPERS ====
         function escapeHtml(s) {
             return String(s ?? '').replace(/[&<>"']/g, c => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -612,8 +621,10 @@
             return 'Squad';
         }
 
-        // ==== MAP API ROW → FRONTEND OBJECT ====
         function mapTournament(row) {
+            const scopeRaw = String(row.Scope || '').trim();
+            const collegeRaw = String(row.CollegeName || '').trim();
+            const isIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
             return {
                 id: row.TournamentID || '',
                 name: row.Name || 'Untitled Tournament',
@@ -621,6 +632,8 @@
                 gameName: row.GameID || 'Game',
                 status: String(row.Status || 'upcoming').toLowerCase(),
                 category: row.Category || 'Tournament',
+                scope: isIntra ? 'Intra College' : 'Public',
+                collegeName: collegeRaw,
                 dateRange: formatDateRange(row.TournamentStartAt, row.TournamentEndAt),
                 teams: row.MaxTeams ?? 0,
                 entry: formatFee(row.EntryFee),
@@ -629,7 +642,6 @@
             };
         }
 
-        // ==== FETCH ====
         async function loadTournaments() {
             grid.innerHTML = `
                 <div class="loading-state">
@@ -647,10 +659,9 @@
                     throw new Error(json.message || 'Invalid response');
                 }
 
-                // Filter: only published (if IsPublished column exists)
-                const rows = json.data.filter(r => 
-                    r.IsPublished === undefined || 
-                    r.IsPublished === true || 
+                const rows = json.data.filter(r =>
+                    r.IsPublished === undefined ||
+                    r.IsPublished === true ||
                     String(r.IsPublished).toUpperCase() === 'TRUE'
                 );
 
@@ -673,24 +684,27 @@
             }
         }
 
-        // ==== BUILD CARD ====
         function buildCard(t) {
             const safeStatus = ['upcoming', 'live', 'completed', 'cancelled'].includes(t.status) ? t.status : 'upcoming';
-            
+            const scopeBadge = t.scope === 'Intra College'
+                ? `<span class="scope-badge intra">🎓 Intra College</span>`
+                : `<span class="scope-badge public">🌐 Public</span>`;
+
             let actionBtn = '';
             if (t.status === 'upcoming') {
-                actionBtn = `<a href="register.html?tid=${encodeURIComponent(t.id)}" class="btn btn-primary btn-sm btn-block">Register</a>`;
+                actionBtn = `<a href="register.html?tid=${encodeURIComponent(t.id)}" class="btn btn-primary btn-sm btn-block" onclick="event.stopPropagation();">Register</a>`;
             } else if (t.status === 'live') {
-                actionBtn = `<a href="results.html?tid=${encodeURIComponent(t.id)}" class="btn btn-outline btn-sm btn-block">View Live</a>`;
+                actionBtn = `<a href="results.html?tid=${encodeURIComponent(t.id)}" class="btn btn-outline btn-sm btn-block" onclick="event.stopPropagation();">View Live</a>`;
             } else {
-                actionBtn = `<a href="results.html?tid=${encodeURIComponent(t.id)}" class="btn btn-outline btn-sm btn-block">View Results</a>`;
+                actionBtn = `<a href="results.html?tid=${encodeURIComponent(t.id)}" class="btn btn-outline btn-sm btn-block" onclick="event.stopPropagation();">View Results</a>`;
             }
 
             return `
-                <article class="tournament-card">
+                <article class="tournament-card" onclick="window.location.href='tournament.html?tid=${encodeURIComponent(t.id)}'" style="cursor:pointer;">
                     <div class="tournament-banner">
                         <span class="status-badge status-${safeStatus}">${escapeHtml(statusLabel(t.status))}</span>
                         <span class="game-badge">${escapeHtml(t.gameName)}</span>
+                        ${scopeBadge}
                     </div>
                     <div class="tournament-body">
                         <span class="tournament-category">${escapeHtml(t.category)} · ${escapeHtml(t.teamSize)}</span>
@@ -722,7 +736,6 @@
             `;
         }
 
-        // ==== RENDER ====
         function render() {
             const filtered = tournaments.filter(t => {
                 const matchStatus = activeStatus === 'all' || t.status === activeStatus;
@@ -763,7 +776,6 @@
             countCompleted.textContent = tournaments.filter(t => t.status === 'completed').length;
         }
 
-        // ==== FILTERS ====
         filterTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 filterTabs.forEach(t => t.classList.remove('active'));
@@ -795,7 +807,6 @@
 
         resetBtn.addEventListener('click', clearFilters);
 
-        // ==== INIT ====
         loadTournaments();
     </script>
 </body>
