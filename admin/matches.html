@@ -4,10 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Match Schedule — BCE Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  .team-chip { display:inline-block; background:var(--bg-secondary); padding:2px 7px; border-radius:4px; font-size:11px; margin:2px 2px 0 0; color:#e2e8f0; }
+  .team-chip.slot1 { background:rgba(34,211,238,.15); color:#22d3ee; font-weight:700; }
+  .team-row { display:flex; align-items:center; gap:8px; padding:6px 8px; border-bottom:1px solid var(--border); font-size:13px; color:#fff; cursor:pointer; }
+  .team-row:hover { background:rgba(255,255,255,.03); }
+  .team-row input[type=checkbox] { accent-color:#22d3ee; }
+  .slot-badge { background:#22d3ee; color:#000; font-size:10px; font-weight:700; padding:1px 6px; border-radius:3px; }
+  .qualify-input { color:#22d3ee; font-weight:700; }
+  .game-row { display:grid; grid-template-columns:70px 1fr 1fr 36px; gap:8px; align-items:center; padding:8px; background:var(--bg-secondary); border-radius:6px; border:1px solid var(--border); margin-bottom:6px; }
+  .game-row-label { font-family:'Orbitron',sans-serif; font-weight:700; color:#22d3ee; font-size:12px; letter-spacing:.5px; }
+  .game-row input { font-size:13px; padding:8px 10px; }
+  .games-header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .games-count-wrap { display:flex; align-items:center; gap:8px; }
+  .games-count-input { width:70px; padding:6px 8px; background:var(--bg-primary); border:1px solid var(--border-bright); color:#fff; border-radius:4px; text-align:center; font-weight:700; }
+  @media (max-width:640px) {
+    .hide-sm { display:none; }
+    .game-row { grid-template-columns:1fr; gap:6px; }
+  }
+</style>
 </head>
 <body>
 <div class="admin-shell">
@@ -15,28 +32,49 @@
   <div class="admin-main">
     <header class="admin-topbar" id="adminTopbar"></header>
     <main class="admin-content">
-      
-      <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;">
+
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;">
         <div>
           <h1>Match Schedule</h1>
-          <p>Create and manage upcoming matches.</p>
+          <p>Schedule any format — 1 game or a full series (Day 1: Game 1 + Game 2 + Game 3).</p>
         </div>
-        <button onclick="openMatchModal()" class="btn btn-primary">＋ Schedule Match</button>
+        <button onclick="openModal()" class="btn btn-primary">＋ Schedule Match</button>
+      </div>
+
+      <div class="dashboard-card" style="margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:220px;">
+          <label class="form-label">Filter by Tournament</label>
+          <select id="filterTourn" class="form-select">
+            <option value="">All Tournaments</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:180px;">
+          <label class="form-label">Filter by Status</label>
+          <select id="filterStatus" class="form-select">
+            <option value="">All Status</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="live">Live</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
 
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Match ID</th>
-              <th>Tournament</th>
-              <th>Round</th>
-              <th>Scheduled Time</th>
+              <th>Match</th>
+              <th class="hide-sm">Tournament / Stage</th>
+              <th>Matchup</th>
+              <th class="hide-sm">Date &amp; Time</th>
+              <th>Qualify</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="matchesBody">
-            <tr><td colspan="5" style="text-align: center; padding: 30px;">Loading matches...</td></tr>
+            <tr><td colspan="7" style="text-align:center;padding:30px;">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -45,30 +83,119 @@
   </div>
 </div>
 
-<!-- Create Match Modal -->
+<!-- ===== Match Form Modal ===== -->
 <div id="matchModal" class="modal">
-  <div class="modal-content">
+  <div class="modal-content" style="max-width:820px;">
     <div class="modal-header">
-      <h3>Schedule New Match</h3>
-      <button class="modal-close" onclick="document.getElementById('matchModal').classList.remove('open')">&times;</button>
+      <h3 id="modalTitle">Schedule New Match</h3>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
     </div>
-    <form id="matchForm" style="display: flex; flex-direction: column; gap: 16px;">
+    <form id="matchForm" style="display:flex;flex-direction:column;gap:14px;max-height:78vh;overflow-y:auto;padding-right:6px;">
+      <input type="hidden" id="mMatchId" value="">
+
       <div class="form-group">
-        <label class="form-label">Select Tournament *</label>
-        <select id="mTournament" class="form-select" required>
-          <option value="">Select...</option>
+        <label class="form-label">Tournament *</label>
+        <select id="mTournament" class="form-select" required onchange="loadTeamsForTournament()">
+          <option value="">Select Tournament...</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Round Name (e.g. Quarter Final)</label>
-        <input type="text" id="mRound" class="form-input" required placeholder="Match 1">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Stage *</label>
+          <select id="mStage" class="form-select" required>
+            <option value="Qualifier">Qualifier</option>
+            <option value="Group Stage" selected>Group Stage</option>
+            <option value="Round of 16">Round of 16</option>
+            <option value="Quarter Final">Quarter Final</option>
+            <option value="Semi Final">Semi Final</option>
+            <option value="Grand Final">Grand Final</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Format *</label>
+          <select id="mFormat" class="form-select" required onchange="updateFormatHint()">
+            <option value="1v1">1v1 (2 teams)</option>
+            <option value="2v2">2v2 (2 teams)</option>
+            <option value="3v3">3v3 (2 teams)</option>
+            <option value="4v4">4v4 (2 teams)</option>
+            <option value="5v5">5v5 (2 teams)</option>
+            <option value="Squad" selected>Squad (4–25 teams)</option>
+            <option value="Battle Royale">Battle Royale (16–25 teams)</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </div>
       </div>
+
       <div class="form-group">
-        <label class="form-label">Date & Time</label>
-        <input type="datetime-local" id="mTime" class="form-input" required>
+        <label class="form-label">Round / Match Day Name *</label>
+        <input type="text" id="mRound" class="form-input" required placeholder="e.g. Day 1 / Group A / Upper Bracket">
       </div>
-      <button type="submit" id="mSaveBtn" class="btn btn-primary">Schedule Match</button>
+
+      <!-- Games Section (multi-game) -->
+      <div class="form-group">
+        <div class="games-header">
+          <label class="form-label" style="margin:0;">Games / Maps *</label>
+          <div class="games-count-wrap" id="gamesCountWrap">
+            <span style="font-size:12px;color:var(--text-muted);">Number of games:</span>
+            <input type="number" id="gamesCount" class="games-count-input" min="1" max="10" value="1" onchange="setGameCount(this.value)">
+          </div>
+        </div>
+        <div id="gameRows"></div>
+        <p style="font-size:11px;color:var(--text-muted);margin:6px 0 0;">
+          💡 Each game = separate match. Teams + points entered per game separately.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Qualify Slots (per game)</label>
+          <input type="number" id="mQualifySlots" class="form-input qualify-input" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select id="mStatus" class="form-select">
+            <option value="upcoming" selected>Upcoming</option>
+            <option value="live">Live</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Participating Teams
+          <span id="teamCountBadge" style="color:#22d3ee;font-weight:700;margin-left:6px;"></span>
+        </label>
+        <div id="teamFormatHint" style="color:var(--text-muted);font-size:12px;margin-bottom:6px;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input type="text" id="teamSearch" class="form-input" placeholder="Search team..." style="flex:1;padding:6px 10px;font-size:13px;">
+          <button type="button" class="btn" onclick="selectAllTeams()" style="padding:6px 12px;font-size:12px;">All</button>
+          <button type="button" class="btn" onclick="clearAllTeams()" style="padding:6px 12px;font-size:12px;">Clear</button>
+        </div>
+        <div id="teamsCheckList" style="max-height:260px;overflow-y:auto;padding:8px;background:var(--bg-secondary);border-radius:6px;border:1px solid var(--border);">
+          <p style="color:var(--text-muted);font-size:13px;margin:0;">Select a tournament first to load teams.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:8px;border-top:1px solid var(--border);">
+        <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+        <button type="submit" id="mSaveBtn" class="btn btn-primary">Save Match</button>
+      </div>
     </form>
+  </div>
+</div>
+
+<!-- ===== Match Details Modal ===== -->
+<div id="detailModal" class="modal">
+  <div class="modal-content" style="max-width:640px;">
+    <div class="modal-header">
+      <h3>Match Details</h3>
+      <button class="modal-close" onclick="document.getElementById('detailModal').classList.remove('open')">&times;</button>
+    </div>
+    <div id="detailBody"></div>
   </div>
 </div>
 
@@ -79,81 +206,442 @@
   const admin = await ADMIN_LAYOUT.init('Matches');
   if (!admin) return;
 
+  let tournMap = {};
+  let allTeams = [];
+  let selectedTeams = new Set();
   let allMatches = [];
-  let tournamentsCache = {};
+  let gameRows = [{ Map: '', ScheduledAt: '' }];
+  let editingMatch = null;
 
-  function badge(s) {
-    s = String(s || 'upcoming').toLowerCase();
-    return `<span class="badge badge-${s}">${s}</span>`;
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+  function formatDate(str) {
+    if (!str) return 'TBA';
+    const d = new Date(str);
+    if (isNaN(d)) return String(str);
+    return d.toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+  function toLocalInput(str) {
+    if (!str) return '';
+    const d = new Date(str);
+    if (isNaN(d)) return '';
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   }
 
-  function formatDate(iso) {
-    if (!iso) return 'TBA';
-    const d = new Date(iso);
-    return isNaN(d) ? 'TBA' : d.toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  }
-
-  async function loadData() {
+  /* ---------- LOADERS ---------- */
+  async function loadTournaments() {
     try {
-      const [mRes, tRes] = await Promise.all([
-        ADMIN_API.get('admin.getMatches'),
-        ADMIN_API.get('getTournaments')
-      ]);
+      const r = await ADMIN_API.get('admin.getTournaments');
+      if (!r.success) return;
+      const sel1 = document.getElementById('mTournament');
+      const sel2 = document.getElementById('filterTourn');
+      (r.data || []).forEach(t => {
+        tournMap[t.TournamentID] = t;
+        const label = escapeHtml(t.Name || t.TournamentID);
+        sel1.insertAdjacentHTML('beforeend', `<option value="${t.TournamentID}">${label}</option>`);
+        sel2.insertAdjacentHTML('beforeend', `<option value="${t.TournamentID}">${label}</option>`);
+      });
+    } catch (e) { console.error('loadTournaments', e); }
+  }
 
-      if (tRes.success) {
-        const sel = document.getElementById('mTournament');
-        (tRes.data || []).forEach(t => {
-          tournamentsCache[t.TournamentID] = t.Name;
-          sel.innerHTML += `<option value="${t.TournamentID}">${t.Name}</option>`;
+  async function loadMatches(tid, status) {
+    try {
+      const params = {};
+      if (tid) params.tournamentId = tid;
+      const r = await ADMIN_API.get('admin.getMatches', params);
+      const tbody = document.getElementById('matchesBody');
+
+      if (r.success && r.data.length) {
+        let matches = r.data.slice().sort((a, b) => {
+          const na = Number(a.MatchNumber || 0);
+          const nb = Number(b.MatchNumber || 0);
+          if (na !== nb) return na - nb;
+          return new Date(a.ScheduledAt || 0).getTime() - new Date(b.ScheduledAt || 0).getTime();
         });
-      }
+        if (status) matches = matches.filter(m => String(m.Status || '').toLowerCase() === status);
+        allMatches = matches;
 
-      if (mRes.success) {
-        allMatches = mRes.data || [];
-        allMatches.sort((a, b) => new Date(a.ScheduledAt || 0) - new Date(b.ScheduledAt || 0));
-        
-        const tbody = document.getElementById('matchesBody');
-        if (allMatches.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No matches scheduled.</td></tr>';
+        if (!matches.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;">No matches match this filter.</td></tr>';
           return;
         }
 
-        tbody.innerHTML = allMatches.map(m => `
-          <tr>
-            <td><strong style="color:#fff;">${m.MatchID}</strong></td>
-            <td>${tournamentsCache[m.TournamentID] || m.TournamentID}</td>
-            <td>${m.Round || '-'}</td>
-            <td>${formatDate(m.ScheduledAt)}</td>
-            <td>${badge(m.Status)}</td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = matches.map(m => {
+          const t = tournMap[m.TournamentID];
+          const tName = t ? (t.Name || t.TournamentID) : (m.TournamentID || '—');
+          const teams = m.Teams || [];
+          const teamsHtml = teams.length
+            ? teams.map((tm, i) => `<span class="team-chip ${i === 0 ? 'slot1' : ''}">${escapeHtml(tm.TeamName || tm.TeamID)}</span>`).join('')
+            : '<span style="color:var(--text-muted);font-size:12px;">No teams</span>';
+          const statusClass = String(m.Status || 'upcoming').toLowerCase();
+
+          return `<tr>
+            <td>
+              <div style="font-weight:700;color:#fff;">${escapeHtml(m.Round || '—')}</div>
+              <div style="font-size:11px;color:var(--text-muted);">#${m.MatchNumber || '—'} · ${escapeHtml(m.Map || 'TBA')}</div>
+            </td>
+            <td class="hide-sm">
+              <div>${escapeHtml(tName)}</div>
+              <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(m.Stage || '—')} · ${escapeHtml(m.Format || '—')}</div>
+            </td>
+            <td style="max-width:280px;">${teamsHtml}</td>
+            <td class="hide-sm">${formatDate(m.ScheduledAt)}</td>
+            <td>${m.QualifySlots ? `<span style="color:#22d3ee;font-weight:700;">${m.QualifySlots}</span>` : '<span style="color:var(--text-muted);">—</span>'}</td>
+            <td><span class="badge badge-${statusClass}">${escapeHtml(m.Status || 'upcoming')}</span></td>
+            <td>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                <button class="btn" style="padding:4px 8px;font-size:11px;" onclick="viewMatch('${m.MatchID}')">View</button>
+                <button class="btn" style="padding:4px 8px;font-size:11px;" onclick="editMatch('${m.MatchID}')">Edit</button>
+                <button class="btn" style="padding:4px 8px;font-size:11px;background:#dc2626;color:#fff;border-color:#dc2626;" onclick="deleteMatch('${m.MatchID}')">Del</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;">No matches scheduled.</td></tr>';
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('loadMatches', e);
+      document.getElementById('matchesBody').innerHTML =
+        '<tr><td colspan="7" style="text-align:center;color:#f87171;padding:20px;">Error loading matches</td></tr>';
+    }
   }
 
-  loadData();
+  /* ---------- MODAL ---------- */
+  window.openModal = () => {
+    editingMatch = null;
+    document.getElementById('matchForm').reset();
+    document.getElementById('mMatchId').value = '';
+    document.getElementById('modalTitle').textContent = 'Schedule New Match';
+    document.getElementById('mSaveBtn').textContent = 'Create Match';
+    document.getElementById('mFormat').value = 'Squad';
+    document.getElementById('mStage').value = 'Group Stage';
+    document.getElementById('mStatus').value = 'upcoming';
+    document.getElementById('gamesCount').value = 1;
+    document.getElementById('gamesCountWrap').style.display = 'flex';
+    document.getElementById('teamsCheckList').innerHTML = '<p style="color:var(--text-muted);font-size:13px;margin:0;">Select a tournament first to load teams.</p>';
+    document.getElementById('teamCountBadge').textContent = '';
+    document.getElementById('teamSearch').value = '';
+    allTeams = [];
+    selectedTeams = new Set();
+    gameRows = [{ Map: '', ScheduledAt: '' }];
+    renderGameRows();
+    updateFormatHint();
+    document.getElementById('matchModal').classList.add('open');
+  };
 
-  window.openMatchModal = () => document.getElementById('matchModal').classList.add('open');
+  window.closeModal = () => document.getElementById('matchModal').classList.remove('open');
 
+  window.setGameCount = (n) => {
+    let count = Math.max(1, Math.min(10, Number(n) || 1));
+    document.getElementById('gamesCount').value = count;
+    while (gameRows.length < count) gameRows.push({ Map: '', ScheduledAt: '' });
+    while (gameRows.length > count) gameRows.pop();
+    renderGameRows();
+  };
+
+  window.updateGameRow = (idx, field, val) => {
+    if (gameRows[idx]) gameRows[idx][field] = val;
+  };
+
+  function renderGameRows() {
+    const container = document.getElementById('gameRows');
+    container.innerHTML = gameRows.map((g, i) => `
+      <div class="game-row">
+        <span class="game-row-label">Game ${i + 1}</span>
+        <input type="text" class="form-input" placeholder="Map name (e.g. Erangel)" value="${escapeHtml(g.Map || '')}" oninput="updateGameRow(${i}, 'Map', this.value)">
+        <input type="datetime-local" class="form-input" value="${g.ScheduledAt || ''}" oninput="updateGameRow(${i}, 'ScheduledAt', this.value)">
+        <button type="button" class="btn" onclick="removeGameRow(${i})" style="padding:6px 8px;${gameRows.length <= 1 ? 'opacity:.4;cursor:not-allowed;' : ''}" ${gameRows.length <= 1 ? 'disabled' : ''}>×</button>
+      </div>
+    `).join('');
+  }
+
+  window.removeGameRow = (idx) => {
+    if (gameRows.length <= 1) return;
+    gameRows.splice(idx, 1);
+    document.getElementById('gamesCount').value = gameRows.length;
+    renderGameRows();
+  };
+
+  window.updateFormatHint = () => {
+    const fmt = document.getElementById('mFormat').value;
+    const hints = {
+      '1v1': 'Exactly 2 teams required (1 player each).',
+      '2v2': 'Exactly 2 teams required (2 players each).',
+      '3v3': 'Exactly 2 teams required (3 players each).',
+      '4v4': 'Exactly 2 teams required (4 players each).',
+      '5v5': 'Exactly 2 teams required (5 players each).',
+      'Squad': 'Select 4+ teams. Each team has ~4 players.',
+      'Battle Royale': 'Select all participating teams (16–25).',
+      'Custom': 'Select any number of teams.'
+    };
+    document.getElementById('teamFormatHint').textContent = hints[fmt] || '';
+  };
+
+  /* ---------- TEAMS ---------- */
+  window.loadTeamsForTournament = async () => {
+    const tid = document.getElementById('mTournament').value;
+    const container = document.getElementById('teamsCheckList');
+    if (!tid) {
+      container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;margin:0;">Select tournament first.</p>';
+      document.getElementById('teamCountBadge').textContent = '';
+      return;
+    }
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;margin:0;">Loading teams…</p>';
+    allTeams = [];
+    selectedTeams = new Set();
+
+    try {
+      const r = await ADMIN_API.get('admin.getAvailableTeams', { tournamentId: tid });
+      if (r.success && r.data.length) {
+        allTeams = r.data;
+        renderTeams();
+      } else {
+        container.innerHTML = '<p style="color:#f87171;font-size:13px;margin:0;">No approved teams for this tournament. Approve registrations first.</p>';
+      }
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = '<p style="color:#f87171;font-size:13px;margin:0;">Error loading teams.</p>';
+    }
+  };
+
+  function renderTeams() {
+    const container = document.getElementById('teamsCheckList');
+    const q = (document.getElementById('teamSearch').value || '').toLowerCase().trim();
+    const filtered = allTeams.filter(t => {
+      if (!q) return true;
+      return String(t.TeamName || '').toLowerCase().includes(q) ||
+             String(t.TeamTag || '').toLowerCase().includes(q) ||
+             String(t.CaptainName || '').toLowerCase().includes(q);
+    });
+    if (!filtered.length) {
+      container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;margin:0;">No teams match search.</p>';
+      document.getElementById('teamCountBadge').textContent = '';
+      return;
+    }
+    const orderedSelected = Array.from(selectedTeams);
+    container.innerHTML = filtered.map(t => {
+      const checked = selectedTeams.has(t.TeamID);
+      const slot = orderedSelected.indexOf(t.TeamID) + 1;
+      return `<label class="team-row">
+        <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleTeam('${t.TeamID}')">
+        ${checked ? `<span class="slot-badge">#${slot}</span>` : ''}
+        <span style="flex:1;">
+          <strong>${escapeHtml(t.TeamName)}</strong>
+          ${t.TeamTag ? `<span style="color:var(--text-muted);"> (${escapeHtml(t.TeamTag)})</span>` : ''}
+        </span>
+        ${t.CaptainName ? `<span style="color:var(--text-muted);font-size:11px;">${escapeHtml(t.CaptainName)}</span>` : ''}
+      </label>`;
+    }).join('') +
+      `<p style="color:var(--text-muted);font-size:11px;margin:8px 0 0;text-align:center;">
+        Showing ${filtered.length} of ${allTeams.length} · ${selectedTeams.size} selected
+      </p>`;
+    document.getElementById('teamCountBadge').textContent = selectedTeams.size ? `(${selectedTeams.size} selected)` : '';
+  }
+
+  window.toggleTeam = (teamId) => {
+    if (selectedTeams.has(teamId)) selectedTeams.delete(teamId);
+    else selectedTeams.add(teamId);
+    renderTeams();
+  };
+  window.selectAllTeams = () => { allTeams.forEach(t => selectedTeams.add(t.TeamID)); renderTeams(); };
+  window.clearAllTeams = () => { selectedTeams.clear(); renderTeams(); };
+  document.getElementById('teamSearch').addEventListener('input', renderTeams);
+
+  /* ---------- FORM SUBMIT ---------- */
   document.getElementById('matchForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('mSaveBtn');
+    const matchId = document.getElementById('mMatchId').value;
+    const isEdit = !!matchId;
+
+    const tournamentId = document.getElementById('mTournament').value;
+    const round = document.getElementById('mRound').value.trim();
+    const stage = document.getElementById('mStage').value;
+    const format = document.getElementById('mFormat').value;
+    const qualifySlots = document.getElementById('mQualifySlots').value ? Number(document.getElementById('mQualifySlots').value) : 0;
+    const status = document.getElementById('mStatus').value;
+
+    if (!tournamentId) return alert('Select a tournament.');
+    if (!round) return alert('Round name is required.');
+    if (selectedTeams.size < 2) return alert('Select at least 2 teams.');
+
+    const teams = Array.from(selectedTeams).map(tid => {
+      const t = allTeams.find(x => x.TeamID === tid);
+      return { TeamID: tid, TeamName: t ? t.TeamName : '', TeamTag: t ? t.TeamTag : '' };
+    });
+
     btn.disabled = true;
 
-    const data = {
-      TournamentID: document.getElementById('mTournament').value,
-      Round: document.getElementById('mRound').value,
-      ScheduledAt: document.getElementById('mTime').value,
-      Status: 'upcoming'
-    };
+    try {
+      if (isEdit) {
+        // Single match edit
+        btn.textContent = 'Updating…';
+        const g = gameRows[0] || {};
+        if (!g.Map) return alert('Map name is required.');
+        if (!g.ScheduledAt) return alert('Date & time is required.');
+        const data = {
+          MatchID: matchId,
+          TournamentID: tournamentId,
+          Round: round,
+          Stage: stage,
+          Format: format,
+          Map: g.Map,
+          ScheduledAt: g.ScheduledAt,
+          QualifySlots: qualifySlots,
+          Status: status
+        };
+        const r = await ADMIN_API.post('admin.updateMatch', { data, teams });
+        if (!r.success) return alert(r.message || 'Update failed');
+      } else {
+        // Create — possibly multiple games
+        btn.textContent = 'Creating…';
+        for (let i = 0; i < gameRows.length; i++) {
+          if (!gameRows[i].Map) return alert('Game ' + (i + 1) + ': Map name is required.');
+          if (!gameRows[i].ScheduledAt) return alert('Game ' + (i + 1) + ': Date & time is required.');
+        }
+        const base = { TournamentID: tournamentId, Round: round, Stage: stage, Format: format, QualifySlots: qualifySlots, Status: status };
+        const games = gameRows.map(g => ({ Map: g.Map, ScheduledAt: g.ScheduledAt }));
+        const r = await ADMIN_API.post('admin.createMatchSeries', { base, games, teams });
+        if (!r.success) return alert(r.message || 'Create failed');
+      }
+
+      closeModal();
+      await loadMatches(
+        document.getElementById('filterTourn').value,
+        document.getElementById('filterStatus').value
+      );
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = isEdit ? 'Update Match' : 'Create Match';
+    }
+  });
+
+  /* ---------- EDIT ---------- */
+  window.editMatch = async (matchId) => {
+    const m = allMatches.find(x => x.MatchID === matchId);
+    if (!m) return;
+    editingMatch = m;
+
+    document.getElementById('mMatchId').value = m.MatchID;
+    document.getElementById('mTournament').value = m.TournamentID || '';
+    document.getElementById('mStage').value = m.Stage || 'Group Stage';
+    document.getElementById('mFormat').value = m.Format || 'Squad';
+    document.getElementById('mRound').value = m.Round || '';
+    document.getElementById('mQualifySlots').value = m.QualifySlots || '';
+    document.getElementById('mStatus').value = m.Status || 'upcoming';
+    document.getElementById('gamesCountWrap').style.display = 'none';
+
+    gameRows = [{ Map: m.Map || '', ScheduledAt: toLocalInput(m.ScheduledAt) }];
+    renderGameRows();
+
+    document.getElementById('modalTitle').textContent = 'Edit Match';
+    document.getElementById('mSaveBtn').textContent = 'Update Match';
+    updateFormatHint();
+
+    document.getElementById('teamsCheckList').innerHTML = '<p style="color:var(--text-muted);font-size:13px;margin:0;">Loading teams…</p>';
+    allTeams = [];
+    selectedTeams = new Set();
 
     try {
-      const res = await ADMIN_API.post('admin.createMatch', { data });
-      if (res.success) window.location.reload();
-      else alert(res.message);
-    } catch (err) { alert('Error'); }
-    finally { btn.disabled = false; }
-  });
+      const r = await ADMIN_API.get('admin.getAvailableTeams', { tournamentId: m.TournamentID });
+      if (r.success && r.data.length) {
+        allTeams = r.data;
+        (m.Teams || []).forEach(t => {
+          if (allTeams.some(x => x.TeamID === t.TeamID)) selectedTeams.add(t.TeamID);
+          else {
+            allTeams.push({ TeamID: t.TeamID, TeamName: t.TeamName, TeamTag: t.TeamTag, _ghost: true });
+            selectedTeams.add(t.TeamID);
+          }
+        });
+        renderTeams();
+      } else {
+        allTeams = (m.Teams || []).map(t => ({ TeamID: t.TeamID, TeamName: t.TeamName, TeamTag: t.TeamTag }));
+        allTeams.forEach(t => selectedTeams.add(t.TeamID));
+        renderTeams();
+      }
+    } catch (e) {
+      document.getElementById('teamsCheckList').innerHTML =
+        '<p style="color:#f87171;font-size:13px;margin:0;">Error loading teams.</p>';
+    }
+
+    document.getElementById('matchModal').classList.add('open');
+  };
+
+  /* ---------- DELETE ---------- */
+  window.deleteMatch = async (matchId) => {
+    if (!confirm('Delete this match? Results for this match will also be removed.')) return;
+    try {
+      const r = await ADMIN_API.post('admin.deleteMatch', { matchId });
+      if (r.success) {
+        await loadMatches(
+          document.getElementById('filterTourn').value,
+          document.getElementById('filterStatus').value
+        );
+      } else {
+        alert(r.message || 'Delete failed');
+      }
+    } catch (e) {
+      alert('Error: ' + e.message);
+    }
+  };
+
+  /* ---------- VIEW ---------- */
+  window.viewMatch = (matchId) => {
+    const m = allMatches.find(x => x.MatchID === matchId);
+    if (!m) return;
+    const t = tournMap[m.TournamentID];
+    const teams = m.Teams || [];
+    const teamsHtml = teams.length
+      ? teams.map((tm, i) => `<tr>
+          <td style="text-align:center;color:#22d3ee;font-weight:700;">#${i + 1}</td>
+          <td><strong>${escapeHtml(tm.TeamName || tm.TeamID)}</strong></td>
+          <td style="color:var(--text-muted);">${escapeHtml(tm.TeamTag || '—')}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:16px;">No teams assigned</td></tr>';
+
+    const info = [
+      ['Tournament', t ? (t.Name || t.TournamentID) : m.TournamentID],
+      ['Stage', m.Stage || '—'],
+      ['Round', m.Round || '—'],
+      ['Format', m.Format || '—'],
+      ['Map', m.Map || 'TBA'],
+      ['Match #', m.MatchNumber || '—'],
+      ['Scheduled', formatDate(m.ScheduledAt)],
+      ['Qualify Slots', m.QualifySlots || 0],
+      ['Status', m.Status || 'upcoming'],
+      ['Match ID', m.MatchID]
+    ];
+
+    document.getElementById('detailBody').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:16px;">
+        ${info.map(([k, v]) => `
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">${k}</div>
+            <div style="color:#fff;font-weight:600;font-size:13px;">${escapeHtml(String(v))}</div>
+          </div>`).join('')}
+      </div>
+      <div style="font-weight:700;color:#fff;margin-bottom:8px;">Participating Teams (${teams.length})</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Slot</th><th>Team</th><th>Tag</th></tr></thead>
+          <tbody>${teamsHtml}</tbody>
+        </table>
+      </div>
+    `;
+    document.getElementById('detailModal').classList.add('open');
+  };
+
+  document.getElementById('filterTourn').addEventListener('change', (e) =>
+    loadMatches(e.target.value, document.getElementById('filterStatus').value));
+  document.getElementById('filterStatus').addEventListener('change', (e) =>
+    loadMatches(document.getElementById('filterTourn').value, e.target.value));
+
+  await loadTournaments();
+  await loadMatches('', '');
 })();
 </script>
 </body>

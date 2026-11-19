@@ -4,10 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tournament Form — BCE Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  .scope-cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .scope-card { background:var(--bg-primary); border:2px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; transition:all .2s; user-select: none; }
+  .scope-card:hover { border-color:var(--border-bright); }
+  .scope-card.selected { border-color:#22d3ee; background:rgba(34,211,238,.08); }
+  .scope-card-icon { font-size:24px; margin-bottom:8px; }
+  .scope-card-title { font-family:'Orbitron',sans-serif; font-weight:700; color:#fff; font-size:14px; margin-bottom:4px; }
+  .scope-card-desc { font-size:12px; color:var(--text-muted); line-height:1.4; }
+  @media (max-width:640px) { .scope-cards { grid-template-columns:1fr; } }
+</style>
 </head>
 <body>
 <div class="admin-shell">
@@ -15,7 +23,7 @@
   <div class="admin-main">
     <header class="admin-topbar" id="adminTopbar"></header>
     <main class="admin-content">
-      
+
       <div class="page-header">
         <h1 id="pageTitle">Create Tournament</h1>
         <p>Fill in the details below to set up a new tournament.</p>
@@ -23,9 +31,9 @@
 
       <form id="tournamentForm" class="form">
         <input type="hidden" id="tournamentId" value="">
-        
+
         <div class="form-grid">
-          <div class="form-group">
+          <div class="form-group full">
             <label class="form-label">Tournament Name *</label>
             <input type="text" id="name" class="form-input" required placeholder="e.g. BCE Winter Showdown">
           </div>
@@ -34,7 +42,6 @@
             <label class="form-label">Game *</label>
             <select id="gameId" class="form-select" required>
               <option value="">Select a Game...</option>
-              <!-- Games will load here -->
             </select>
           </div>
 
@@ -44,8 +51,30 @@
               <option value="upcoming">Upcoming</option>
               <option value="live">Live</option>
               <option value="completed">Completed</option>
-              <option value="archived">Archived</option>
             </select>
+          </div>
+
+          <!-- ===== SCOPE SELECTOR (Fixed) ===== -->
+          <div class="form-group full">
+            <label class="form-label">Tournament Scope *</label>
+            <div class="scope-cards">
+              <!-- Hidden input to store actual value -->
+              <input type="hidden" id="tournamentScope" value="Public">
+              
+              <!-- Public Card -->
+              <div class="scope-card selected" id="scopePublicCard" onclick="selectScope('Public')">
+                <div class="scope-card-icon">🌐</div>
+                <div class="scope-card-title">Public</div>
+                <div class="scope-card-desc">Open to everyone. No college ID required.</div>
+              </div>
+
+              <!-- Intra College Card -->
+              <div class="scope-card" id="scopeIntraCard" onclick="selectScope('Intra College')">
+                <div class="scope-card-icon">🎓</div>
+                <div class="scope-card-title">College Students</div>
+                <div class="scope-card-desc">Players must provide their College Name, Roll No & ID Card during registration.</div>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -63,7 +92,7 @@
             <input type="number" id="entryFee" class="form-input" placeholder="0 for Free" value="0">
           </div>
 
-          <div class="form-group full">
+          <div class="form-group">
             <label class="form-label">Prize Pool (₹)</label>
             <input type="number" id="prizePool" class="form-input" placeholder="e.g. 5000" value="0">
           </div>
@@ -94,7 +123,14 @@
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get('id');
 
-  // Load Games Dropdown
+  // NEW FIXED FUNCTION
+  window.selectScope = (val) => {
+    document.getElementById('tournamentScope').value = val;
+    document.getElementById('scopePublicCard').classList.toggle('selected', val === 'Public');
+    document.getElementById('scopeIntraCard').classList.toggle('selected', val === 'Intra College');
+  };
+
+  // Load Games
   try {
     const gamesRes = await ADMIN_API.get('getGames');
     if (gamesRes.success) {
@@ -108,11 +144,11 @@
     }
   } catch (e) { console.error('Failed to load games', e); }
 
-  // If Edit Mode, load existing data
+  // Edit mode
   if (editId) {
     document.getElementById('pageTitle').textContent = 'Edit Tournament';
     document.getElementById('tournamentId').value = editId;
-    
+
     try {
       const res = await ADMIN_API.get('getTournament', { id: editId });
       if (res.success && res.data) {
@@ -124,8 +160,11 @@
         document.getElementById('entryFee').value = t.EntryFee || 0;
         document.getElementById('prizePool').value = t.PrizePool || 0;
         document.getElementById('description').value = t.Description || '';
-        
-        // Format Date for datetime-local input
+
+        // Set Scope correctly
+        const scope = t.Scope || 'Public';
+        selectScope(scope);
+
         if (t.TournamentStartAt) {
           const d = new Date(t.TournamentStartAt);
           if (!isNaN(d)) {
@@ -134,15 +173,15 @@
           }
         }
       }
-    } catch (e) {
-      alert('Error loading tournament data.');
-    }
+    } catch (e) { alert('Error loading tournament data.'); }
   }
 
-  // Handle Form Submit
+  // Submit
   document.getElementById('tournamentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('saveBtn');
+    const scope = document.getElementById('tournamentScope').value;
+
     btn.disabled = true;
     btn.textContent = 'Saving...';
 
@@ -150,6 +189,7 @@
       Name: document.getElementById('name').value.trim(),
       GameID: document.getElementById('gameId').value,
       Status: document.getElementById('status').value,
+      Scope: scope,
       MaxTeams: Number(document.getElementById('maxTeams').value),
       TournamentStartAt: document.getElementById('startDate').value,
       EntryFee: Number(document.getElementById('entryFee').value),
@@ -162,7 +202,7 @@
       if (editId) data.TournamentID = editId;
 
       const res = await ADMIN_API.post(action, { data: data });
-      
+
       if (res.success) {
         window.location.href = 'tournaments.html';
       } else {
