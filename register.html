@@ -5,21 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Registration — BCE Esports</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    
     <style>
+        /* Page-specific styles for Registration */
         :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225,6,0,.35); --text-primary: #fff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333; --green: #22c55e; --cyan: #22d3ee; --red-error: #ef4444; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-body); background: var(--bg-primary); color: var(--text-primary); font-size: 16px; line-height: 1.6; }
-        a { color: inherit; text-decoration: none; }
-        button { cursor: pointer; border: none; background: none; color: inherit; font-family: inherit; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-        .section { padding: 60px 0; }
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 14px 28px; border-radius: var(--radius-sm); transition: all .3s; white-space: nowrap; }
-        .btn-primary { background: var(--red); color: #fff; box-shadow: 0 0 24px var(--red-glow); }
-        .btn-primary:hover { background: var(--red-bright); }
-        .btn-outline { border: 2px solid var(--border-bright); }
-        .btn-outline:hover { border-color: var(--red); color: var(--red); }
-        .btn:disabled { opacity: .5; cursor: not-allowed; }
 
         .loading-overlay { position: fixed; inset: 0; background: rgba(10,10,10,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
         .loading-overlay.active { display: flex; }
@@ -33,15 +28,6 @@
         .error-title { font-family: var(--font-display); font-size: 18px; color: #f87171; margin-bottom: 12px; text-transform: uppercase; }
         .error-message { color: var(--text-secondary); margin-bottom: 20px; white-space: pre-wrap; text-align: left; font-size: 14px; }
         .error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-        .nav { position: sticky; top: 0; z-index: 1000; background: rgba(10,10,10,.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-        .nav-inner { display: flex; justify-content: space-between; height: 72px; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 12px; }
-        .logo-mark { width: 42px; height: 42px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 22px; }
-        .logo-main { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 2px; }
-        .logo-sub { font-family: var(--font-display); font-size: 9px; color: var(--red); letter-spacing: 4px; }
-        .nav-links { display: flex; gap: 24px; }
-        .nav-link { font-size: 14px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); }
 
         .strip { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 20px 0; }
         .strip-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
@@ -144,8 +130,8 @@
 
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
             .step-card { padding: 24px; }
+            .success-panel { padding: 40px 20px; }
         }
     </style>
 </head>
@@ -170,21 +156,9 @@
 </div>
 
 <div id="mainContent" style="display:none;">
-    <nav class="nav">
-        <div class="container nav-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-mark">B</div>
-                <div class="logo-text">
-                    <span class="logo-main">BCE</span>
-                    <span class="logo-sub">ESPORTS</span>
-                </div>
-            </a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="tournaments.html" class="nav-link">Tournaments</a>
-            </div>
-        </div>
-    </nav>
+    
+    <!-- Navigation (Injected by main.js) -->
+    <nav class="nav"><div class="container nav-inner"></div></nav>
 
     <div class="strip">
         <div class="container strip-inner">
@@ -364,12 +338,56 @@
 
         </div>
     </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo"><div class="logo-mark">B</div><div class="logo-text"><span class="logo-main">BCE</span><span class="logo-sub">ESPORTS</span></div></a>
+                    <p class="footer-tagline">The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.</p>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Platform</h4>
+                    <div class="footer-links">
+                        <a href="about.html" class="footer-link">About Us</a>
+                        <a href="tournaments.html" class="footer-link">Tournaments</a>
+                        <a href="teams.html" class="footer-link">Teams</a>
+                        <a href="rules.html" class="footer-link">Rules</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Games</h4>
+                    <div class="footer-links">
+                        <a href="index.html#games" class="footer-link">Free Fire</a>
+                        <a href="index.html#games" class="footer-link">BGMI</a>
+                        <a href="index.html#games" class="footer-link">Valorant</a>
+                        <a href="index.html#games" class="footer-link">COD Mobile</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Connect</h4>
+                    <div class="footer-links">
+                        <a href="index.html#community" class="footer-link">Discord</a>
+                        <a href="index.html#community" class="footer-link">Instagram</a>
+                        <a href="index.html#community" class="footer-link">YouTube</a>
+                        <a href="index.html#announcements" class="footer-link">News</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
+                <p class="footer-note">Design Preview · Sample data</p>
+            </div>
+        </div>
+    </footer>
 </div>
+
+<!-- External JS -->
+<script src="assets/js/main.js"></script>
 
 <script>
 // --- 🎵 Audio Continuity Logic ---
-// This ensures the music tries to autoplay when the page loads (since they clicked Register previously).
-// If blocked by browser, it will play on the very first interaction (click/touch) on this page.
 (function initAudio() {
     const music = document.getElementById('bgMusic');
     if (!music) return;
@@ -377,7 +395,6 @@
     const playPromise = music.play();
     if (playPromise !== undefined) {
         playPromise.catch(() => {
-            // Autoplay was prevented, wait for user interaction
             const playOnInteraction = () => {
                 music.play().catch(e => console.log('Audio play failed:', e));
                 document.removeEventListener('click', playOnInteraction);
@@ -761,7 +778,6 @@ function validateStep2() {
 function validateStep3() {
     if (!paymentRequired) return true;
     let ok = true;
-    // Strict length validation removed
     if (!document.getElementById('utr').value.trim()) { document.getElementById('err-utr').classList.add('show'); ok = false; } else document.getElementById('err-utr').classList.remove('show');
     if (!state.payment.fileBase64) { document.getElementById('err-screenshot').style.display = 'block'; ok = false; } else document.getElementById('err-screenshot').style.display = 'none';
     return ok;
