@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Verify and download your official BCE ESPORTS certificates.">
+<meta name="theme-color" content="#0a0a0a">
+<title>Certificate Verification — BCE Esports</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="assets/css/certificates.css">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo" aria-label="BCE Esports Home">
+      <div class="logo-mark">B</div>
+      <div class="logo-text">
+        <span class="logo-main">BCE</span>
+        <span class="logo-sub">ESPORTS</span>
+      </div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="tournaments.html" class="nav-link">Tournaments</a>
+      <a href="teams.html" class="nav-link">Teams</a>
+      <a href="results.html" class="nav-link">Results</a>
+      <a href="certificates.html" class="nav-link active">Certificates</a>
+      <a href="news.html" class="nav-link">News</a>
+      <a href="gallery.html" class="nav-link">Gallery</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="register.html" class="btn btn-primary" style="padding:10px 18px;font-size:11px">Register</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="cert-hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="dot"></span>Secure Verification · BCE Esports</div>
+    <h1 class="cert-title">Certificate <span class="accent">Verification</span></h1>
+    <p class="cert-subtitle">Verify and download your official BCE ESPORTS certificates instantly. Enter your Certificate ID below.</p>
+    <form class="verify-form" id="verifyForm" autocomplete="off">
+      <input type="text" class="verify-input" id="certIdInput" placeholder="BCE-ES-2026-0001" maxlength="50" spellcheck="false" aria-label="Certificate ID">
+      <button type="submit" class="btn btn-primary" id="verifyBtn">Verify →</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===== RESULT AREA ===== -->
+<section class="result-section">
+  <div class="container result-container" id="resultArea"></div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-mark">B</div>
+          <div class="logo-text"><span class="logo-main">BCE</span><span class="logo-sub">ESPORTS</span></div>
+        </a>
+        <p class="footer-tagline">The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.</p>
+      </div>
+      <div>
+        <h4 class="footer-heading">Platform</h4>
+        <div class="footer-links">
+          <a href="tournaments.html" class="footer-link">Tournaments</a>
+          <a href="teams.html" class="footer-link">Teams</a>
+          <a href="results.html" class="footer-link">Results</a>
+          <a href="certificates.html" class="footer-link">Certificates</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-heading">Games</h4>
+        <div class="footer-links">
+          <a href="tournaments.html" class="footer-link">Free Fire</a>
+          <a href="tournaments.html" class="footer-link">BGMI</a>
+          <a href="tournaments.html" class="footer-link">Valorant</a>
+          <a href="tournaments.html" class="footer-link">COD Mobile</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-heading">Connect</h4>
+        <div class="footer-links">
+          <a href="contact.html" class="footer-link">Contact</a>
+          <a href="news.html" class="footer-link">News</a>
+          <a href="gallery.html" class="footer-link">Gallery</a>
+          <a href="rules.html" class="footer-link">Rules</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
+      <p class="footer-note">BCE Esports · Official Platform</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/certificates.js"></script>
+</body>
+</html>
