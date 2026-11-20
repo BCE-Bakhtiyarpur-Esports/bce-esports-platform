@@ -27,6 +27,10 @@ const ADMIN_LAYOUT = (() => {
       { label: 'Results', href: 'results.html', icon: '📊' },
       { label: 'Standings', href: 'standings.html', icon: '🏅' }
     ]},
+    { group: 'Certificates', items: [
+      { label: 'All Certificates', href: 'certificates.html', icon: '🎓', roles: ['Super Admin','Admin'] },
+      { label: 'Issue Certificate', href: 'certificate-form.html', icon: '＋', roles: ['Super Admin','Admin'] }
+    ]},
     { group: 'Content', items: [
       { label: 'Announcements', href: 'announcements.html', icon: '📢' },
       { label: 'Gallery', href: 'gallery.html', icon: '🖼️' },
@@ -112,7 +116,6 @@ const ADMIN_LAYOUT = (() => {
     if (!ok) return null;
     const admin = ADMIN_API.getAdmin();
 
-    const shell = document.getElementById('adminShell');
     const sidebar = document.getElementById('adminSidebar');
     const topbar = document.getElementById('adminTopbar');
 
@@ -131,7 +134,6 @@ const ADMIN_LAYOUT = (() => {
       window.location.href = 'login.html';
     });
 
-    // Close dropdown on outside click
     document.addEventListener('click', (e) => {
       const menu = document.querySelector('.user-menu');
       if (menu && !menu.contains(e.target)) {
@@ -139,7 +141,6 @@ const ADMIN_LAYOUT = (() => {
       }
     });
 
-    // Close sidebar on nav click (mobile)
     document.querySelectorAll('.nav-item').forEach(a => {
       a.addEventListener('click', () => {
         document.getElementById('adminSidebar')?.classList.remove('open');
