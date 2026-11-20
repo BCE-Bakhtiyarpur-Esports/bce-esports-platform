@@ -376,6 +376,9 @@
 </head>
 <body>
 
+    <!-- 🎵 Music Audio Tag (Hidden) -->
+    <audio id="registerAudio" src="assets/audio/register-song.mp3" preload="none"></audio>
+
     <div class="preview-notice">
         <strong>BCE Esports</strong> — Live tournaments from backend
     </div>
@@ -534,6 +537,21 @@
     </footer>
 
     <script>
+        // 🎵 Audio Trigger Logic for Register Buttons
+        document.addEventListener('click', function(e) {
+            const registerLink = e.target.closest('a[href*="register.html"]');
+            if (registerLink) {
+                const audio = document.getElementById('registerAudio');
+                if (audio && audio.paused) {
+                    // Play returns a promise. Catch handles autoplay restrictions gracefully.
+                    audio.play().catch(function(error) {
+                        console.warn('Audio playback blocked or failed:', error);
+                    });
+                }
+            }
+        }, true); // 'true' ensures it triggers before event.stopPropagation() on the cards
+
+        // --- Existing Tournaments Logic ---
         const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 
         const navToggle = document.getElementById('navToggle');
