@@ -1,11 +1,31 @@
 /**
  * BCE ESPORTS — MAIN SHARED JAVASCRIPT
- * Used by all public pages. Exposes helpers via window.MAIN.
+ * Auto-injects standard navbar + footer quick buttons on every page.
  */
 (function () {
   'use strict';
 
   const API_URL = 'https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec';
+
+  /* ============================================================
+     NAVIGATION — EDIT HERE TO CHANGE NAV ACROSS ALL PAGES
+     ============================================================ */
+  const NAV_ITEMS = [
+    { label: 'Home',         href: 'index.html' },
+    { label: 'About',        href: 'about.html' },
+    { label: 'Tournaments',  href: 'tournaments.html' },
+    { label: 'Teams',        href: 'teams.html' },
+    { label: 'Results',      href: 'results.html' },
+    { label: 'Leaderboard',  href: 'leaderboard.html' },
+    { label: 'Certificates', href: 'certificates.html' },
+    { label: 'News',         href: 'news.html' },
+    { label: 'Contact',      href: 'contact.html' }
+  ];
+
+  // Pages that should highlight a different nav item
+  const ACTIVE_PAGE_MAP = {
+    'tournament.html': 'tournaments.html'
+  };
 
   /* ============ HELPERS ============ */
 
@@ -75,6 +95,64 @@
     }
   }
 
+  /* ============ NAV AUTO-INJECT ============ */
+
+  function renderNav() {
+    const navInner = document.querySelector('.nav .nav-inner');
+    if (!navInner) return;
+
+    const path = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    const activeHref = ACTIVE_PAGE_MAP[path] || path;
+
+    const linksHTML = NAV_ITEMS.map(item => {
+      const isActive = item.href.toLowerCase() === activeHref;
+      return `<a href="${item.href}" class="nav-link${isActive ? ' active' : ''}">${escapeHTML(item.label)}</a>`;
+    }).join('');
+
+    navInner.innerHTML = `
+      <a href="index.html" class="logo" aria-label="BCE Esports Home">
+        <div class="logo-mark">B</div>
+        <div class="logo-text">
+          <span class="logo-main">BCE</span>
+          <span class="logo-sub">ESPORTS</span>
+        </div>
+      </a>
+      <div class="nav-links" id="navLinks">
+        ${linksHTML}
+        <a href="register.html" class="nav-cta btn btn-primary btn-sm">Register</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
+          <path d="M3 6h18M3 12h18M3 18h18"/>
+        </svg>
+      </button>
+    `;
+  }
+
+  /* ============ FOOTER QUICK BUTTONS AUTO-INJECT ============ */
+
+  function renderFooterQuickLinks() {
+    const footer = document.querySelector('.footer');
+    if (!footer) return;
+    if (footer.querySelector('.footer-quick-links')) return;
+
+    const footerBottom = footer.querySelector('.footer-bottom');
+    if (!footerBottom) return;
+
+    const quickLinks = document.createElement('div');
+    quickLinks.className = 'footer-quick-links';
+    quickLinks.innerHTML = `
+      <a href="index.html#reg-status" class="footer-quick-btn">
+        <span>📋</span> Check Registration Status
+      </a>
+      <a href="gallery.html" class="footer-quick-btn">
+        <span>🖼️</span> Browse Gallery
+      </a>
+    `;
+
+    footerBottom.parentNode.insertBefore(quickLinks, footerBottom);
+  }
+
   /* ============ NAV TOGGLE ============ */
 
   function setupNavToggle() {
@@ -114,10 +192,13 @@
     formatPrizeShort,
     fetchJSON,
     fetchJSONWithParams,
-    fetchConfig
+    fetchConfig,
+    NAV_ITEMS
   };
 
-  /* ============ INIT (DOM already loaded, scripts at end of body) ============ */
+  /* ============ INIT ============ */
+  renderNav();
+  renderFooterQuickLinks();
   setupNavToggle();
   setupReveal();
 })();
