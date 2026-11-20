@@ -151,6 +151,9 @@
 </head>
 <body>
 
+<!-- 🎵 Background Music for Registration Page -->
+<audio id="bgMusic" src="assets/audio/register-song.mp3" preload="auto" autoplay loop></audio>
+
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner"></div>
     <div id="loadingMessage">Loading tournament...</div>
@@ -364,6 +367,29 @@
 </div>
 
 <script>
+// --- 🎵 Audio Continuity Logic ---
+// This ensures the music tries to autoplay when the page loads (since they clicked Register previously).
+// If blocked by browser, it will play on the very first interaction (click/touch) on this page.
+(function initAudio() {
+    const music = document.getElementById('bgMusic');
+    if (!music) return;
+
+    const playPromise = music.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            // Autoplay was prevented, wait for user interaction
+            const playOnInteraction = () => {
+                music.play().catch(e => console.log('Audio play failed:', e));
+                document.removeEventListener('click', playOnInteraction);
+                document.removeEventListener('touchstart', playOnInteraction);
+            };
+            document.addEventListener('click', playOnInteraction);
+            document.addEventListener('touchstart', playOnInteraction);
+        });
+    }
+})();
+
+// --- Existing Registration Logic ---
 const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 const urlParams = new URLSearchParams(window.location.search);
 const tournamentId = urlParams.get('tid') || urlParams.get('id') || '';
