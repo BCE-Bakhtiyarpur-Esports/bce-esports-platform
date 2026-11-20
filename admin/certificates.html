@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificates — BCE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  .filter-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+  .filter-bar .form-input,.filter-bar .form-select{max-width:280px;flex:1;min-width:200px}
+  .cert-tbl td{font-size:13px}
+  .cert-tbl .id-cell{font-family:var(--font-display);letter-spacing:1px;color:var(--red);font-weight:700}
+  .cert-tbl .actions-cell{display:flex;gap:6px;flex-wrap:wrap}
+  .cert-tbl .actions-cell .btn{padding:6px 10px;font-size:10px}
+  .modal-content.wide{max-width:780px}
+  .cert-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+  .cert-detail-item{background:var(--bg-secondary);padding:12px 14px;border-radius:var(--radius-sm);border:1px solid var(--border)}
+  .cert-detail-item .lbl{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px}
+  .cert-detail-item .val{font-size:14px;font-weight:600;color:#fff;word-break:break-word}
+  @media(max-width:768px){.cert-detail-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="adminSidebar"></aside>
+  <div class="admin-main">
+    <header class="admin-topbar" id="adminTopbar"></header>
+    <main class="admin-content">
+      <div class="page-header">
+        <h1>Certificates</h1>
+        <p>Issue, verify, edit and manage all BCE Esports certificates.</p>
+        <div class="page-actions">
+          <a href="certificate-form.html" class="btn btn-primary">＋ Issue Certificate</a>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" class="form-input" id="searchInput" placeholder="Search by ID, recipient name or tournament…">
+        <select class="form-select" id="statusFilter">
+          <option value="">All Status</option>
+          <option value="valid">Valid</option>
+          <option value="revoked">Revoked</option>
+        </select>
+        <button class="btn btn-outline btn-sm" id="refreshBtn">↻ Refresh</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="cert-tbl">
+          <thead>
+            <tr>
+              <th>Certificate ID</th>
+              <th>Recipient</th>
+              <th>Tournament</th>
+              <th>Type</th>
+              <th>Issue Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="certTbody">
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Detail / Actions Modal -->
+<div class="modal" id="certModal">
+  <div class="modal-content wide">
+    <div class="modal-header">
+      <h3>Certificate Details</h3>
+      <button class="modal-close" id="modalClose">×</button>
+    </div>
+    <div id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal" id="confirmModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="confirmTitle">Confirm</h3>
+      <button class="modal-close" id="confirmClose">×</button>
+    </div>
+    <p id="confirmMsg" style="color:var(--text-secondary);margin-bottom:20px"></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" id="confirmCancel">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="confirmOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="assets/js/admin-api.js"></script>
+<script src="assets/js/admin-layout.js"></script>
+<script>
+(async () => {
+  const admin = await ADMIN_LAYOUT.init('Certificates');
+  if (!admin) return;
+
+  const tbody = document.getElementById('certTbody');
+  const searchInput = document.getElementById('searchInput');
+  const statusFilter = document.getElementById('statusFilter');
+  let allCerts = [];
+  let currentCert = null;
+
+  function toast(msg, type) {
+    const t = document.createElement('div');
+    t.className = 'toast ' + (type || '');
+    t.textContent = msg;
+    document.getElementById('toastContainer').appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function badge(status) {
+    const s = String(status || 'valid').toLowerCase();
+    return `<span class="badge badge-${s === 'valid' ? 'approved' : s === 'revoked' ? 'rejected' : 'pending'}">${esc(s)}</span>`;
+  }
+
+  async function loadCerts() {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Loading…</td></tr>';
+    try {
+      const res = await ADMIN_API.get('admin.getCertificates', {});
+      if (!res.success) throw new Error(res.message || 'Failed to load');
+      allCerts = res.data || [];
+      renderTable();
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:#f87171">${esc(e.message)}</td></tr>`;
+    }
+  }
+
+  function applyFilter() {
+    const q = (searchInput.value || '').toLowerCase().trim();
+    const st = (statusFilter.value || '').toLowerCase();
+    return allCerts.filter(c => {
+      if (st && String(c.Status || '').toLowerCase() !== st) return false;
+      if (!q) return true;
+      return String(c.CertificateID || '').toLowerCase().includes(q)
+          || String(c.RecipientName || '').toLowerCase().includes(q)
+          || String(c.TournamentName || '').toLowerCase().includes(q)
+          || String(c.TeamName || '').toLowerCase().includes(q);
+    });
+  }
+
+  function renderTable() {
+    const rows = applyFilter();
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">No certificates found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(c => {
+      const isRevoked = String(c.Status || '').toLowerCase() === 'revoked';
+      const actionBtns = [
+        `<button class="btn btn-outline btn-sm" data-act="view" data-id="${esc(c.CertificateID)}">View</button>`,
+        `<button class="btn btn-outline btn-sm" data-act="edit" data-id="${esc(c.CertificateID)}">Edit</button>`,
+        isRevoked
+          ? `<button class="btn btn-success btn-sm" data-act="restore" data-id="${esc(c.CertificateID)}">Restore</button>`
+          : `<button class="btn btn-danger btn-sm" data-act="revoke" data-id="${esc(c.CertificateID)}">Revoke</button>`,
+        `<button class="btn btn-outline btn-sm" data-act="reissue" data-id="${esc(c.CertificateID)}">Reissue</button>`
+      ].join('');
+      return `
+        <tr>
+          <td class="id-cell">${esc(c.CertificateID)}</td>
+          <td>
+            <strong>${esc(c.RecipientName)}</strong>
+            ${c.TeamName ? `<br><small style="color:var(--text-muted)">${esc(c.TeamName)}</small>` : ''}
+          </td>
+          <td>${esc(c.TournamentName || '—')}</td>
+          <td>${esc(c.CertificateType || '—')}</td>
+          <td>${fmtDate(c.IssueDate)}</td>
+          <td>${badge(c.Status)}</td>
+          <td class="actions-cell">${actionBtns}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  // Event delegation for action buttons
+  tbody.addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    const act = btn.dataset.act;
+    const id = btn.dataset.id;
+    const cert = allCerts.find(c => String(c.CertificateID) === String(id));
+    if (!cert) return;
+
+    if (act === 'view') return openDetail(cert);
+    if (act === 'edit') { window.location.href = 'certificate-form.html?id=' + encodeURIComponent(id); return; }
+    if (act === 'revoke') return doRevoke(cert);
+    if (act === 'restore') return doRestore(cert);
+    if (act === 'reissue') return doReissue(cert);
+  });
+
+  function openDetail(cert) {
+    currentCert = cert;
+    const isRevoked = String(cert.Status || '').toLowerCase() === 'revoked';
+    document.getElementById('modalBody').innerHTML = `
+      <div class="cert-detail-grid">
+        <div class="cert-detail-item"><div class="lbl">Certificate ID</div><div class="val" style="font-family:var(--font-display);color:var(--red)">${esc(cert.CertificateID)}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Status</div><div class="val">${badge(cert.Status)}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Recipient</div><div class="val">${esc(cert.RecipientName || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Team</div><div class="val">${esc(cert.TeamName || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Tournament</div><div class="val">${esc(cert.TournamentName || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Game</div><div class="val">${esc(cert.GameName || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Achievement</div><div class="val">${esc(cert.Achievement || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Certificate Type</div><div class="val">${esc(cert.CertificateType || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Issue Date</div><div class="val">${fmtDate(cert.IssueDate)}</div></div>
+        <div class="cert-detail-item"><div class="lbl">File</div><div class="val">${cert.FileID ? (esc(cert.FileType || '') + ' · ' + Math.round((cert.FileSize||0)/1024) + ' KB') : 'None'}</div></div>
+        ${cert.Remarks ? `<div class="cert-detail-item" style="grid-column:1/-1"><div class="lbl">Remarks</div><div class="val">${esc(cert.Remarks)}</div></div>` : ''}
+        ${isRevoked ? `<div class="cert-detail-item" style="grid-column:1/-1"><div class="lbl">Revoked</div><div class="val">${fmtDate(cert.RevokedAt)} · by ${esc(cert.RevokedBy || '—')}</div></div>` : ''}
+        <div class="cert-detail-item"><div class="lbl">Created</div><div class="val">${fmtDate(cert.CreatedAt)} · ${esc(cert.CreatedBy || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Updated</div><div class="val">${fmtDate(cert.UpdatedAt)} · ${esc(cert.UpdatedBy || '—')}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Verifications</div><div class="val">${Number(cert.VerificationCount) || 0}</div></div>
+        <div class="cert-detail-item"><div class="lbl">Last Verified</div><div class="val">${fmtDate(cert.LastVerifiedAt)}</div></div>
+      </div>`;
+    document.getElementById('modalActions').innerHTML = `
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('certModal').classList.remove('open')">Close</button>
+      ${cert.FileID ? `<button class="btn btn-primary btn-sm" id="adminDownloadBtn">⬇ Download File</button>` : ''}
+    `;
+    document.getElementById('certModal').classList.add('open');
+
+    const dlBtn = document.getElementById('adminDownloadBtn');
+    if (dlBtn) dlBtn.addEventListener('click', () => adminDownload(cert.CertificateID, dlBtn));
+  }
+
+  async function adminDownload(certId, btn) {
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Preparing…';
+    try {
+      const res = await ADMIN_API.post('certificate.download', { certificateId: certId });
+      if (!res.success || !res.data || !res.data.base64) throw new Error(res.message || 'Download failed');
+      const bin = atob(res.data.base64);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      const blob = new Blob([arr], { type: res.data.mimeType || 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = res.data.fileName || 'certificate';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      btn.innerHTML = '✓ Downloaded';
+      setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2000);
+    } catch (e) {
+      toast('Download failed: ' + e.message, 'error');
+      btn.innerHTML = orig; btn.disabled = false;
+    }
+  }
+
+  function confirmDialog(title, msg, onOk) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMsg').textContent = msg;
+    const okBtn = document.getElementById('confirmOk');
+    const close = () => document.getElementById('confirmModal').classList.remove('open');
+    const newOk = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newOk, okBtn);
+    newOk.addEventListener('click', () => { close(); onOk(); });
+    document.getElementById('confirmCancel').onclick = close;
+    document.getElementById('confirmClose').onclick = close;
+    document.getElementById('confirmModal').classList.add('open');
+  }
+
+  function doRevoke(cert) {
+    confirmDialog(
+      'Revoke Certificate?',
+      `Are you sure you want to revoke ${cert.CertificateID}? The recipient will no longer be able to download it.`,
+      async () => {
+        const res = await ADMIN_API.post('admin.revokeCertificate', { certificateId: cert.CertificateID });
+        if (res.success) { toast('Certificate revoked', 'success'); loadCerts(); }
+        else toast(res.message || 'Failed', 'error');
+      }
+    );
+  }
+
+  function doRestore(cert) {
+    confirmDialog(
+      'Restore Certificate?',
+      `Restore ${cert.CertificateID}? The recipient will be able to verify and download again.`,
+      async () => {
+        const res = await ADMIN_API.post('admin.restoreCertificate', { certificateId: cert.CertificateID });
+        if (res.success) { toast('Certificate restored', 'success'); loadCerts(); }
+        else toast(res.message || 'Failed', 'error');
+      }
+    );
+  }
+
+  function doReissue(cert) {
+    confirmDialog(
+      'Reissue Certificate?',
+      `Create a new certificate with the same recipient and file data but a new ID? The old one (${cert.CertificateID}) will stay as is.`,
+      async () => {
+        const res = await ADMIN_API.post('admin.reissueCertificate', { certificateId: cert.CertificateID });
+        if (res.success) {
+          toast('Reissued as ' + res.data.certificateId, 'success');
+          loadCerts();
+        } else toast(res.message || 'Failed', 'error');
+      }
+    );
+  }
+
+  // Filters
+  searchInput.addEventListener('input', renderTable);
+  statusFilter.addEventListener('change', renderTable);
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    searchInput.value = '';
+    statusFilter.value = '';
+    loadCerts();
+  });
+
+  // Modal close
+  document.getElementById('modalClose').onclick = () => document.getElementById('certModal').classList.remove('open');
+  document.getElementById('certModal').addEventListener('click', (e) => {
+    if (e.target.id === 'certModal') e.target.classList.remove('open');
+  });
+
+  loadCerts();
+})();
+</script>
+</body>
+</html>
