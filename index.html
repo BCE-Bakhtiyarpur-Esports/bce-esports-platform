@@ -248,8 +248,8 @@
 </head>
 <body>
 
-    <!-- 🎵 Background Music (Muted by default to bypass autoplay block) -->
-    <audio id="homeBgMusic" src="assets/audio/home-song.mp3" loop muted></audio>
+    <!-- 🎵 Background Music: muted is removed. It will play on first click/scroll -->
+    <audio id="homeBgMusic" src="assets/audio/home-song.mp3" loop></audio>
 
     <nav class="nav">
         <div class="container nav-inner">
@@ -494,38 +494,43 @@
     </footer>
 
     <script>
-        // --- 🎵 FORCE PLAY BACKGROUND MUSIC ---
+        // --- 🎵 SUPER POWERFUL AUDIO LOGIC ---
         const homeAudio = document.getElementById('homeBgMusic');
         if (homeAudio) {
-            homeAudio.volume = 0.4; // Default volume (0 to 1)
-            
-            // Step 1: Try to autoplay as MUTED (Browsers allow this)
-            const playPromise = homeAudio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Step 2: Audio is playing but muted. Now wait for ANY interaction to unmute.
-                    const enableAudio = () => {
-                        homeAudio.muted = false;
-                        // Remove listeners to save memory
-                        document.removeEventListener('click', enableAudio);
-                        document.removeEventListener('touchstart', enableAudio);
-                        document.removeEventListener('scroll', enableAudio);
-                        document.removeEventListener('keydown', enableAudio);
-                        console.log("🎵 Music unmuted and playing successfully!");
-                    };
+            homeAudio.volume = 0.5; // Volume 50% (0 to 1)
 
-                    // Add listeners for all possible user interactions
-                    document.addEventListener('click', enableAudio);
-                    document.addEventListener('touchstart', enableAudio);
-                    document.addEventListener('scroll', enableAudio, { once: true });
-                    document.addEventListener('keydown', enableAudio);
-                }).catch(error => {
-                    console.log("Autoplay was blocked entirely by the browser:", error);
-                });
-            }
+            // Function to force play
+            const forcePlayAudio = () => {
+                const playPromise = homeAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Audio started successfully!
+                        console.log("🎵 Music Started!");
+                        removeInteractionListeners(); // Listeners hata do, kaam ho gaya
+                    }).catch(error => {
+                        console.log("Audio play failed. Waiting for user interaction.", error);
+                    });
+                }
+            };
+
+            // Remove listeners once played
+            const removeInteractionListeners = () => {
+                document.removeEventListener('click', forcePlayAudio);
+                document.removeEventListener('touchstart', forcePlayAudio);
+                document.removeEventListener('scroll', forcePlayAudio);
+                document.removeEventListener('keydown', forcePlayAudio);
+            };
+
+            // 1. Try to play immediately on page load
+            forcePlayAudio();
+
+            // 2. Agar browser ne block kiya, toh pehle interaction pe force play karo
+            document.addEventListener('click', forcePlayAudio);
+            document.addEventListener('touchstart', forcePlayAudio);
+            document.addEventListener('scroll', forcePlayAudio, { once: true });
+            document.addEventListener('keydown', forcePlayAudio);
         }
-        // ------------------------------------------
+        // --------------------------------------
 
         const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 
@@ -842,7 +847,6 @@
             }).join('');
         }
 
-        // ===== SOCIAL LINKS — Case-insensitive config reader =====
         function renderSocialLinks(config) {
             const grid = document.getElementById('socialGrid');
             if (!grid) return;
