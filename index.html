@@ -189,12 +189,6 @@
         .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
         .reveal.visible{opacity:1;transform:translateY(0)}
         
-        /* Music Button CSS */
-        .music-btn { position: fixed; bottom: 24px; right: 24px; width: 50px; height: 50px; border-radius: 50%; background: var(--red); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(225, 6, 0, 0.4); z-index: 9999; transition: all 0.3s ease; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); }
-        .music-btn:hover { transform: scale(1.1); background: var(--red-bright); }
-        .music-btn svg { width: 24px; height: 24px; }
-        .music-btn.muted { background: var(--bg-card); color: var(--text-muted); border-color: var(--border-bright); box-shadow: none; }
-        
         @media (max-width:1024px){
             .games-grid{grid-template-columns:repeat(3,1fr)}
             .tournaments-grid,.results-grid,.announcements-grid{grid-template-columns:repeat(2,1fr)}
@@ -226,8 +220,6 @@
             .footer-bottom{flex-direction:column;text-align:center}
             .leaderboard-table th,.leaderboard-table td{padding:12px;font-size:13px}
             .leaderboard-table th:nth-child(4),.leaderboard-table td:nth-child(4){display:none}
-            .music-btn { bottom: 16px; right: 16px; width: 44px; height: 44px; }
-            .music-btn svg { width: 20px; height: 20px; }
         }
         @media (max-width:480px){
             .container{padding:0 16px}
@@ -240,14 +232,8 @@
 </head>
 <body>
 
-    <!-- 🎵 Background Music -->
+    <!-- 🎵 Background Music (No Button) -->
     <audio id="homeBgMusic" src="assets/audio/home-song.mp3" loop></audio>
-    
-    <!-- 🎵 Floating Music Toggle Button -->
-    <div class="music-btn muted" id="musicToggle" title="Play/Pause Music">
-        <svg id="musicIconMuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-        <svg id="musicIconPlaying" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-    </div>
 
     <nav class="nav">
         <div class="container nav-inner">
@@ -463,41 +449,19 @@
     </footer>
 
     <script>
-        // --- 🎵 Homepage Background Music Logic ---
+        // --- 🎵 Smart Autoplay Background Music Logic ---
         const homeAudio = document.getElementById('homeBgMusic');
-        const musicBtn = document.getElementById('musicToggle');
-        const iconMuted = document.getElementById('musicIconMuted');
-        const iconPlaying = document.getElementById('musicIconPlaying');
-        let isAudioPlaying = false;
-
-        // Function to update button UI
-        function updateMusicUI(playing) {
-            isAudioPlaying = playing;
-            if (playing) {
-                musicBtn.classList.remove('muted');
-                iconMuted.style.display = 'none';
-                iconPlaying.style.display = 'block';
-            } else {
-                musicBtn.classList.add('muted');
-                iconMuted.style.display = 'block';
-                iconPlaying.style.display = 'none';
-            }
-        }
-
-        // Attempt to play audio automatically on load
+        
+        // Try to play immediately on load
         const playPromise = homeAudio.play();
+        
         if (playPromise !== undefined) {
-            playPromise.then(() => {
-                updateMusicUI(true);
-            }).catch(() => {
-                // Autoplay blocked. We wait for the user's first interaction (click/scroll/touch)
-                updateMusicUI(false);
-                
+            playPromise.catch(() => {
+                // Autoplay was blocked by the browser (common on mobile)
+                // We wait for the user's first interaction (click/scroll/touch) to play it
                 const playOnInteraction = () => {
                     if (homeAudio.paused) {
-                        homeAudio.play().then(() => {
-                            updateMusicUI(true);
-                        }).catch(e => console.log("Audio blocked:", e));
+                        homeAudio.play().catch(e => console.log("Audio blocked again:", e));
                     }
                     // Remove listeners once played
                     document.removeEventListener('click', playOnInteraction);
@@ -511,15 +475,6 @@
             });
         }
 
-        // Toggle button manually
-        musicBtn.addEventListener('click', () => {
-            if (homeAudio.paused) {
-                homeAudio.play().then(() => updateMusicUI(true)).catch(e => console.log(e));
-            } else {
-                homeAudio.pause();
-                updateMusicUI(false);
-            }
-        });
         // ------------------------------------------
 
         const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
