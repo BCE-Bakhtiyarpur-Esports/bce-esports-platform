@@ -12,8 +12,182 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- External CSS -->
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/home.css">
+
+    <!-- Custom Styles for New Sections (Organisers) -->
+    <style>
+        /* Organisers Section Styling */
+        .organisers-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 24px; 
+        }
+        .organiser-card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border); 
+            border-radius: var(--radius-lg); 
+            padding: 32px 20px; 
+            text-align: center; 
+            transition: all var(--transition); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .organiser-card:hover { 
+            border-color: var(--red); 
+            background: var(--bg-card-hover); 
+            transform: translateY(-6px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4); 
+        }
+        .organiser-avatar { 
+            width: 100px; 
+            height: 100px; 
+            margin: 0 auto 20px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: var(--font-display); 
+            font-weight: 900; 
+            font-size: 30px; 
+            color: #fff; 
+            background: var(--member-gradient, linear-gradient(135deg, #e10600, #7a0400)); 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+            border: 3px solid var(--border-bright); 
+            transition: all var(--transition); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .organiser-card:hover .organiser-avatar { 
+            transform: scale(1.05); 
+            border-color: var(--red); 
+            box-shadow: 0 8px 30px var(--red-glow); 
+        }
+        .organiser-avatar img { 
+            position: absolute; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            z-index: 2; 
+        }
+        .organiser-name { 
+            font-family: var(--font-display); 
+            font-weight: 700; 
+            font-size: 17px; 
+            letter-spacing: 1px; 
+            margin-bottom: 6px; 
+        }
+        .organiser-role { 
+            display: inline-block; 
+            font-family: var(--font-display); 
+            font-size: 10px; 
+            font-weight: 700; 
+            letter-spacing: 2px; 
+            color: var(--red); 
+            background: rgba(225,6,0,0.1); 
+            padding: 4px 12px; 
+            border-radius: 4px; 
+            border: 1px solid rgba(225,6,0,0.25); 
+            margin-bottom: 14px; 
+            text-transform: uppercase; 
+        }
+        .organiser-bio { 
+            font-size: 13px; 
+            color: var(--text-secondary); 
+            line-height: 1.6; 
+        }
+
+        /* Responsive Design for Organisers & Status */
+        @media (max-width: 1024px) {
+            .organisers-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .organisers-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Styling for Registration Status Form */
+        .reg-status-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border-top: 3px solid var(--red);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .reg-status-form {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .reg-status-fields {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+            min-width: 280px;
+        }
+        .reg-input {
+            flex: 1;
+            padding: 14px 16px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-bright);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        .reg-input:focus {
+            outline: none;
+            border-color: var(--red);
+            box-shadow: 0 0 10px rgba(225,6,0,0.2);
+        }
+        .reg-status-results {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .reg-result-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .reg-result-info h4 {
+            font-family: var(--font-display);
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .reg-result-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .reg-status-pill {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .reg-status-pill.approved { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
+        .reg-status-pill.pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+        .reg-status-pill.rejected { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+
+        @media (max-width: 768px) {
+            .reg-status-form { flex-direction: column; align-items: stretch; }
+            .reg-status-fields { flex-direction: column; }
+        }
+    </style>
 </head>
 <body>
 
@@ -120,7 +294,7 @@
         </div>
     </section>
 
-    <!-- NEW: REGISTRATION STATUS SECTION -->
+    <!-- REGISTRATION STATUS SECTION -->
     <section class="section" id="reg-status" style="background:var(--bg-secondary);">
         <div class="container">
             <div class="section-header reveal">
@@ -219,6 +393,55 @@
         </div>
     </section>
 
+    <!-- MEET THE ORGANISERS (NEW SECTION) -->
+    <section class="section" id="organisers" style="background:var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Leadership</span>
+                <h2 class="section-title">Meet the <span class="accent">Organisers</span></h2>
+                <p class="section-desc">The core team driving the vision, operations, and community of BCE Esports.</p>
+            </div>
+            <div class="organisers-grid reveal">
+                <div class="organiser-card">
+                    <div class="organiser-avatar" style="--member-gradient: linear-gradient(135deg, #e10600, #7a0400);">
+                        PK
+                        <img src="assets/image/piyush.jpg" alt="Piyush Kashyap" onerror="this.style.display='none'">
+                    </div>
+                    <div class="organiser-name">Piyush Kashyap</div>
+                    <span class="organiser-role">Founder & Head</span>
+                    <p class="organiser-bio">Leads overall vision, tournament strategy, and administrative oversight of BCE Esports.</p>
+                </div>
+                <div class="organiser-card">
+                    <div class="organiser-avatar" style="--member-gradient: linear-gradient(135deg, #2563eb, #1e293b);">
+                        PS
+                        <img src="assets/image/prince.jpg" alt="Prince Shelby" onerror="this.style.display='none'">
+                    </div>
+                    <div class="organiser-name">Prince Shelby</div>
+                    <span class="organiser-role">Admin (Tournament Ops)</span>
+                    <p class="organiser-bio">Manages brackets, scheduling, and match coordination for all competitive events.</p>
+                </div>
+                <div class="organiser-card">
+                    <div class="organiser-avatar" style="--member-gradient: linear-gradient(135deg, #f59e0b, #7a0400);">
+                        HK
+                        <img src="assets/image/harsh.jpg" alt="Harsh Kumar" onerror="this.style.display='none'">
+                    </div>
+                    <div class="organiser-name">Harsh Kumar</div>
+                    <span class="organiser-role">Admin (Content & Comms)</span>
+                    <p class="organiser-bio">Handles announcements, social media, and community engagement across platforms.</p>
+                </div>
+                <div class="organiser-card">
+                    <div class="organiser-avatar" style="--member-gradient: linear-gradient(135deg, #8b5cf6, #1e1b4b);">
+                        RA
+                        <img src="assets/image/raj.jpg" alt="Raj Aryan" onerror="this.style.display='none'">
+                    </div>
+                    <div class="organiser-name">Raj Aryan</div>
+                    <span class="organiser-role">Moderator</span>
+                    <p class="organiser-bio">Maintains healthy community spaces, enforces fair play, and supports teams.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="section community" id="community">
         <div class="container">
             <div class="section-header reveal">
@@ -239,6 +462,9 @@
                         <div class="logo-text"><span class="logo-main">BCE</span><span class="logo-sub">ESPORTS</span></div>
                     </a>
                     <p class="footer-tagline">The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.</p>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 16px;">
+                        <strong>Email:</strong> <a href="mailto:Bcesports.team@gmail.com" style="color: var(--red);">Bcesports.team@gmail.com</a>
+                    </p>
                 </div>
                 <div>
                     <h4 class="footer-heading">Platform</h4>
@@ -262,6 +488,7 @@
                     <h4 class="footer-heading">Connect</h4>
                     <div class="footer-links">
                         <a href="contact.html" class="footer-link">Contact</a>
+                        <a href="mailto:Bcesports.team@gmail.com" class="footer-link">Bcesports.team@gmail.com</a>
                         <a href="news.html" class="footer-link">News</a>
                         <a href="gallery.html" class="footer-link">Gallery</a>
                         <a href="rules.html" class="footer-link">Rules</a>
@@ -275,6 +502,7 @@
         </div>
     </footer>
 
+    <!-- External JS -->
     <script src="assets/js/main.js"></script>
     <script src="assets/js/home.js"></script>
 </body>
