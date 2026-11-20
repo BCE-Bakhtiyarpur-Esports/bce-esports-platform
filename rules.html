@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BCE Esports tournament standings and leaderboards — view live points, wins, and rankings.">
+    <meta name="description" content="BCE Esports Rules & Regulations — official tournament rules, eligibility criteria, code of conduct, and FAQs.">
     <meta name="theme-color" content="#0a0a0a">
-    <title>Leaderboard — BCE Esports</title>
+    <title>Rules & Regulations — BCE Esports</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
     <style>
-        :root { --gold:#ffd700; --silver:#c0c0c0; --bronze:#cd7f32; }
+        html { scroll-padding-top: 100px; }
+        ul, ol { padding-left: 20px; }
+
         .preview-notice { background: linear-gradient(90deg, #4a0a0a, #2a0808); border-bottom: 1px solid rgba(225,6,0,0.3); padding: 10px 16px; text-align: center; font-size: 13px; color: #ffb3b3; position: relative; z-index: 100; }
         .preview-notice strong { color: #fff; font-weight: 700; }
 
@@ -23,188 +25,554 @@
         .page-hero-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(36px, 7vw, 68px); line-height: 1; letter-spacing: 0.5px; margin-bottom: 20px; text-transform: uppercase; }
         .page-hero-title .accent { color: var(--red); text-shadow: 0 0 40px var(--red-glow); }
         .page-hero-desc { color: var(--text-secondary); font-size: 17px; max-width: 600px; margin: 0 auto; }
+        .last-updated { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 100px; }
+        .last-updated strong { color: #fff; font-family: var(--font-display); letter-spacing: 0.5px; }
 
-        .selector-bar { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 24px 0; position: sticky; top: 72px; z-index: 50; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .selector-inner { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; }
-        .selector-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px; }
-        .selector-label svg { width: 16px; height: 16px; color: var(--red); }
-        .selector-select { font-size: 15px; font-weight: 600; background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: var(--radius-sm); padding: 12px 40px 12px 16px; color: #fff; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; transition: border-color var(--transition); width: 100%; }
-        .selector-select:focus { outline: none; border-color: var(--red); }
-        .selector-status { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 12px; border-radius: 4px; }
-        .selector-status.live { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
-        .selector-status.upcoming { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); }
-        .selector-status.completed { background: rgba(107,107,107,0.2); color: var(--text-muted); border: 1px solid var(--border-bright); }
-        .selector-status.cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+        .rules-layout { display: grid; grid-template-columns: 260px 1fr; gap: 40px; align-items: start; }
 
-        .tournament-info { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 32px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
-        .tournament-info-left { display: flex; flex-direction: column; gap: 6px; }
-        .tournament-info-name { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 0.5px; }
-        .tournament-info-meta { display: flex; gap: 20px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; }
-        .tournament-info-meta span { display: inline-flex; align-items: center; gap: 6px; }
-        .tournament-info-meta strong { color: var(--red); font-family: var(--font-display); letter-spacing: 0.5px; }
+        .sidebar { position: sticky; top: 100px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+        .sidebar-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+        .sidebar-links { display: flex; flex-direction: column; gap: 4px; list-style: none; padding-left: 0; }
+        .sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary); transition: all var(--transition); cursor: pointer; border-left: 2px solid transparent; }
+        .sidebar-link:hover { background: var(--bg-secondary); color: #fff; }
+        .sidebar-link.active { background: rgba(225,6,0,0.08); color: var(--red); border-left-color: var(--red); }
+        .sidebar-link-num { font-family: var(--font-display); font-size: 10px; font-weight: 700; width: 22px; flex-shrink: 0; }
 
-        .podium { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 48px; align-items: end; }
-        .podium-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px 20px 24px; text-align: center; position: relative; overflow: hidden; transition: all var(--transition); }
-        .podium-card:hover { transform: translateY(-4px); }
-        .podium-card.first { border-color: rgba(255,215,0,0.4); background: linear-gradient(180deg, rgba(255,215,0,0.08), var(--bg-card) 60%); padding-top: 44px; padding-bottom: 36px; }
-        .podium-card.second { border-color: rgba(192,192,192,0.3); }
-        .podium-card.third { border-color: rgba(205,127,50,0.3); }
-        .podium-rank-badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 900; font-size: 11px; letter-spacing: 2px; padding: 6px 18px; border-radius: 0 0 8px 8px; text-transform: uppercase; }
-        .podium-card.first .podium-rank-badge { background: linear-gradient(135deg, var(--gold), #b8860b); color: #000; }
-        .podium-card.second .podium-rank-badge { background: linear-gradient(135deg, var(--silver), #808080); color: #000; }
-        .podium-card.third .podium-rank-badge { background: linear-gradient(135deg, var(--bronze), #8b4513); color: #fff; }
-        .podium-logo { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 28px; color: #fff; margin: 0 auto 16px; background: var(--team-gradient, linear-gradient(135deg, #333, #111)); box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 3px solid var(--bg-card); letter-spacing: 1px; }
-        .podium-card.first .podium-logo { width: 104px; height: 104px; font-size: 34px; box-shadow: 0 0 0 3px var(--gold), 0 12px 32px rgba(255,215,0,0.3); }
-        .podium-card.second .podium-logo { box-shadow: 0 0 0 2px var(--silver), 0 8px 24px rgba(0,0,0,0.4); }
-        .podium-card.third .podium-logo { box-shadow: 0 0 0 2px var(--bronze), 0 8px 24px rgba(0,0,0,0.4); }
-        .podium-team-name { font-family: var(--font-display); font-weight: 900; font-size: 16px; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .podium-card.first .podium-team-name { font-size: 18px; }
-        .podium-team-tag { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 16px; }
-        .podium-points { font-family: var(--font-display); font-weight: 900; font-size: 28px; color: var(--red); line-height: 1; margin-bottom: 4px; }
-        .podium-card.first .podium-points { font-size: 34px; color: var(--gold); }
-        .podium-points-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+        .rules-content { min-width: 0; }
+        .rules-section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .rules-section-number { font-family: var(--font-display); font-weight: 900; font-size: 32px; color: var(--red); line-height: 1; }
+        .rules-section-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(20px, 3vw, 26px); letter-spacing: 0.5px; text-transform: uppercase; }
 
-        .standings-section-title { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-        .standings-section-title::before { content: ''; width: 4px; height: 22px; background: var(--red); border-radius: 2px; }
-        .standings-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 40px; overflow-x: auto; }
-        .standings-table { width: 100%; border-collapse: collapse; }
-        .standings-table thead { background: var(--bg-secondary); }
-        .standings-table th { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
-        .standings-table th.num { text-align: center; }
-        .standings-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .standings-table td.num { text-align: center; font-family: var(--font-display); font-weight: 700; }
-        .standings-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-        .standings-table tbody tr:last-child td { border-bottom: none; }
-        .standings-table tr.top-1 { background: linear-gradient(90deg, rgba(255,215,0,0.05), transparent 40%); }
-        .standings-table tr.top-2 { background: linear-gradient(90deg, rgba(192,192,192,0.04), transparent 40%); }
-        .standings-table tr.top-3 { background: linear-gradient(90deg, rgba(205,127,50,0.05), transparent 40%); }
-        .rank-cell { display: flex; align-items: center; gap: 12px; }
-        .rank-badge { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 12px; background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-bright); flex-shrink: 0; }
-        .rank-badge.top-1 { background: linear-gradient(135deg, var(--gold), #b8860b); color: #000; border-color: var(--gold); }
-        .rank-badge.top-2 { background: linear-gradient(135deg, var(--silver), #808080); color: #000; border-color: var(--silver); }
-        .rank-badge.top-3 { background: linear-gradient(135deg, var(--bronze), #8b4513); color: #fff; border-color: var(--bronze); }
-        .rank-team { display: flex; align-items: center; gap: 10px; }
-        .team-mini-logo { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 11px; color: #fff; background: var(--team-gradient, linear-gradient(135deg, #333, #111)); flex-shrink: 0; letter-spacing: 0.5px; }
-        .rank-team-name { font-weight: 700; letter-spacing: 0.3px; }
-        .rank-team-name small { display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; }
-        .points-cell { font-family: var(--font-display); font-weight: 900; color: var(--red); font-size: 16px; }
+        .accordion { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; transition: border-color var(--transition); }
+        .accordion.open { border-color: var(--red); }
+        .accordion-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; cursor: pointer; background: var(--bg-card); transition: background var(--transition); width: 100%; text-align: left; }
+        .accordion-header:hover { background: var(--bg-card-hover); }
+        .accordion.open .accordion-header { background: var(--bg-card-hover); }
+        .accordion-title { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: 0.5px; color: #fff; display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        .accordion-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border-bright); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all var(--transition); }
+        .accordion-icon svg { width: 14px; height: 14px; color: var(--text-secondary); transition: transform var(--transition); }
+        .accordion.open .accordion-icon { background: var(--red); border-color: var(--red); }
+        .accordion.open .accordion-icon svg { color: #fff; transform: rotate(180deg); }
+        .accordion-body { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .accordion.open .accordion-body { max-height: 2000px; }
+        .accordion-content { padding: 0 24px 24px; color: var(--text-secondary); font-size: 15px; line-height: 1.75; }
+        .accordion-content p { margin-bottom: 12px; }
+        .accordion-content p:last-child { margin-bottom: 0; }
+        .accordion-content ul, .accordion-content ol { margin: 12px 0; padding-left: 24px; }
+        .accordion-content li { margin-bottom: 8px; }
+        .accordion-content strong { color: #fff; font-weight: 700; }
+        .accordion-content code { font-family: 'Courier New', monospace; background: var(--bg-secondary); border: 1px solid var(--border-bright); padding: 2px 8px; border-radius: 4px; font-size: 13px; color: var(--red); }
 
-        .legend-wrap { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; }
-        .legend-title { font-family: var(--font-display); font-weight: 900; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-        .legend-title::before { content: ''; width: 4px; height: 18px; background: var(--red); border-radius: 2px; }
-        .legend-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
-        .legend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-        .legend-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
-        .legend-item-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-        .legend-item-value { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
-        .legend-item-value strong { color: #fff; }
-        .legend-item-value .accent { color: var(--red); font-weight: 700; }
+        .callout { display: flex; gap: 12px; padding: 16px 18px; border-radius: var(--radius-md); margin: 16px 0; font-size: 14px; }
+        .callout-icon { font-size: 20px; flex-shrink: 0; line-height: 1.4; }
+        .callout.warning { background: rgba(225,6,0,0.08); border: 1px solid rgba(225,6,0,0.3); }
+        .callout.warning .callout-icon { color: var(--red); }
+        .callout.info { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.3); }
+        .callout.info .callout-icon { color: #60a5fa; }
+        .callout strong { color: #fff; }
 
-        .empty-state, .loading-state, .error-state { text-align: center; padding: 80px 20px; background: var(--bg-card); border: 1px dashed var(--border-bright); border-radius: var(--radius-lg); }
-        .state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-        .state-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: 1px; margin-bottom: 8px; }
-        .state-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+        .faq-wrap { margin-top: 60px; padding-top: 60px; border-top: 1px solid var(--border); }
+        .faq-header { text-align: center; margin-bottom: 40px; }
+        .faq-label { display: inline-block; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--red); background: rgba(225,6,0,0.1); padding: 6px 14px; border-radius: 4px; border: 1px solid rgba(225,6,0,0.25); margin-bottom: 16px; }
+        .faq-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(24px, 4vw, 34px); letter-spacing: 1px; text-transform: uppercase; }
+        .faq-title .accent { color: var(--red); }
+
+        .contact-cta { background: radial-gradient(ellipse at 50% 50%, rgba(225,6,0,0.15), transparent 60%), var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 48px 32px; text-align: center; margin-top: 60px; }
+        .contact-cta-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 4vw, 32px); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
+        .contact-cta-title .accent { color: var(--red); }
+        .contact-cta-desc { color: var(--text-secondary); font-size: 15px; max-width: 520px; margin: 0 auto 24px; }
+        .contact-cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
         @media (max-width: 1024px) {
-            .legend-grid { grid-template-columns: repeat(2, 1fr); }
+            .rules-layout { grid-template-columns: 1fr; gap: 24px; }
+            .sidebar { position: static; }
+            .sidebar-links { flex-direction: row; flex-wrap: wrap; overflow-x: auto; padding-bottom: 4px; }
+            .sidebar-link { flex-shrink: 0; border-left: none; border-bottom: 2px solid transparent; }
+            .sidebar-link.active { border-left-color: transparent; border-bottom-color: var(--red); }
         }
         @media (max-width: 768px) {
             .section { padding: 40px 0; }
             .page-hero { padding: 70px 20px 60px; }
-            .selector-inner { grid-template-columns: 1fr; gap: 10px; }
-            .selector-label { display: none; }
-            .selector-status { align-self: flex-start; }
-            .tournament-info { padding: 20px 16px; }
-            .tournament-info-name { font-size: 16px; }
-            .podium { grid-template-columns: 1fr; gap: 12px; }
-            .podium-card.first { order: -1; padding-top: 44px; padding-bottom: 24px; }
-            .podium-logo { width: 72px; height: 72px; font-size: 22px; }
-            .podium-card.first .podium-logo { width: 80px; height: 80px; font-size: 26px; }
-            .standings-table th, .standings-table td { padding: 12px 8px; font-size: 12px; }
-            .standings-table th:nth-child(5), .standings-table td:nth-child(5),
-            .standings-table th:nth-child(6), .standings-table td:nth-child(6) { display: none; }
-            .team-mini-logo { width: 26px; height: 26px; font-size: 9px; }
-            .legend-grid { grid-template-columns: 1fr; }
+            .accordion-header { padding: 16px 18px; }
+            .accordion-title { font-size: 14px; }
+            .accordion-content { padding: 0 18px 18px; font-size: 14px; }
+            .rules-section-number { font-size: 26px; }
+            .contact-cta { padding: 36px 20px; }
+            .contact-cta-actions { flex-direction: column; }
+            .contact-cta-actions .btn { width: 100%; }
         }
         @media (max-width: 480px) {
-            .rank-badge { width: 26px; height: 26px; font-size: 10px; }
-            .team-mini-logo { width: 22px; height: 22px; font-size: 8px; }
+            .accordion-header { padding: 14px 14px; }
+            .accordion-content { padding: 0 14px 16px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="preview-notice"><strong>BCE Esports</strong> — Live standings from backend</div>
+    <div class="preview-notice">⚠️ <strong>Design Preview</strong> — These rules are sample content for demonstration. Official rules will be finalised before each tournament.</div>
 
     <nav class="nav"><div class="container nav-inner"></div></nav>
 
     <section class="page-hero">
         <div class="page-hero-content">
-            <span class="page-hero-label">Standings</span>
-            <h1 class="page-hero-title">Tournament <span class="accent">Leaderboard</span></h1>
-            <p class="page-hero-desc">Live standings from BCE Esports tournaments. Ranked by total points earned through match placements and eliminations.</p>
+            <span class="page-hero-label">Official Documentation</span>
+            <h1 class="page-hero-title">Rules & <span class="accent">Regulations</span></h1>
+            <p class="page-hero-desc">The rules that govern every BCE Esports tournament — for players, teams, and organisers. Read them carefully before you register.</p>
+            <div class="last-updated">Last updated: <strong>Feb 1, 2026</strong></div>
         </div>
     </section>
 
-    <div class="selector-bar">
-        <div class="container selector-inner">
-            <div class="selector-label">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7-6.5-4.5-6.5 4.5 2-7L2 9h7z"/></svg>
-                Tournament
-            </div>
-            <select class="selector-select" id="tournamentSelect">
-                <option value="">Loading tournaments...</option>
-            </select>
-            <span class="selector-status upcoming" id="statusBadge">—</span>
-        </div>
-    </div>
-
     <section class="section">
         <div class="container">
-            <div class="tournament-info" id="tournamentInfo" style="display:none;">
-                <div class="tournament-info-left">
-                    <div class="tournament-info-name" id="infoName">—</div>
-                    <div class="tournament-info-meta">
-                        <span>Game: <strong id="infoGame">—</strong></span>
-                        <span>Format: <strong id="infoFormat">—</strong></span>
-                        <span>Prize Pool: <strong id="infoPrize">—</strong></span>
+            <div class="rules-layout">
+
+                <aside class="sidebar">
+                    <div class="sidebar-title">Quick Navigation</div>
+                    <ul class="sidebar-links">
+                        <li><a class="sidebar-link active" href="#general" data-target="general"><span class="sidebar-link-num">01</span>General Rules</a></li>
+                        <li><a class="sidebar-link" href="#eligibility" data-target="eligibility"><span class="sidebar-link-num">02</span>Eligibility</a></li>
+                        <li><a class="sidebar-link" href="#team-composition" data-target="team-composition"><span class="sidebar-link-num">03</span>Team Composition</a></li>
+                        <li><a class="sidebar-link" href="#match-rules" data-target="match-rules"><span class="sidebar-link-num">04</span>Match Rules</a></li>
+                        <li><a class="sidebar-link" href="#conduct" data-target="conduct"><span class="sidebar-link-num">05</span>Code of Conduct</a></li>
+                        <li><a class="sidebar-link" href="#payment" data-target="payment"><span class="sidebar-link-num">06</span>Payment & Refunds</a></li>
+                        <li><a class="sidebar-link" href="#disqualification" data-target="disqualification"><span class="sidebar-link-num">07</span>Disqualification</a></li>
+                        <li><a class="sidebar-link" href="#disputes" data-target="disputes"><span class="sidebar-link-num">08</span>Disputes & Appeals</a></li>
+                    </ul>
+                </aside>
+
+                <div class="rules-content">
+
+                    <!-- SECTION 1 -->
+                    <section id="general" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">01</div>
+                            <h2 class="rules-section-title">General Rules</h2>
+                        </div>
+                        <div class="accordion open">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Tournament Scope & Acceptance</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>By registering for any BCE Esports tournament, all team captains and their registered players agree to be bound by these rules. These rules apply to every tournament unless a specific tournament page states additional or overriding rules.</p>
+                                <p>BCE Esports reserves the right to modify these rules at any time. Registered teams will be notified of any material changes via email or the tournament page, at least <strong>48 hours</strong> before the affected matches begin.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Registration Windows</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Each tournament has a fixed registration window. Registrations submitted <strong>after the closing date/time</strong> will not be accepted, even if slots remain. Times are always in <strong>Indian Standard Time (IST)</strong>.</p>
+                                <p>If more registrations are received than available slots, teams will be added to a waitlist on a first-come, first-served basis. Waitlisted teams may be promoted if confirmed teams withdraw.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Communication Channel</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>All official tournament communication will be sent to the <strong>captain's registered email</strong>. It is the captain's responsibility to:</p>
+                                <ul>
+                                    <li>Monitor the registered email regularly (including spam folder).</li>
+                                    <li>Join the official BCE Esports Discord server for real-time updates.</li>
+                                    <li>Relay important information to their teammates.</li>
+                                </ul>
+                                <div class="callout warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div>Missing a match because you didn't check your email or Discord is <strong>not grounds for appeal</strong>. It is the captain's responsibility to stay updated.</div>
+                                </div>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 2 -->
+                    <section id="eligibility" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">02</div>
+                            <h2 class="rules-section-title">Eligibility</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Student Status Requirement</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Eligibility depends on the tournament's category:</p>
+                                <ul>
+                                    <li><strong>Intra-College:</strong> All players must be currently enrolled students at Bakhtiyarpur College of Engineering (BCE) with a valid ID card.</li>
+                                    <li><strong>Inter-College:</strong> Players must be enrolled at a recognised college listed in the tournament's eligible institutions list.</li>
+                                    <li><strong>Open:</strong> Any player can participate, subject to game-specific age ratings and rules.</li>
+                                </ul>
+                                <div class="callout info">
+                                    <span class="callout-icon">ℹ️</span>
+                                    <div>If you have recently graduated but are within 6 months of your last exam, you may still be eligible. Contact <strong>esports@bcebakhtiyarpur.ac.in</strong> for individual verification.</div>
+                                </div>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Email Verification (College Email)</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>For <strong>Intra-College</strong> tournaments, the captain must register using a valid <code>@bcebakhtiyarpur.ac.in</code> email address. This is to prevent external players from joining college-only events.</p>
+                                <p>Inter-college and open tournaments do not require this verification, though additional documentation may be requested for prize distribution.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Age & Account Requirements</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <ul>
+                                    <li>Players must be at least <strong>16 years old</strong> at the time of registration.</li>
+                                    <li>Players must own their in-game accounts. Account sharing, purchase, or transfer is prohibited.</li>
+                                    <li>In-game account names must be appropriate and non-offensive. Offensive names will result in disqualification.</li>
+                                </ul>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 3 -->
+                    <section id="team-composition" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">03</div>
+                            <h2 class="rules-section-title">Team Composition</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Roster Size & Substitutes</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Each tournament page specifies the required team size. You must submit <strong>exactly the required number of main players</strong>. For example, in BGMI squad tournaments this is 4 main players.</p>
+                                <p>Some tournaments allow <strong>1 optional substitute</strong>. Substitutes must meet the same eligibility criteria as main players.</p>
+                                <div class="callout warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div>Registrations with incorrect roster sizes (too many or too few) will be <strong>rejected during verification</strong>.</div>
+                                </div>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">One Player, One Team Per Tournament</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>A player may register for multiple tournaments across different games, but within a single tournament, a player may only be on <strong>one team</strong>.</p>
+                                <p>Any player appearing on two rosters in the same tournament will have all their registrations flagged for review, and both teams may face disqualification.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Roster Changes After Registration</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Roster changes may be requested via email before the <strong>registration closing date</strong>. After that date, roster changes are not permitted except in exceptional cases (medical emergencies, family emergencies) approved by the organisers.</p>
+                                <p>Substitutes may replace main players between matches but <strong>not mid-match</strong>, unless approved by a referee.</p>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 4 -->
+                    <section id="match-rules" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">04</div>
+                            <h2 class="rules-section-title">Match Rules</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Check-In & Punctuality</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Teams must join the match lobby <strong>at least 10 minutes before</strong> the scheduled start time. Late teams will face penalties:</p>
+                                <ul>
+                                    <li><strong>5+ minutes late:</strong> Warning issued.</li>
+                                    <li><strong>10+ minutes late:</strong> Walkover (W.O.) awarded to the opposing team.</li>
+                                    <li><strong>15+ minutes late:</strong> Immediate disqualification from the tournament.</li>
+                                </ul>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Map Pools & Server Rules</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Map pools, server regions, and pick/ban procedures are defined per tournament on the tournament page. For BGMI/Free Fire/CODM, standard tournament maps are used. For Valorant, the map veto is conducted in the lobby before the match.</p>
+                                <p>Servers are hosted in the India/South Asia region. If a player has persistent lag issues, they should report this to a referee <strong>before</strong> the match begins.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Device & Platform Requirements</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <ul>
+                                    <li><strong>Mobile games (BGMI, FF, CODM):</strong> Mobile phones or tablets only. Emulators are strictly prohibited.</li>
+                                    <li><strong>Valorant:</strong> PC only, with stable internet connection (minimum 10 Mbps recommended).</li>
+                                    <li><strong>Chess:</strong> Played on the designated online platform; link shared before the tournament.</li>
+                                </ul>
+                                <div class="callout warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div>Using an emulator in a mobile-game tournament is an <strong>instant disqualification</strong> offence — no exceptions.</div>
+                                </div>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 5 -->
+                    <section id="conduct" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">05</div>
+                            <h2 class="rules-section-title">Code of Conduct</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Respect & Sportsmanship</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>All players, teams, and spectators must treat others with respect. The following are strictly prohibited:</p>
+                                <ul>
+                                    <li>Abusive, racist, sexist, or discriminatory language in any game chat, Discord, or social media.</li>
+                                    <li>Harassment, bullying, or targeted mockery of other players.</li>
+                                    <li>Threats of violence, doxxing, or sharing another player's personal information.</li>
+                                    <li>Deliberately provocative behaviour (trolling) intended to upset others.</li>
+                                </ul>
+                                <p>Penalties range from a formal warning to immediate disqualification, at the organiser's discretion.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Anti-Cheating Policy</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Any form of cheating is an immediate disqualification offence. This includes, but is not limited to:</p>
+                                <ul>
+                                    <li>Use of hacks, aim-bots, wall-hacks, or modified game files.</li>
+                                    <li>Team identification to gain unfair advantage (teaming in solo modes).</li>
+                                    <li>Deliberate use of game glitches or exploits.</li>
+                                    <li>Third-party software or scripts that provide an unfair advantage.</li>
+                                    <li>Account sharing or playing under a false identity.</li>
+                                </ul>
+                                <div class="callout warning">
+                                    <span class="callout-icon">⚠️</span>
+                                    <div>Cheating results in <strong>permanent ban from all BCE Esports tournaments</strong> and forfeiture of any prize money won during that tournament.</div>
+                                </div>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Streaming & Broadcasting Rights</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>BCE Esports retains the exclusive right to broadcast and stream all tournament matches. Players and teams:</p>
+                                <ul>
+                                    <li>May stream their own POV with a <strong>minimum 2-minute delay</strong>, unless the tournament is flagged as "no personal streams".</li>
+                                    <li>May not monetise their personal streams during BCE Esports tournaments without prior written permission.</li>
+                                    <li>Must not share streams to reveal positions of other teams mid-match.</li>
+                                </ul>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 6 -->
+                    <section id="payment" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">06</div>
+                            <h2 class="rules-section-title">Payment & Refunds</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Entry Fees & Payment Method</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Entry fees are listed on each tournament page. Free tournaments require no payment. For paid tournaments:</p>
+                                <ul>
+                                    <li>Pay the exact amount to the UPI ID shown on the registration page.</li>
+                                    <li>Take a screenshot of the successful transaction showing the UTR number.</li>
+                                    <li>Upload the screenshot when registering.</li>
+                                </ul>
+                                <p>Registrations with missing or invalid payment proof will remain <strong>pending</strong> and may be rejected after the registration window closes.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Refund Policy</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Refunds are issued in the following cases:</p>
+                                <ul>
+                                    <li><strong>Tournament cancelled by organisers:</strong> 100% refund.</li>
+                                    <li><strong>Your registration rejected before tournament start:</strong> 100% refund.</li>
+                                    <li><strong>You withdraw 7+ days before start:</strong> 100% refund.</li>
+                                    <li><strong>You withdraw 3–7 days before start:</strong> 50% refund.</li>
+                                    <li><strong>You withdraw fewer than 3 days before start:</strong> No refund.</li>
+                                </ul>
+                                <p>Refunds are processed to the original payment method within 7–10 business days.</p>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 7 -->
+                    <section id="disqualification" style="margin-bottom: 60px;">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">07</div>
+                            <h2 class="rules-section-title">Disqualification & Penalties</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Immediate Disqualification Offences</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>The following offences result in <strong>immediate disqualification</strong>, without warning:</p>
+                                <ul>
+                                    <li>Any form of cheating (hacks, exploits, teaming).</li>
+                                    <li>Use of emulators in mobile-game tournaments.</li>
+                                    <li>Falsifying eligibility documents or identity.</li>
+                                    <li>Registering multiple times with different emails/phones.</li>
+                                    <li>Threatening or assaulting another player or organiser.</li>
+                                </ul>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Progressive Penalties</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>For lesser offences, penalties escalate progressively:</p>
+                                <ol>
+                                    <li><strong>First offence:</strong> Formal warning, recorded on the team's tournament file.</li>
+                                    <li><strong>Second offence:</strong> Point deduction (typically 5–10 points).</li>
+                                    <li><strong>Third offence:</strong> Match forfeiture or tournament disqualification.</li>
+                                </ol>
+                                <p>Serious offences may skip levels at the organiser's discretion.</p>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 8 -->
+                    <section id="disputes">
+                        <div class="rules-section-header">
+                            <div class="rules-section-number">08</div>
+                            <h2 class="rules-section-title">Disputes & Appeals</h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">How to File a Dispute</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>If you believe a match result, disqualification, or other decision was unfair, you must:</p>
+                                <ol>
+                                    <li>File your dispute <strong>within 24 hours</strong> of the incident.</li>
+                                    <li>Email <strong>esports@bcebakhtiyarpur.ac.in</strong> with subject "Dispute — [Tournament Name] — [Match ID]".</li>
+                                    <li>Include all evidence: screenshots, video clips, timestamps, and a clear description of what happened.</li>
+                                </ol>
+                                <p>Disputes filed after the 24-hour window will not be considered, unless exceptional circumstances apply.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Appeal Process & Final Decision</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>All disputes are reviewed by the tournament organisers within 48 hours. If the dispute concerns an ongoing match, the match may be paused while evidence is reviewed.</p>
+                                <p>The decision of the organisers is <strong>final and binding</strong>. Persistent filing of frivolous disputes may result in penalties against the filing team.</p>
+                                <div class="callout info">
+                                    <span class="callout-icon">ℹ️</span>
+                                    <div>For allegations of cheating, evidence must include <strong>video footage</strong>. Screenshots alone are not sufficient.</div>
+                                </div>
+                            </div></div>
+                        </div>
+                    </section>
+
+                    <!-- FAQ -->
+                    <div class="faq-wrap">
+                        <div class="faq-header">
+                            <span class="faq-label">Frequently Asked</span>
+                            <h2 class="faq-title">Common <span class="accent">Questions</span></h2>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Who can participate in BCE Esports tournaments?</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>This depends on the tournament. Intra-College tournaments are open only to currently enrolled BCE students. Inter-college tournaments are open to students of listed colleges. Open tournaments accept any player who meets the age requirement.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Is there an entry fee?</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Some tournaments are free; others have a small entry fee (usually ₹100–₹200 per team). The entry fee is always listed clearly on the tournament page and in the registration form.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Can I play for multiple teams in different tournaments?</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Yes. You can be on different teams for different tournaments, and even for different games in the same season. However, within one single tournament, you may only be on <strong>one team</strong>.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">How do I check my registration status?</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Go to the <a href="registration-status.html" style="color: var(--red); text-decoration: underline;">Registration Status page</a> and enter your Registration ID and captain email. You'll see your current status (Pending / Approved / Rejected / Waitlist) plus payment verification progress.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">What happens if my payment is rejected?</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>If your payment screenshot is invalid (blurry, wrong amount, unclear UTR), an admin will reject it and email you the reason. You can then resubmit valid proof by emailing <strong>esports@bcebakhtiyarpur.ac.in</strong> within 24 hours of rejection.</p>
+                            </div></div>
+                        </div>
+                        <div class="accordion">
+                            <button class="accordion-header">
+                                <span class="accordion-title">Can I change my roster after registration?</span>
+                                <span class="accordion-icon"><svg fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></span>
+                            </button>
+                            <div class="accordion-body"><div class="accordion-content">
+                                <p>Yes, but only before the registration closing date. Roster changes must be requested via email and confirmed by an admin. After the registration closes, changes are only allowed in exceptional circumstances (medical emergency, etc.).</p>
+                            </div></div>
+                        </div>
                     </div>
-                </div>
-                <a href="tournament.html" class="btn btn-outline btn-sm" id="viewTournamentBtn">View Tournament →</a>
-            </div>
 
-            <div id="podium" class="podium" style="display:none;"></div>
+                    <div class="contact-cta">
+                        <h3 class="contact-cta-title">Still Have <span class="accent">Questions?</span></h3>
+                        <p class="contact-cta-desc">Our team is here to help. If anything in these rules is unclear, or you have a situation that isn't covered, reach out to us directly.</p>
+                        <div class="contact-cta-actions">
+                            <a href="index.html#community" class="btn btn-primary">Contact Us</a>
+                            <a href="tournaments.html" class="btn btn-outline">Browse Tournaments</a>
+                        </div>
+                    </div>
 
-            <div id="standingsSection" style="display:none;">
-                <h2 class="standings-section-title">Full Standings</h2>
-                <div class="standings-wrap">
-                    <table class="standings-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Team</th>
-                                <th class="num">MP</th>
-                                <th class="num">W</th>
-                                <th class="num">L</th>
-                                <th class="num">Kills</th>
-                                <th class="num">Points</th>
-                            </tr>
-                        </thead>
-                        <tbody id="standingsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="stateContainer"></div>
-
-            <div class="legend-wrap" id="legendWrap" style="display:none;">
-                <h3 class="legend-title">How Points Are Calculated</h3>
-                <p class="legend-desc">Points are earned per match based on final placement and total eliminations.</p>
-                <div class="legend-grid">
-                    <div class="legend-item"><div class="legend-item-label">Placement Points</div><div class="legend-item-value">1st → <span class="accent">10 pts</span> · 2nd → <span class="accent">6 pts</span> · 3rd → <span class="accent">5 pts</span> · 4th → <span class="accent">4 pts</span> · 5th → <span class="accent">3 pts</span></div></div>
-                    <div class="legend-item"><div class="legend-item-label">Kill Points</div><div class="legend-item-value"><strong>+1 point</strong> per elimination, added to your placement points.</div></div>
-                    <div class="legend-item"><div class="legend-item-label">Total Score</div><div class="legend-item-value"><strong>Total Points</strong> = Placement + Kills across all matches played.</div></div>
-                    <div class="legend-item"><div class="legend-item-label">Tiebreaker</div><div class="legend-item-value">In case of equal points, the team with <strong>more wins</strong> ranks higher.</div></div>
                 </div>
             </div>
         </div>
@@ -223,16 +591,16 @@
                         <a href="about.html" class="footer-link">About Us</a>
                         <a href="tournaments.html" class="footer-link">Tournaments</a>
                         <a href="teams.html" class="footer-link">Teams</a>
-                        <a href="leaderboard.html" class="footer-link">Leaderboard</a>
+                        <a href="rules.html" class="footer-link">Rules</a>
                     </div>
                 </div>
                 <div>
                     <h4 class="footer-heading">Games</h4>
                     <div class="footer-links">
-                        <a href="tournaments.html" class="footer-link">Free Fire</a>
-                        <a href="tournaments.html" class="footer-link">BGMI</a>
-                        <a href="tournaments.html" class="footer-link">Valorant</a>
-                        <a href="tournaments.html" class="footer-link">COD Mobile</a>
+                        <a href="index.html#games" class="footer-link">Free Fire</a>
+                        <a href="index.html#games" class="footer-link">BGMI</a>
+                        <a href="index.html#games" class="footer-link">Valorant</a>
+                        <a href="index.html#games" class="footer-link">COD Mobile</a>
                     </div>
                 </div>
                 <div>
@@ -241,13 +609,13 @@
                         <a href="index.html#community" class="footer-link">Discord</a>
                         <a href="index.html#community" class="footer-link">Instagram</a>
                         <a href="index.html#community" class="footer-link">YouTube</a>
-                        <a href="news.html" class="footer-link">News</a>
+                        <a href="index.html#announcements" class="footer-link">News</a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
-                <p class="footer-note">Live Data · Backend Connected</p>
+                <p class="footer-note">Design Preview · Sample data</p>
             </div>
         </div>
     </footer>
@@ -256,197 +624,42 @@
     <script>
     (function () {
         'use strict';
-        const M = window.MAIN;
-        if (!M) { console.error('main.js not loaded'); return; }
-        const { fetchJSON, fetchJSONWithParams, escapeHTML, initials, safeGradient } = M;
 
-        let tournaments = [];
-        let activeTournamentId = '';
-        let standings = [];
-        let activeTournament = null;
-
-        const selectEl = document.getElementById('tournamentSelect');
-        const statusBadge = document.getElementById('statusBadge');
-        const infoBox = document.getElementById('tournamentInfo');
-        const podiumEl = document.getElementById('podium');
-        const standingsSection = document.getElementById('standingsSection');
-        const standingsBody = document.getElementById('standingsBody');
-        const stateContainer = document.getElementById('stateContainer');
-        const legendWrap = document.getElementById('legendWrap');
-
-        function formatPrize(p) {
-            const n = Number(p);
-            if (!n || isNaN(n) || n <= 0) return '—';
-            if (n >= 100000) return '₹' + (n / 100000).toFixed(1).replace(/\.0$/, '') + 'L';
-            if (n >= 1000) return '₹' + (n / 1000).toFixed(0) + 'K';
-            return '₹' + n;
-        }
-        function formatDates(start, end) {
-            if (!start && !end) return 'TBA';
-            const s = start ? new Date(start) : null;
-            const e = end ? new Date(end) : null;
-            const opt = { day: 'numeric', month: 'short', year: 'numeric' };
-            if (s && e && !isNaN(s.getTime()) && !isNaN(e.getTime())) return s.toLocaleDateString('en-IN', opt) + ' – ' + e.toLocaleDateString('en-IN', opt);
-            if (s && !isNaN(s.getTime())) return s.toLocaleDateString('en-IN', opt);
-            return 'TBA';
-        }
-        function statusLabel(s) { s = String(s || 'upcoming').toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); }
-
-        function mapTournament(row) {
-            return {
-                id: row.TournamentID || '',
-                name: row.Name || 'Untitled',
-                game: row.GameID || 'Game',
-                format: row.TeamFormat || (row.RosterSize ? row.RosterSize + 'v' + row.RosterSize : 'Squad'),
-                prize: formatPrize(row.PrizePool),
-                status: String(row.Status || 'upcoming').toLowerCase(),
-                dates: formatDates(row.TournamentStartAt, row.TournamentEndAt)
-            };
-        }
-        function mapStanding(row) {
-            return {
-                rank: Number(row.Rank) || 0,
-                teamId: row.TeamID || '',
-                team: row.TeamName || 'Unknown Team',
-                tag: row.TeamTag || '',
-                gradient: safeGradient(row.LogoGradient),
-                mp: Number(row.MatchesPlayed != null ? row.MatchesPlayed : (row.MP != null ? row.MP : 0)),
-                w: Number(row.Wins != null ? row.Wins : (row.W != null ? row.W : 0)),
-                l: Number(row.Losses != null ? row.Losses : (row.L != null ? row.L : 0)),
-                kills: Number(row.Kills != null ? row.Kills : 0),
-                points: Number(row.Points != null ? row.Points : 0)
-            };
-        }
-
-        async function loadTournaments() {
-            try {
-                const data = await fetchJSON('getTournaments');
-                const published = (data || []).filter(function (t) {
-                    const pub = t.IsPublished;
-                    return pub === undefined || pub === true || String(pub).toUpperCase() === 'TRUE';
-                });
-                tournaments = published.map(mapTournament);
-
-                if (!tournaments.length) {
-                    selectEl.innerHTML = '<option value="">No tournaments available</option>';
-                    showEmpty('No Tournaments Available', 'Tournaments will appear here once they are created.');
-                    return;
-                }
-
-                selectEl.innerHTML = tournaments.map(function (t) {
-                    return '<option value="' + escapeHTML(t.id) + '">' + escapeHTML(t.name) + ' (' + escapeHTML(t.game) + ') — ' + statusLabel(t.status) + '</option>';
-                }).join('');
-
-                const live = tournaments.find(function (t) { return t.status === 'live'; });
-                const upcoming = tournaments.find(function (t) { return t.status === 'upcoming'; });
-                activeTournamentId = (live || upcoming || tournaments[0]).id;
-                selectEl.value = activeTournamentId;
-
-                await loadStandings(activeTournamentId);
-            } catch (err) {
-                console.error('Tournaments load error:', err);
-                selectEl.innerHTML = '<option value="">Error loading</option>';
-                showError('Unable to load tournaments', err.message);
-            }
-        }
-
-        async function loadStandings(tournamentId) {
-            activeTournament = tournaments.find(function (t) { return t.id === tournamentId; });
-            if (!activeTournament) return;
-
-            infoBox.style.display = 'flex';
-            document.getElementById('infoName').textContent = activeTournament.name;
-            document.getElementById('infoGame').textContent = activeTournament.game;
-            document.getElementById('infoFormat').textContent = activeTournament.format;
-            document.getElementById('infoPrize').textContent = activeTournament.prize;
-            document.getElementById('viewTournamentBtn').href = 'tournament.html?tid=' + encodeURIComponent(activeTournament.id);
-
-            const s = activeTournament.status;
-            statusBadge.className = 'selector-status ' + (['live','upcoming','completed','cancelled'].indexOf(s) > -1 ? s : 'upcoming');
-            statusBadge.textContent = statusLabel(s);
-
-            stateContainer.innerHTML = '<div class="loading-state"><div class="state-icon">⏳</div><div class="state-title">Loading Standings...</div></div>';
-            podiumEl.style.display = 'none';
-            standingsSection.style.display = 'none';
-            legendWrap.style.display = 'none';
-
-            try {
-                const data = await fetchJSONWithParams('getStandings', { tournamentId: tournamentId });
-                standings = (data || []).map(mapStanding);
-                stateContainer.innerHTML = '';
-
-                if (!standings.length) {
-                    showEmpty('No Standings Yet', 'Standings will appear here once matches are played in this tournament.');
-                    return;
-                }
-
-                renderPodium();
-                renderStandings();
-                legendWrap.style.display = 'block';
-            } catch (err) {
-                console.error('Standings load error:', err);
-                showError('Unable to load standings', err.message);
-            }
-        }
-
-        function renderPodium() {
-            const byRank = {};
-            standings.forEach(function (s) { byRank[s.rank] = s; });
-            const order = [{ rank: 2, cls: 'second' }, { rank: 1, cls: 'first' }, { rank: 3, cls: 'third' }];
-            const available = order.filter(function (o) { return byRank[o.rank]; });
-            if (!available.length) return;
-
-            podiumEl.innerHTML = available.map(function (item) {
-                const rank = item.rank;
-                const cls = item.cls;
-                const t = byRank[rank];
-                const label = rank === 1 ? 'Champion' : rank === 2 ? 'Runner-up' : '3rd Place';
-                return '<div class="podium-card ' + cls + '">' +
-                    '<div class="podium-rank-badge">' + label + '</div>' +
-                    '<div class="podium-logo" style="--team-gradient: ' + t.gradient + ';">' + escapeHTML(initials(t.team)) + '</div>' +
-                    '<div class="podium-team-name">' + escapeHTML(t.team) + '</div>' +
-                    '<div class="podium-team-tag">' + escapeHTML(t.tag) + '</div>' +
-                    '<div class="podium-points">' + t.points + '</div>' +
-                    '<div class="podium-points-label">Points</div>' +
-                '</div>';
-            }).join('');
-            podiumEl.style.display = 'grid';
-        }
-
-        function renderStandings() {
-            standingsBody.innerHTML = standings.map(function (t) {
-                const rc = t.rank <= 3 ? 'top-' + t.rank : '';
-                return '<tr class="' + rc + '">' +
-                    '<td><div class="rank-cell"><span class="rank-badge ' + rc + '">' + t.rank + '</span></div></td>' +
-                    '<td><div class="rank-team">' +
-                        '<div class="team-mini-logo" style="--team-gradient: ' + t.gradient + ';">' + escapeHTML(initials(t.team)) + '</div>' +
-                        '<div class="rank-team-name">' + escapeHTML(t.team) + '<small>' + escapeHTML(t.tag) + '</small></div>' +
-                    '</div></td>' +
-                    '<td class="num">' + t.mp + '</td>' +
-                    '<td class="num">' + t.w + '</td>' +
-                    '<td class="num">' + t.l + '</td>' +
-                    '<td class="num">' + t.kills + '</td>' +
-                    '<td class="num points-cell">' + t.points + '</td>' +
-                '</tr>';
-            }).join('');
-            standingsSection.style.display = 'block';
-        }
-
-        function showEmpty(title, desc) {
-            stateContainer.innerHTML = '<div class="empty-state"><div class="state-icon">📊</div><div class="state-title">' + escapeHTML(title) + '</div><div class="state-desc">' + escapeHTML(desc) + '</div><a href="tournaments.html" class="btn btn-primary btn-sm" style="margin-top:16px;">Browse Tournaments</a></div>';
-        }
-
-        function showError(title, msg) {
-            stateContainer.innerHTML = '<div class="error-state"><div class="state-icon">⚠️</div><div class="state-title">' + escapeHTML(title) + '</div><div class="state-desc">' + escapeHTML(msg || 'Network error') + '</div><button class="btn btn-primary btn-sm" id="retryBtn" style="margin-top:16px;">Retry</button></div>';
-            const rb = document.getElementById('retryBtn');
-            if (rb) rb.addEventListener('click', loadTournaments);
-        }
-
-        selectEl.addEventListener('change', function (e) {
-            if (e.target.value) loadStandings(e.target.value);
+        // Accordion toggle
+        document.querySelectorAll('.accordion-header').forEach(function (header) {
+            header.addEventListener('click', function () {
+                var acc = header.closest('.accordion');
+                if (acc) acc.classList.toggle('open');
+            });
         });
 
-        document.addEventListener('DOMContentLoaded', loadTournaments);
+        // Sidebar scroll spy + smooth scroll
+        var sections = document.querySelectorAll('.rules-content > section[id]');
+        var sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        function updateActiveSidebar() {
+            var scrollPos = window.scrollY + 150;
+            var currentId = 'general';
+            sections.forEach(function (sec) {
+                if (sec.offsetTop <= scrollPos) currentId = sec.id;
+            });
+            sidebarLinks.forEach(function (link) {
+                link.classList.toggle('active', link.dataset.target === currentId);
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveSidebar, { passive: true });
+
+        sidebarLinks.forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                var target = document.getElementById(link.dataset.target);
+                if (target) {
+                    var top = target.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: top, behavior: 'smooth' });
+                }
+            });
+        });
     })();
     </script>
 </body>
