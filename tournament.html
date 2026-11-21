@@ -14,8 +14,43 @@
 
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/tournament.css">
+
+    <!-- ===== Banner Hero Styles ===== -->
+    <style>
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(225,6,0,.35), rgba(0,0,0,.85));
+            box-shadow: 0 12px 40px rgba(0,0,0,.55);
+        }
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(10,10,10,.92) 100%);
+        }
+        @media (max-width: 640px) {
+            .hero-banner { height: 190px; border-radius: 12px; margin-bottom: 24px; }
+        }
+    </style>
+    <!-- ===== End Banner Styles ===== -->
 </head>
 <body>
+
+    <!-- Audio player (referenced by JS on register click) -->
+    <audio id="registerAudio" src="assets/audio/register-song.mp3" preload="none"></audio>
 
     <div class="preview-notice" id="loadingNotice">
         ⏳ Loading tournament data from server...
@@ -53,6 +88,12 @@
                 <a href="tournaments.html">Tournaments</a> <span class="sep">/</span>
                 <span class="current" id="t-breadcrumb-name">Loading...</span>
             </div>
+
+            <!-- ===== Banner Image (auto-shows if BannerURL exists) ===== -->
+            <div class="hero-banner" id="t-banner-wrap" style="display:none;">
+                <img id="t-banner-img" alt="Tournament Banner">
+            </div>
+            <!-- ===== End Banner ===== -->
 
             <div class="hero-grid">
                 <div>
