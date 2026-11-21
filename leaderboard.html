@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <style>
         :root { --gold:#ffd700; --silver:#c0c0c0; --bronze:#cd7f32; }
+        * { box-sizing: border-box; }
         .preview-notice { background: linear-gradient(90deg, #4a0a0a, #2a0808); border-bottom: 1px solid rgba(225,6,0,0.3); padding: 10px 16px; text-align: center; font-size: 13px; color: #ffb3b3; position: relative; z-index: 100; }
         .preview-notice strong { color: #fff; font-weight: 700; }
 
@@ -24,111 +25,178 @@
         .page-hero-title .accent { color: var(--red); text-shadow: 0 0 40px var(--red-glow); }
         .page-hero-desc { color: var(--text-secondary); font-size: 17px; max-width: 600px; margin: 0 auto; }
 
-        .selector-bar { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 24px 0; position: sticky; top: 72px; z-index: 50; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-        .selector-inner { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; }
-        .selector-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px; }
-        .selector-label svg { width: 16px; height: 16px; color: var(--red); }
-        .selector-select { font-size: 15px; font-weight: 600; background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: var(--radius-sm); padding: 12px 40px 12px 16px; color: #fff; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; transition: border-color var(--transition); width: 100%; }
+        /* ============ SELECTOR BAR ============ */
+        .selector-bar { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 20px 0; position: sticky; top: 72px; z-index: 50; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .selector-inner { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+        .selector-select-wrap { position: relative; }
+        .selector-label { display: block; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+        .selector-select { font-size: 15px; font-weight: 600; background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: var(--radius-sm); padding: 12px 44px 12px 16px; color: #fff; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; transition: border-color var(--transition); width: 100%; font-family: var(--font-body); }
         .selector-select:focus { outline: none; border-color: var(--red); }
-        .selector-status { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 12px; border-radius: 4px; }
-        .selector-status.live { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
+        .selector-status { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 14px; border-radius: 6px; align-self: end; margin-bottom: 1px; white-space: nowrap; }
+        .selector-status.live { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); animation: pulseGlow 1.8s infinite; }
         .selector-status.upcoming { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); }
         .selector-status.completed { background: rgba(107,107,107,0.2); color: var(--text-muted); border: 1px solid var(--border-bright); }
         .selector-status.cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+        .selector-status.loading { background: rgba(107,107,107,0.2); color: var(--text-muted); border: 1px solid var(--border-bright); }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } }
 
-        .tournament-info { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 32px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
-        .tournament-info-left { display: flex; flex-direction: column; gap: 6px; }
-        .tournament-info-name { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 0.5px; }
-        .tournament-info-meta { display: flex; gap: 20px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; }
+        /* ============ TOURNAMENT INFO ============ */
+        .tournament-info { background: linear-gradient(135deg, rgba(225,6,0,0.06), var(--bg-card) 60%); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 28px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; position: relative; overflow: hidden; }
+        .tournament-info::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--red); }
+        .tournament-info-left { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+        .tournament-info-name { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 0.5px; line-height: 1.3; word-break: break-word; }
+        .tournament-info-meta { display: flex; gap: 20px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; align-items: center; }
         .tournament-info-meta span { display: inline-flex; align-items: center; gap: 6px; }
-        .tournament-info-meta strong { color: var(--red); font-family: var(--font-display); letter-spacing: 0.5px; }
+        .tournament-info-meta strong { color: var(--red); font-family: var(--font-display); letter-spacing: 0.5px; font-weight: 700; }
+        .tournament-info-meta .game-pill { font-family: var(--font-display); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; background: rgba(34,211,238,0.12); color: #67e8f9; border: 1px solid rgba(34,211,238,0.3); padding: 4px 10px; border-radius: 4px; font-weight: 700; }
 
+        /* ============ PODIUM ============ */
         .podium { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 48px; align-items: end; }
-        .podium-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px 20px 24px; text-align: center; position: relative; overflow: hidden; transition: all var(--transition); }
-        .podium-card:hover { transform: translateY(-4px); }
-        .podium-card.first { border-color: rgba(255,215,0,0.4); background: linear-gradient(180deg, rgba(255,215,0,0.08), var(--bg-card) 60%); padding-top: 44px; padding-bottom: 36px; }
-        .podium-card.second { border-color: rgba(192,192,192,0.3); }
-        .podium-card.third { border-color: rgba(205,127,50,0.3); }
-        .podium-rank-badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 900; font-size: 11px; letter-spacing: 2px; padding: 6px 18px; border-radius: 0 0 8px 8px; text-transform: uppercase; }
-        .podium-card.first .podium-rank-badge { background: linear-gradient(135deg, var(--gold), #b8860b); color: #000; }
+        .podium-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 44px 20px 28px; text-align: center; position: relative; overflow: hidden; transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
+        .podium-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .podium-card.first { border-color: rgba(255,215,0,0.5); background: linear-gradient(180deg, rgba(255,215,0,0.1), var(--bg-card) 55%); padding-top: 56px; padding-bottom: 40px; box-shadow: 0 0 40px rgba(255,215,0,0.08); }
+        .podium-card.first:hover { box-shadow: 0 20px 60px rgba(255,215,0,0.2); }
+        .podium-card.second { border-color: rgba(192,192,192,0.35); }
+        .podium-card.third { border-color: rgba(205,127,50,0.35); }
+        .podium-card.first::before { content: '👑'; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-size: 24px; filter: drop-shadow(0 4px 12px rgba(255,215,0,0.6)); animation: floatCrown 2.5s ease-in-out infinite; }
+        @keyframes floatCrown { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-4px); } }
+
+        .podium-rank-badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 900; font-size: 10px; letter-spacing: 2px; padding: 6px 18px; border-radius: 0 0 8px 8px; text-transform: uppercase; white-space: nowrap; }
+        .podium-card.first .podium-rank-badge { background: linear-gradient(135deg, var(--gold), #b8860b); color: #000; top: -1px; }
         .podium-card.second .podium-rank-badge { background: linear-gradient(135deg, var(--silver), #808080); color: #000; }
         .podium-card.third .podium-rank-badge { background: linear-gradient(135deg, var(--bronze), #8b4513); color: #fff; }
+
         .podium-logo { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 28px; color: #fff; margin: 0 auto 16px; background: var(--team-gradient, linear-gradient(135deg, #333, #111)); box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 3px solid var(--bg-card); letter-spacing: 1px; }
-        .podium-card.first .podium-logo { width: 104px; height: 104px; font-size: 34px; box-shadow: 0 0 0 3px var(--gold), 0 12px 32px rgba(255,215,0,0.3); }
+        .podium-card.first .podium-logo { width: 104px; height: 104px; font-size: 34px; box-shadow: 0 0 0 3px var(--gold), 0 12px 32px rgba(255,215,0,0.35); }
         .podium-card.second .podium-logo { box-shadow: 0 0 0 2px var(--silver), 0 8px 24px rgba(0,0,0,0.4); }
         .podium-card.third .podium-logo { box-shadow: 0 0 0 2px var(--bronze), 0 8px 24px rgba(0,0,0,0.4); }
-        .podium-team-name { font-family: var(--font-display); font-weight: 900; font-size: 16px; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .podium-card.first .podium-team-name { font-size: 18px; }
-        .podium-team-tag { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 16px; }
-        .podium-points { font-family: var(--font-display); font-weight: 900; font-size: 28px; color: var(--red); line-height: 1; margin-bottom: 4px; }
-        .podium-card.first .podium-points { font-size: 34px; color: var(--gold); }
-        .podium-points-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
 
-        .standings-section-title { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+        .podium-team-name { font-family: var(--font-display); font-weight: 900; font-size: 16px; letter-spacing: 0.5px; margin-bottom: 6px; line-height: 1.25; word-break: break-word; }
+        .podium-card.first .podium-team-name { font-size: 18px; }
+        .podium-team-tag { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 18px; }
+        .podium-points { font-family: var(--font-display); font-weight: 900; font-size: 28px; color: var(--red); line-height: 1; margin-bottom: 4px; }
+        .podium-card.first .podium-points { font-size: 36px; color: var(--gold); text-shadow: 0 2px 16px rgba(255,215,0,0.4); }
+        .podium-points-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+        .podium-substats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); }
+        .podium-substats strong { color: #fff; font-family: var(--font-display); font-weight: 700; }
+
+        /* ============ STANDINGS HEADER ============ */
+        .standings-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+        .standings-section-title { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 12px; }
         .standings-section-title::before { content: ''; width: 4px; height: 22px; background: var(--red); border-radius: 2px; }
-        .standings-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 40px; overflow-x: auto; }
-        .standings-table { width: 100%; border-collapse: collapse; }
+        .standings-search { position: relative; flex: 1; max-width: 320px; }
+        .standings-search input { width: 100%; font-size: 13px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px 10px 38px; color: #fff; font-family: var(--font-body); transition: border-color 0.2s; }
+        .standings-search input::placeholder { color: var(--text-muted); }
+        .standings-search input:focus { outline: none; border-color: var(--red); }
+        .standings-search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-muted); pointer-events: none; }
+
+        /* ============ TABLE ============ */
+        .standings-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 40px; }
+        .standings-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .standings-table { width: 100%; border-collapse: collapse; min-width: 640px; }
         .standings-table thead { background: var(--bg-secondary); }
         .standings-table th { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
         .standings-table th.num { text-align: center; }
-        .standings-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .standings-table th.points-col { color: var(--red); }
+        .standings-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
         .standings-table td.num { text-align: center; font-family: var(--font-display); font-weight: 700; }
-        .standings-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .standings-table tbody tr { transition: background 0.2s; }
+        .standings-table tbody tr:hover { background: rgba(255,255,255,0.03); }
         .standings-table tbody tr:last-child td { border-bottom: none; }
-        .standings-table tr.top-1 { background: linear-gradient(90deg, rgba(255,215,0,0.05), transparent 40%); }
-        .standings-table tr.top-2 { background: linear-gradient(90deg, rgba(192,192,192,0.04), transparent 40%); }
-        .standings-table tr.top-3 { background: linear-gradient(90deg, rgba(205,127,50,0.05), transparent 40%); }
+        .standings-table tr.top-1 { background: linear-gradient(90deg, rgba(255,215,0,0.06), transparent 50%); }
+        .standings-table tr.top-2 { background: linear-gradient(90deg, rgba(192,192,192,0.05), transparent 50%); }
+        .standings-table tr.top-3 { background: linear-gradient(90deg, rgba(205,127,50,0.06), transparent 50%); }
+        .standings-table tr.top-1:hover { background: linear-gradient(90deg, rgba(255,215,0,0.1), transparent 50%); }
+        .standings-table tr.highlight { background: rgba(225,6,0,0.08) !important; }
+
         .rank-cell { display: flex; align-items: center; gap: 12px; }
-        .rank-badge { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 12px; background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-bright); flex-shrink: 0; }
-        .rank-badge.top-1 { background: linear-gradient(135deg, var(--gold), #b8860b); color: #000; border-color: var(--gold); }
+        .rank-badge { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 13px; background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border-bright); flex-shrink: 0; }
+        .rank-badge.top-1 { background: linear-gradient(135deg, var(--gold), #b8860b); color: #000; border-color: var(--gold); box-shadow: 0 4px 12px rgba(255,215,0,0.25); }
         .rank-badge.top-2 { background: linear-gradient(135deg, var(--silver), #808080); color: #000; border-color: var(--silver); }
         .rank-badge.top-3 { background: linear-gradient(135deg, var(--bronze), #8b4513); color: #fff; border-color: var(--bronze); }
-        .rank-team { display: flex; align-items: center; gap: 10px; }
-        .team-mini-logo { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 11px; color: #fff; background: var(--team-gradient, linear-gradient(135deg, #333, #111)); flex-shrink: 0; letter-spacing: 0.5px; }
-        .rank-team-name { font-weight: 700; letter-spacing: 0.3px; }
-        .rank-team-name small { display: block; font-size: 10px; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; }
-        .points-cell { font-family: var(--font-display); font-weight: 900; color: var(--red); font-size: 16px; }
 
+        .rank-team { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .team-mini-logo { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 12px; color: #fff; background: var(--team-gradient, linear-gradient(135deg, #333, #111)); flex-shrink: 0; letter-spacing: 0.5px; border: 2px solid var(--bg-secondary); }
+        .rank-team-text { min-width: 0; }
+        .rank-team-name { font-weight: 700; letter-spacing: 0.3px; font-size: 14px; word-break: break-word; line-height: 1.25; }
+        .rank-team-tag { display: block; font-family: var(--font-display); font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; margin-top: 2px; }
+
+        .points-cell { font-family: var(--font-display); font-weight: 900; color: var(--red); font-size: 17px; }
+        .rank-cell-num { color: var(--text-muted); font-size: 12px; }
+
+        .winrate-bar-wrap { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .winrate-bar { width: 40px; height: 4px; background: var(--bg-secondary); border-radius: 2px; overflow: hidden; }
+        .winrate-bar-fill { height: 100%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 2px; }
+        .winrate-pct { font-size: 11px; color: var(--text-secondary); min-width: 32px; text-align: right; font-family: var(--font-display); font-weight: 700; }
+
+        /* ============ LEGEND ============ */
         .legend-wrap { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; }
         .legend-title { font-family: var(--font-display); font-weight: 900; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
         .legend-title::before { content: ''; width: 4px; height: 18px; background: var(--red); border-radius: 2px; }
         .legend-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
         .legend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
         .legend-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; }
-        .legend-item-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+        .legend-item-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
         .legend-item-value { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
         .legend-item-value strong { color: #fff; }
         .legend-item-value .accent { color: var(--red); font-weight: 700; }
 
+        /* ============ STATES ============ */
         .empty-state, .loading-state, .error-state { text-align: center; padding: 80px 20px; background: var(--bg-card); border: 1px dashed var(--border-bright); border-radius: var(--radius-lg); }
         .state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
         .state-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: 1px; margin-bottom: 8px; }
         .state-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
 
+        .no-results-row td { padding: 60px 20px !important; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+        /* ============ RESPONSIVE ============ */
         @media (max-width: 1024px) {
             .legend-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 768px) {
             .section { padding: 40px 0; }
             .page-hero { padding: 70px 20px 60px; }
+            .page-hero-desc { font-size: 15px; }
             .selector-inner { grid-template-columns: 1fr; gap: 10px; }
-            .selector-label { display: none; }
-            .selector-status { align-self: flex-start; }
-            .tournament-info { padding: 20px 16px; }
+            .selector-status { align-self: flex-start; margin-bottom: 0; }
+            .tournament-info { padding: 20px 20px 20px 24px; }
             .tournament-info-name { font-size: 16px; }
+            .tournament-info-meta { font-size: 12px; gap: 12px; }
+            .tournament-info-meta span { gap: 4px; }
+
             .podium { grid-template-columns: 1fr; gap: 12px; }
-            .podium-card.first { order: -1; padding-top: 44px; padding-bottom: 24px; }
+            .podium-card { padding: 44px 16px 20px; }
+            .podium-card.first { order: -1; padding-top: 52px; padding-bottom: 24px; }
             .podium-logo { width: 72px; height: 72px; font-size: 22px; }
-            .podium-card.first .podium-logo { width: 80px; height: 80px; font-size: 26px; }
-            .standings-table th, .standings-table td { padding: 12px 8px; font-size: 12px; }
-            .standings-table th:nth-child(5), .standings-table td:nth-child(5),
-            .standings-table th:nth-child(6), .standings-table td:nth-child(6) { display: none; }
-            .team-mini-logo { width: 26px; height: 26px; font-size: 9px; }
+            .podium-card.first .podium-logo { width: 84px; height: 84px; font-size: 28px; }
+            .podium-team-name { font-size: 15px; }
+            .podium-card.first .podium-team-name { font-size: 17px; }
+            .podium-points { font-size: 24px; }
+            .podium-card.first .podium-points { font-size: 30px; }
+            .podium-substats { gap: 10px; font-size: 10px; }
+
+            .standings-header { flex-direction: column; align-items: stretch; gap: 12px; }
+            .standings-search { max-width: 100%; }
+            .standings-section-title { font-size: 16px; }
+
+            .standings-table th, .standings-table td { padding: 12px 10px; font-size: 12px; }
+            .standings-table th { font-size: 9px; letter-spacing: 1px; }
+            .rank-badge { width: 28px; height: 28px; font-size: 11px; border-radius: 6px; }
+            .team-mini-logo { width: 28px; height: 28px; font-size: 10px; }
+            .rank-team-name { font-size: 13px; }
+            .rank-team-tag { font-size: 9px; }
+            .points-cell { font-size: 15px; }
+            .winrate-bar { width: 28px; }
+            .winrate-pct { font-size: 10px; min-width: 28px; }
+
             .legend-grid { grid-template-columns: 1fr; }
+            .legend-wrap { padding: 20px; }
         }
         @media (max-width: 480px) {
-            .rank-badge { width: 26px; height: 26px; font-size: 10px; }
-            .team-mini-logo { width: 22px; height: 22px; font-size: 8px; }
+            .tournament-info-meta { display: none; }
+            .standings-table { min-width: 560px; }
+            .standings-table th:nth-child(5), .standings-table td:nth-child(5),
+            .standings-table th:nth-child(6), .standings-table td:nth-child(6) { display: none; }
         }
     </style>
 </head>
@@ -148,14 +216,13 @@
 
     <div class="selector-bar">
         <div class="container selector-inner">
-            <div class="selector-label">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7-6.5-4.5-6.5 4.5 2-7L2 9h7z"/></svg>
-                Tournament
+            <div class="selector-select-wrap">
+                <label class="selector-label">Select Tournament</label>
+                <select class="selector-select" id="tournamentSelect">
+                    <option value="">Loading tournaments...</option>
+                </select>
             </div>
-            <select class="selector-select" id="tournamentSelect">
-                <option value="">Loading tournaments...</option>
-            </select>
-            <span class="selector-status upcoming" id="statusBadge">—</span>
+            <span class="selector-status loading" id="statusBadge">Loading</span>
         </div>
     </div>
 
@@ -165,9 +232,9 @@
                 <div class="tournament-info-left">
                     <div class="tournament-info-name" id="infoName">—</div>
                     <div class="tournament-info-meta">
-                        <span>Game: <strong id="infoGame">—</strong></span>
+                        <span class="game-pill" id="infoGame">Game</span>
                         <span>Format: <strong id="infoFormat">—</strong></span>
-                        <span>Prize Pool: <strong id="infoPrize">—</strong></span>
+                        <span>Prize: <strong id="infoPrize">—</strong></span>
                     </div>
                 </div>
                 <a href="tournament.html" class="btn btn-outline btn-sm" id="viewTournamentBtn">View Tournament →</a>
@@ -176,22 +243,31 @@
             <div id="podium" class="podium" style="display:none;"></div>
 
             <div id="standingsSection" style="display:none;">
-                <h2 class="standings-section-title">Full Standings</h2>
+                <div class="standings-header">
+                    <h2 class="standings-section-title">Full Standings</h2>
+                    <div class="standings-search">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <input type="text" id="standingsSearch" placeholder="Search team...">
+                    </div>
+                </div>
                 <div class="standings-wrap">
-                    <table class="standings-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Team</th>
-                                <th class="num">MP</th>
-                                <th class="num">W</th>
-                                <th class="num">L</th>
-                                <th class="num">Kills</th>
-                                <th class="num">Points</th>
-                            </tr>
-                        </thead>
-                        <tbody id="standingsBody"></tbody>
-                    </table>
+                    <div class="standings-scroll">
+                        <table class="standings-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:70px;">Rank</th>
+                                    <th>Team</th>
+                                    <th class="num" style="width:60px;">MP</th>
+                                    <th class="num" style="width:60px;">W</th>
+                                    <th class="num" style="width:60px;">L</th>
+                                    <th class="num" style="width:70px;">Kills</th>
+                                    <th class="num" style="width:90px;">Win %</th>
+                                    <th class="num points-col" style="width:80px;">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standingsBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -256,23 +332,49 @@
     <script>
     (function () {
         'use strict';
-        const M = window.MAIN;
-        if (!M) { console.error('main.js not loaded'); return; }
-        const { fetchJSON, fetchJSONWithParams, escapeHTML, initials, safeGradient } = M;
 
-        let tournaments = [];
-        let activeTournamentId = '';
-        let standings = [];
-        let activeTournament = null;
+        const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 
-        const selectEl = document.getElementById('tournamentSelect');
-        const statusBadge = document.getElementById('statusBadge');
-        const infoBox = document.getElementById('tournamentInfo');
-        const podiumEl = document.getElementById('podium');
-        const standingsSection = document.getElementById('standingsSection');
-        const standingsBody = document.getElementById('standingsBody');
-        const stateContainer = document.getElementById('stateContainer');
-        const legendWrap = document.getElementById('legendWrap');
+        /* ============ HELPERS ============ */
+        function escapeHTML(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function initials(name) {
+            const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) return '?';
+            if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        }
+        async function fetchAction(action, params) {
+            const qs = new URLSearchParams(Object.assign({ action: action }, params || {}));
+            const res = await fetch(API_URL + '?' + qs.toString(), { cache: 'no-store' });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            if (!json || json.success === false) throw new Error((json && json.message) || 'Failed');
+            return json.data;
+        }
+
+        // Deterministic gradient from team name (so it stays consistent across page loads)
+        const GRADIENTS = [
+            'linear-gradient(135deg, #e10600, #7a0400)',
+            'linear-gradient(135deg, #ff6b35, #c1121f)',
+            'linear-gradient(135deg, #7209b7, #3a0ca3)',
+            'linear-gradient(135deg, #06d6a0, #0a8754)',
+            'linear-gradient(135deg, #118ab2, #073b4c)',
+            'linear-gradient(135deg, #f72585, #7209b7)',
+            'linear-gradient(135deg, #ffb703, #fb8500)',
+            'linear-gradient(135deg, #06d6a0, #118ab2)',
+            'linear-gradient(135deg, #ef476f, #c1121f)',
+            'linear-gradient(135deg, #264653, #2a9d8f)'
+        ];
+        function hashGradient(name) {
+            let h = 0;
+            const s = String(name || '');
+            for (let i = 0; i < s.length; i++) h = ((h << 5) - h) + s.charCodeAt(i);
+            return GRADIENTS[Math.abs(h) % GRADIENTS.length];
+        }
 
         function formatPrize(p) {
             const n = Number(p);
@@ -292,49 +394,118 @@
         }
         function statusLabel(s) { s = String(s || 'upcoming').toLowerCase(); return s.charAt(0).toUpperCase() + s.slice(1); }
 
+        /* ============ STATE ============ */
+        let tournaments = [];
+        let gamesMap = {};
+        let teamsMap = {}; // TeamID -> { name, tag }
+        let activeTournamentId = '';
+        let standings = [];
+        let activeTournament = null;
+        let searchFilter = '';
+
+        /* ============ DOM ============ */
+        const selectEl = document.getElementById('tournamentSelect');
+        const statusBadge = document.getElementById('statusBadge');
+        const infoBox = document.getElementById('tournamentInfo');
+        const podiumEl = document.getElementById('podium');
+        const standingsSection = document.getElementById('standingsSection');
+        const standingsBody = document.getElementById('standingsBody');
+        const standingsSearch = document.getElementById('standingsSearch');
+        const stateContainer = document.getElementById('stateContainer');
+        const legendWrap = document.getElementById('legendWrap');
+
+        /* ============ MAP ============ */
         function mapTournament(row) {
+            const gameId = String(row.GameID || '').trim();
             return {
                 id: row.TournamentID || '',
-                name: row.Name || 'Untitled',
-                game: row.GameID || 'Game',
+                name: row.Name || 'Untitled Tournament',
+                gameId: gameId,
+                gameName: gamesMap[gameId] || gameId || 'Game',
                 format: row.TeamFormat || (row.RosterSize ? row.RosterSize + 'v' + row.RosterSize : 'Squad'),
                 prize: formatPrize(row.PrizePool),
+                prizeRaw: Number(row.PrizePool) || 0,
                 status: String(row.Status || 'upcoming').toLowerCase(),
                 dates: formatDates(row.TournamentStartAt, row.TournamentEndAt)
             };
         }
         function mapStanding(row) {
+            const tid = String(row.TeamID || '');
+            // Team name fallback chain: standings -> teams -> TeamID
+            const fallback = teamsMap[tid] || {};
+            const teamName = String(row.TeamName || '').trim() || fallback.name || tid || 'Unknown Team';
+            const teamTag = String(row.TeamTag || '').trim() || fallback.tag || '';
+
+            const mp = Number(row.MatchesPlayed != null ? row.MatchesPlayed : 0) || 0;
+            const w = Number(row.Wins != null ? row.Wins : 0) || 0;
+            const l = Math.max(0, mp - w);
+            const kills = Number(row.Kills != null ? row.Kills : 0) || 0;
+            const points = Number(row.Points != null ? row.Points : 0) || 0;
+            const winRate = mp > 0 ? Math.round((w / mp) * 100) : 0;
+
             return {
                 rank: Number(row.Rank) || 0,
-                teamId: row.TeamID || '',
-                team: row.TeamName || 'Unknown Team',
-                tag: row.TeamTag || '',
-                gradient: safeGradient(row.LogoGradient),
-                mp: Number(row.MatchesPlayed != null ? row.MatchesPlayed : (row.MP != null ? row.MP : 0)),
-                w: Number(row.Wins != null ? row.Wins : (row.W != null ? row.W : 0)),
-                l: Number(row.Losses != null ? row.Losses : (row.L != null ? row.L : 0)),
-                kills: Number(row.Kills != null ? row.Kills : 0),
-                points: Number(row.Points != null ? row.Points : 0)
+                teamId: tid,
+                team: teamName,
+                tag: teamTag,
+                gradient: hashGradient(teamName),
+                mp: mp,
+                w: w,
+                l: l,
+                kills: kills,
+                points: points,
+                winRate: winRate
             };
         }
 
-        async function loadTournaments() {
+        /* ============ LOAD ALL (parallel) ============ */
+        async function bootstrap() {
             try {
-                const data = await fetchJSON('getTournaments');
-                const published = (data || []).filter(function (t) {
+                const [tournsData, gamesData, teamsData] = await Promise.all([
+                    fetchAction('getTournaments').catch(function (e) { console.warn('tournaments:', e); return []; }),
+                    fetchAction('getGames').catch(function (e) { console.warn('games:', e); return []; }),
+                    fetchAction('getTeams').catch(function (e) { console.warn('teams:', e); return []; })
+                ]);
+
+                // Games map
+                (gamesData || []).forEach(function (g) {
+                    const id = String(g.GameID || '').trim();
+                    if (id) gamesMap[id] = g.Name || g.name || id;
+                });
+
+                // Teams map
+                (teamsData || []).forEach(function (row) {
+                    const id = String(row.TeamID || '').trim();
+                    if (id) {
+                        teamsMap[id] = {
+                            name: String(row.Name || row.TeamName || '').trim(),
+                            tag: String(row.Tag || row.TeamTag || '').trim()
+                        };
+                    }
+                });
+
+                // Filter published tournaments
+                const published = (tournsData || []).filter(function (t) {
                     const pub = t.IsPublished;
                     return pub === undefined || pub === true || String(pub).toUpperCase() === 'TRUE';
                 });
+
                 tournaments = published.map(mapTournament);
 
                 if (!tournaments.length) {
                     selectEl.innerHTML = '<option value="">No tournaments available</option>';
                     showEmpty('No Tournaments Available', 'Tournaments will appear here once they are created.');
+                    statusBadge.className = 'selector-status upcoming';
+                    statusBadge.textContent = 'None';
                     return;
                 }
 
+                // Sort: live first, then upcoming, then completed
+                const order = { live: 0, upcoming: 1, completed: 2, cancelled: 3 };
+                tournaments.sort(function (a, b) { return (order[a.status] || 9) - (order[b.status] || 9); });
+
                 selectEl.innerHTML = tournaments.map(function (t) {
-                    return '<option value="' + escapeHTML(t.id) + '">' + escapeHTML(t.name) + ' (' + escapeHTML(t.game) + ') — ' + statusLabel(t.status) + '</option>';
+                    return '<option value="' + escapeHTML(t.id) + '">' + escapeHTML(t.name) + ' · ' + escapeHTML(t.gameName) + ' — ' + statusLabel(t.status) + '</option>';
                 }).join('');
 
                 const live = tournaments.find(function (t) { return t.status === 'live'; });
@@ -344,19 +515,21 @@
 
                 await loadStandings(activeTournamentId);
             } catch (err) {
-                console.error('Tournaments load error:', err);
+                console.error('Bootstrap error:', err);
                 selectEl.innerHTML = '<option value="">Error loading</option>';
                 showError('Unable to load tournaments', err.message);
             }
         }
 
+        /* ============ LOAD STANDINGS ============ */
         async function loadStandings(tournamentId) {
             activeTournament = tournaments.find(function (t) { return t.id === tournamentId; });
             if (!activeTournament) return;
 
+            // Tournament info card
             infoBox.style.display = 'flex';
             document.getElementById('infoName').textContent = activeTournament.name;
-            document.getElementById('infoGame').textContent = activeTournament.game;
+            document.getElementById('infoGame').textContent = activeTournament.gameName;
             document.getElementById('infoFormat').textContent = activeTournament.format;
             document.getElementById('infoPrize').textContent = activeTournament.prize;
             document.getElementById('viewTournamentBtn').href = 'tournament.html?tid=' + encodeURIComponent(activeTournament.id);
@@ -365,13 +538,16 @@
             statusBadge.className = 'selector-status ' + (['live','upcoming','completed','cancelled'].indexOf(s) > -1 ? s : 'upcoming');
             statusBadge.textContent = statusLabel(s);
 
+            // Reset
             stateContainer.innerHTML = '<div class="loading-state"><div class="state-icon">⏳</div><div class="state-title">Loading Standings...</div></div>';
             podiumEl.style.display = 'none';
             standingsSection.style.display = 'none';
             legendWrap.style.display = 'none';
+            searchFilter = '';
+            if (standingsSearch) standingsSearch.value = '';
 
             try {
-                const data = await fetchJSONWithParams('getStandings', { tournamentId: tournamentId });
+                const data = await fetchAction('getStandings', { tournamentId: tournamentId });
                 standings = (data || []).map(mapStanding);
                 stateContainer.innerHTML = '';
 
@@ -379,6 +555,9 @@
                     showEmpty('No Standings Yet', 'Standings will appear here once matches are played in this tournament.');
                     return;
                 }
+
+                // Sort by rank
+                standings.sort(function (a, b) { return (a.rank || 999) - (b.rank || 999); });
 
                 renderPodium();
                 renderStandings();
@@ -389,64 +568,108 @@
             }
         }
 
+        /* ============ RENDER PODIUM ============ */
         function renderPodium() {
             const byRank = {};
             standings.forEach(function (s) { byRank[s.rank] = s; });
-            const order = [{ rank: 2, cls: 'second' }, { rank: 1, cls: 'first' }, { rank: 3, cls: 'third' }];
+
+            const order = [
+                { rank: 2, cls: 'second', label: 'Runner-up' },
+                { rank: 1, cls: 'first', label: 'Champion' },
+                { rank: 3, cls: 'third', label: '3rd Place' }
+            ];
             const available = order.filter(function (o) { return byRank[o.rank]; });
             if (!available.length) return;
 
             podiumEl.innerHTML = available.map(function (item) {
-                const rank = item.rank;
-                const cls = item.cls;
-                const t = byRank[rank];
-                const label = rank === 1 ? 'Champion' : rank === 2 ? 'Runner-up' : '3rd Place';
-                return '<div class="podium-card ' + cls + '">' +
-                    '<div class="podium-rank-badge">' + label + '</div>' +
+                const t = byRank[item.rank];
+                return '<div class="podium-card ' + item.cls + '">' +
+                    '<div class="podium-rank-badge">' + item.label + '</div>' +
                     '<div class="podium-logo" style="--team-gradient: ' + t.gradient + ';">' + escapeHTML(initials(t.team)) + '</div>' +
                     '<div class="podium-team-name">' + escapeHTML(t.team) + '</div>' +
-                    '<div class="podium-team-tag">' + escapeHTML(t.tag) + '</div>' +
+                    '<div class="podium-team-tag">' + (t.tag ? escapeHTML(t.tag) : '&nbsp;') + '</div>' +
                     '<div class="podium-points">' + t.points + '</div>' +
                     '<div class="podium-points-label">Points</div>' +
+                    '<div class="podium-substats">' +
+                        '<span><strong>' + t.w + '</strong> W</span>' +
+                        '<span><strong>' + t.kills + '</strong> Kills</span>' +
+                        '<span><strong>' + t.mp + '</strong> MP</span>' +
+                    '</div>' +
                 '</div>';
             }).join('');
             podiumEl.style.display = 'grid';
         }
 
+        /* ============ RENDER TABLE ============ */
         function renderStandings() {
-            standingsBody.innerHTML = standings.map(function (t) {
-                const rc = t.rank <= 3 ? 'top-' + t.rank : '';
-                return '<tr class="' + rc + '">' +
-                    '<td><div class="rank-cell"><span class="rank-badge ' + rc + '">' + t.rank + '</span></div></td>' +
-                    '<td><div class="rank-team">' +
-                        '<div class="team-mini-logo" style="--team-gradient: ' + t.gradient + ';">' + escapeHTML(initials(t.team)) + '</div>' +
-                        '<div class="rank-team-name">' + escapeHTML(t.team) + '<small>' + escapeHTML(t.tag) + '</small></div>' +
-                    '</div></td>' +
-                    '<td class="num">' + t.mp + '</td>' +
-                    '<td class="num">' + t.w + '</td>' +
-                    '<td class="num">' + t.l + '</td>' +
-                    '<td class="num">' + t.kills + '</td>' +
-                    '<td class="num points-cell">' + t.points + '</td>' +
-                '</tr>';
-            }).join('');
+            const term = searchFilter.toLowerCase().trim();
+            const filtered = term === ''
+                ? standings
+                : standings.filter(function (t) {
+                    return t.team.toLowerCase().indexOf(term) !== -1 ||
+                           (t.tag && t.tag.toLowerCase().indexOf(term) !== -1);
+                });
+
+            if (!filtered.length) {
+                standingsBody.innerHTML = '<tr class="no-results-row"><td colspan="8">No teams match "' + escapeHTML(searchFilter) + '"</td></tr>';
+            } else {
+                standingsBody.innerHTML = filtered.map(function (t) {
+                    const rc = t.rank <= 3 ? 'top-' + t.rank : '';
+                    return '<tr class="' + rc + '">' +
+                        '<td><div class="rank-cell"><span class="rank-badge ' + rc + '">#' + t.rank + '</span></div></td>' +
+                        '<td><div class="rank-team">' +
+                            '<div class="team-mini-logo" style="--team-gradient: ' + t.gradient + ';">' + escapeHTML(initials(t.team)) + '</div>' +
+                            '<div class="rank-team-text">' +
+                                '<div class="rank-team-name">' + escapeHTML(t.team) + '</div>' +
+                                (t.tag ? '<span class="rank-team-tag">' + escapeHTML(t.tag) + '</span>' : '') +
+                            '</div>' +
+                        '</div></td>' +
+                        '<td class="num">' + t.mp + '</td>' +
+                        '<td class="num">' + t.w + '</td>' +
+                        '<td class="num">' + t.l + '</td>' +
+                        '<td class="num">' + t.kills + '</td>' +
+                        '<td class="num"><div class="winrate-bar-wrap"><div class="winrate-bar"><div class="winrate-bar-fill" style="width:' + t.winRate + '%"></div></div><span class="winrate-pct">' + t.winRate + '%</span></div></td>' +
+                        '<td class="num points-cell">' + t.points + '</td>' +
+                    '</tr>';
+                }).join('');
+            }
             standingsSection.style.display = 'block';
         }
 
+        /* ============ STATES ============ */
         function showEmpty(title, desc) {
+            podiumEl.style.display = 'none';
+            standingsSection.style.display = 'none';
+            legendWrap.style.display = 'none';
             stateContainer.innerHTML = '<div class="empty-state"><div class="state-icon">📊</div><div class="state-title">' + escapeHTML(title) + '</div><div class="state-desc">' + escapeHTML(desc) + '</div><a href="tournaments.html" class="btn btn-primary btn-sm" style="margin-top:16px;">Browse Tournaments</a></div>';
         }
-
         function showError(title, msg) {
+            podiumEl.style.display = 'none';
+            standingsSection.style.display = 'none';
+            legendWrap.style.display = 'none';
             stateContainer.innerHTML = '<div class="error-state"><div class="state-icon">⚠️</div><div class="state-title">' + escapeHTML(title) + '</div><div class="state-desc">' + escapeHTML(msg || 'Network error') + '</div><button class="btn btn-primary btn-sm" id="retryBtn" style="margin-top:16px;">Retry</button></div>';
             const rb = document.getElementById('retryBtn');
-            if (rb) rb.addEventListener('click', loadTournaments);
+            if (rb) rb.addEventListener('click', bootstrap);
         }
 
+        /* ============ EVENTS ============ */
         selectEl.addEventListener('change', function (e) {
             if (e.target.value) loadStandings(e.target.value);
         });
 
-        document.addEventListener('DOMContentLoaded', loadTournaments);
+        if (standingsSearch) {
+            standingsSearch.addEventListener('input', function (e) {
+                searchFilter = e.target.value;
+                if (standings.length) renderStandings();
+            });
+        }
+
+        /* ============ INIT ============ */
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bootstrap);
+        } else {
+            bootstrap();
+        }
     })();
     </script>
 </body>
