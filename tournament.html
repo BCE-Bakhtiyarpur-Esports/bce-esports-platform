@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/tournament.css">
 
-    <!-- ===== Banner Hero Styles ===== -->
+    <!-- ===== Banner Hero + Roster Modal Styles ===== -->
     <style>
         .hero-banner {
             position: relative;
@@ -28,12 +28,7 @@
             background: linear-gradient(135deg, rgba(225,6,0,.35), rgba(0,0,0,.85));
             box-shadow: 0 12px 40px rgba(0,0,0,.55);
         }
-        .hero-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .hero-banner::after {
             content: '';
             position: absolute;
@@ -44,12 +39,284 @@
         @media (max-width: 640px) {
             .hero-banner { height: 190px; border-radius: 12px; margin-bottom: 24px; }
         }
+
+        /* Make team cards clickable */
+        .team-card { cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
+        .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+        .team-card:active { transform: translateY(-1px); }
+
+        /* ============ ROSTER MODAL ============ */
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-backdrop.show { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .roster-modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-bright);
+            border-radius: var(--radius-lg);
+            max-width: 660px; width: 100%;
+            max-height: 92vh; overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .roster-modal::-webkit-scrollbar { width: 8px; }
+        .roster-modal::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid var(--border-bright);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; transition: all 0.2s;
+            z-index: 3; cursor: pointer;
+        }
+        .modal-close:hover { background: var(--red); border-color: var(--red); transform: rotate(90deg); }
+        .modal-close svg { width: 18px; height: 18px; }
+
+        .modal-team-hero {
+            padding: 40px 28px 28px;
+            text-align: center;
+            background: radial-gradient(ellipse at top, rgba(225,6,0,0.25), transparent 70%), var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: relative; overflow: hidden;
+        }
+        .modal-team-hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 1px, transparent 1px 20px);
+            pointer-events: none;
+        }
+        .modal-team-logo {
+            width: 88px; height: 88px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 30px;
+            color: #fff;
+            background: linear-gradient(135deg, #e10600, #7a0400);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+            margin: 0 auto 16px;
+            border: 4px solid var(--bg-card);
+            position: relative; z-index: 2;
+            letter-spacing: 1px;
+        }
+        .modal-team-name {
+            font-family: 'Orbitron', sans-serif; font-weight: 900;
+            font-size: clamp(20px, 4vw, 24px);
+            letter-spacing: 0.5px; margin-bottom: 8px;
+            text-transform: uppercase;
+            position: relative; z-index: 2;
+            word-break: break-word;
+            line-height: 1.25;
+        }
+        .modal-team-tag {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700;
+            letter-spacing: 2px; color: var(--red);
+            background: rgba(225,6,0,0.15);
+            padding: 5px 14px; border-radius: 4px;
+            position: relative; z-index: 2;
+        }
+        .modal-body { padding: 24px; }
+
+        .modal-stats {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 22px;
+        }
+        .modal-stat { text-align: center; }
+        .modal-stat-value {
+            font-family: 'Orbitron', sans-serif; font-weight: 900;
+            font-size: 20px; color: var(--red);
+            line-height: 1; margin-bottom: 6px;
+        }
+        .modal-stat-label {
+            font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .modal-section-title {
+            font-family: 'Orbitron', sans-serif; font-weight: 700;
+            font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--red); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px; justify-content: space-between;
+        }
+        .modal-section-title::before {
+            content: ''; width: 4px; height: 16px; background: var(--red);
+            border-radius: 2px; margin-right: -6px;
+        }
+        .modal-section-title > span:first-of-type { flex: 1; }
+        .section-count {
+            font-family: 'Orbitron', sans-serif; font-size: 11px;
+            background: rgba(225,6,0,0.15); color: var(--red);
+            padding: 2px 10px; border-radius: 10px; letter-spacing: 1px;
+        }
+
+        /* Player roster cards */
+        .roster-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .player-card {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex; gap: 14px; align-items: center;
+            transition: all 0.25s;
+            overflow: hidden;
+        }
+        .player-card::before {
+            content: ''; position: absolute;
+            left: 0; top: 0; bottom: 0; width: 3px;
+            background: linear-gradient(180deg, var(--red), transparent);
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .player-card:hover {
+            border-color: rgba(225,6,0,0.4);
+            background: linear-gradient(135deg, rgba(225,6,0,0.06), rgba(255,255,255,0.02));
+        }
+        .player-card:hover::before { opacity: 1; }
+        .player-card.captain {
+            border-color: rgba(245,158,11,0.35);
+            background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(255,255,255,0.01));
+        }
+        .player-card.captain::before { background: linear-gradient(180deg, #f59e0b, transparent); opacity: 1; }
+
+        .player-avatar {
+            flex-shrink: 0; position: relative;
+            width: 54px; height: 54px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 17px;
+            color: #fff;
+            background: linear-gradient(135deg, #8a0400, #3a0200);
+            border: 2px solid rgba(255,255,255,0.08);
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .player-card.captain .player-avatar {
+            background: linear-gradient(135deg, #f59e0b, #7c2d12);
+            border-color: rgba(245,158,11,0.5);
+            box-shadow: 0 0 20px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .player-captain-crown {
+            position: absolute; top: -8px; right: -8px;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .player-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .player-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .player-ign {
+            font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 15px;
+            color: #fff; letter-spacing: 0.3px;
+            word-break: break-word; line-height: 1.2;
+        }
+        .player-role-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            padding: 2px 7px; border-radius: 3px;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .player-role-badge.captain {
+            background: rgba(245,158,11,0.2); color: #fbbf24;
+            border-color: rgba(245,158,11,0.35);
+        }
+        .player-realname { font-size: 12.5px; color: var(--text-secondary); line-height: 1.3; }
+        .player-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+        .player-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 10.5px; color: var(--text-muted);
+            padding: 3px 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 4px;
+            line-height: 1.2;
+            white-space: nowrap;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .player-tag.uid {
+            background: rgba(34,211,238,0.08);
+            border-color: rgba(34,211,238,0.2);
+            color: #67e8f9;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .player-status {
+            flex-shrink: 0; align-self: flex-start;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            padding: 5px 10px; border-radius: 5px;
+            margin-left: auto; white-space: nowrap;
+        }
+        .player-status.verified { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .player-status.pending { background: rgba(234,179,8,0.15); color: #fbbf24; border: 1px solid rgba(234,179,8,0.3); }
+        .player-status.rejected { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+        .no-roster {
+            background: var(--bg-secondary);
+            border: 1px dashed var(--border-bright);
+            border-radius: var(--radius-md);
+            padding: 28px 20px;
+            text-align: center;
+            font-size: 13px; color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .no-roster-icon { font-size: 30px; margin-bottom: 10px; opacity: 0.5; }
+
+        .modal-loading {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        .modal-loading-spinner {
+            width: 32px; height: 32px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--red);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .modal-team-hero { padding: 32px 20px 22px; }
+            .modal-team-logo { width: 72px; height: 72px; font-size: 24px; }
+            .modal-body { padding: 18px; }
+            .modal-stats { grid-template-columns: repeat(2, 1fr); }
+            .player-card { padding: 12px; gap: 10px; }
+            .player-avatar { width: 44px; height: 44px; font-size: 14px; border-radius: 10px; }
+            .player-ign { font-size: 13px; }
+            .player-status { font-size: 8px; padding: 3px 7px; }
+            .modal-close { top: 12px; right: 12px; width: 32px; height: 32px; }
+        }
     </style>
-    <!-- ===== End Banner Styles ===== -->
+    <!-- ===== End Styles ===== -->
 </head>
 <body>
 
-    <!-- Audio player (referenced by JS on register click) -->
     <audio id="registerAudio" src="assets/audio/register-song.mp3" preload="none"></audio>
 
     <div class="preview-notice" id="loadingNotice">
@@ -89,11 +356,9 @@
                 <span class="current" id="t-breadcrumb-name">Loading...</span>
             </div>
 
-            <!-- ===== Banner Image (auto-shows if BannerURL exists) ===== -->
             <div class="hero-banner" id="t-banner-wrap" style="display:none;">
                 <img id="t-banner-img" alt="Tournament Banner">
             </div>
-            <!-- ===== End Banner ===== -->
 
             <div class="hero-grid">
                 <div>
@@ -219,6 +484,38 @@
 
         </div>
     </section>
+
+    <!-- ============ ROSTER MODAL ============ -->
+    <div class="modal-backdrop" id="rosterModalBackdrop">
+        <div class="roster-modal">
+            <button class="modal-close" id="rosterModalClose" aria-label="Close">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+            <div class="modal-team-hero">
+                <div class="modal-team-logo" id="rm-logo">—</div>
+                <h2 class="modal-team-name" id="rm-name">—</h2>
+                <div class="modal-team-tag" id="rm-tag">—</div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-stats">
+                    <div class="modal-stat"><div class="modal-stat-value" id="rm-rank">—</div><div class="modal-stat-label">Rank</div></div>
+                    <div class="modal-stat"><div class="modal-stat-value" id="rm-matches">—</div><div class="modal-stat-label">Matches</div></div>
+                    <div class="modal-stat"><div class="modal-stat-value" id="rm-wins">—</div><div class="modal-stat-label">Wins</div></div>
+                    <div class="modal-stat"><div class="modal-stat-value" id="rm-points">—</div><div class="modal-stat-label">Points</div></div>
+                </div>
+
+                <h3 class="modal-section-title"><span>Roster</span><span class="section-count" id="rm-count">0</span></h3>
+                <div id="rm-roster">
+                    <div class="modal-loading">
+                        <div class="modal-loading-spinner"></div>
+                        Loading players...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="container">
