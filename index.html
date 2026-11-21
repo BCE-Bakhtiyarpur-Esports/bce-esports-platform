@@ -12,186 +12,560 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- External CSS -->
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/home.css">
 
-    <!-- Custom Styles for New Sections (Organisers) -->
     <style>
-        /* Organisers Section Styling */
-        .organisers-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 24px; 
-        }
-        .organiser-card { 
-            background: var(--bg-card); 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius-lg); 
-            padding: 32px 20px; 
-            text-align: center; 
-            transition: all var(--transition); 
-            position: relative; 
-            overflow: hidden; 
-        }
-        .organiser-card:hover { 
-            border-color: var(--red); 
-            background: var(--bg-card-hover); 
-            transform: translateY(-6px); 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4); 
-        }
-        .organiser-avatar { 
-            width: 100px; 
-            height: 100px; 
-            margin: 0 auto 20px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-family: var(--font-display); 
-            font-weight: 900; 
-            font-size: 30px; 
-            color: #fff; 
-            background: var(--member-gradient, linear-gradient(135deg, #e10600, #7a0400)); 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
-            border: 3px solid var(--border-bright); 
-            transition: all var(--transition); 
-            position: relative; 
-            overflow: hidden; 
-        }
-        .organiser-card:hover .organiser-avatar { 
-            transform: scale(1.05); 
-            border-color: var(--red); 
-            box-shadow: 0 8px 30px var(--red-glow); 
-        }
-        .organiser-avatar img { 
-            position: absolute; 
-            inset: 0; 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            z-index: 2; 
-        }
-        .organiser-name { 
-            font-family: var(--font-display); 
-            font-weight: 700; 
-            font-size: 17px; 
-            letter-spacing: 1px; 
-            margin-bottom: 6px; 
-        }
-        .organiser-role { 
-            display: inline-block; 
-            font-family: var(--font-display); 
-            font-size: 10px; 
-            font-weight: 700; 
-            letter-spacing: 2px; 
-            color: var(--red); 
-            background: rgba(225,6,0,0.1); 
-            padding: 4px 12px; 
-            border-radius: 4px; 
-            border: 1px solid rgba(225,6,0,0.25); 
-            margin-bottom: 14px; 
-            text-transform: uppercase; 
-        }
-        .organiser-bio { 
-            font-size: 13px; 
-            color: var(--text-secondary); 
-            line-height: 1.6; 
-        }
+        /* ============================================
+           Organisers Section
+           ============================================ */
+        .organisers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .organiser-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px 20px; text-align: center; transition: all var(--transition); position: relative; overflow: hidden; }
+        .organiser-card:hover { border-color: var(--red); background: var(--bg-card-hover); transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .organiser-avatar { width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 30px; color: #fff; background: var(--member-gradient, linear-gradient(135deg, #e10600, #7a0400)); box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 3px solid var(--border-bright); transition: all var(--transition); position: relative; overflow: hidden; }
+        .organiser-card:hover .organiser-avatar { transform: scale(1.05); border-color: var(--red); box-shadow: 0 8px 30px var(--red-glow); }
+        .organiser-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
+        .organiser-name { font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 1px; margin-bottom: 6px; }
+        .organiser-role { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--red); background: rgba(225,6,0,0.1); padding: 4px 12px; border-radius: 4px; border: 1px solid rgba(225,6,0,0.25); margin-bottom: 14px; text-transform: uppercase; }
+        .organiser-bio { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 
-        /* Responsive Design for Organisers & Status */
-        @media (max-width: 1024px) {
-            .organisers-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 768px) {
-            .organisers-grid { grid-template-columns: 1fr; }
-        }
-
-        /* Styling for Registration Status Form */
-        .reg-status-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            border-top: 3px solid var(--red);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .reg-status-form {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .reg-status-fields {
-            display: flex;
-            gap: 16px;
-            flex: 1;
-            min-width: 280px;
-        }
-        .reg-input {
-            flex: 1;
-            padding: 14px 16px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-bright);
-            color: #fff;
-            border-radius: var(--radius-sm);
-            font-size: 15px;
-            transition: 0.3s;
-        }
-        .reg-input:focus {
-            outline: none;
-            border-color: var(--red);
-            box-shadow: 0 0 10px rgba(225,6,0,0.2);
-        }
-        .reg-status-results {
-            margin-top: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .reg-result-item {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .reg-result-info h4 {
-            font-family: var(--font-display);
-            color: #fff;
-            margin-bottom: 4px;
-        }
-        .reg-result-info p {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        .reg-status-pill {
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+        /* ============================================
+           Registration Status
+           ============================================ */
+        .reg-status-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); border-top: 3px solid var(--red); max-width: 800px; margin: 0 auto; }
+        .reg-status-form { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .reg-status-fields { display: flex; gap: 16px; flex: 1; min-width: 280px; }
+        .reg-input { flex: 1; padding: 14px 16px; background: var(--bg-primary); border: 1px solid var(--border-bright); color: #fff; border-radius: var(--radius-sm); font-size: 15px; transition: 0.3s; }
+        .reg-input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 10px rgba(225,6,0,0.2); }
+        .reg-status-results { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .reg-result-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .reg-result-info h4 { font-family: var(--font-display); color: #fff; margin-bottom: 4px; }
+        .reg-result-info p { font-size: 13px; color: var(--text-secondary); }
+        .reg-status-pill { padding: 6px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .reg-status-pill.approved { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
         .reg-status-pill.pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
         .reg-status-pill.rejected { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
 
+        /* ============================================
+           Schedule CTA
+           ============================================ */
+        .schedule-cta-section { padding: 48px 0; background: var(--bg-primary); }
+        .schedule-cta-card { display: flex; justify-content: space-between; align-items: center; gap: 32px; background: linear-gradient(135deg, rgba(225,6,0,0.08) 0%, rgba(0,0,0,0) 60%), var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px 40px; transition: all var(--transition); position: relative; overflow: hidden; text-decoration: none; color: inherit; cursor: pointer; }
+        .schedule-cta-card::before { content: '📅'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 220px; opacity: 0.04; pointer-events: none; line-height: 1; }
+        .schedule-cta-card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--red); opacity: 0; transition: opacity var(--transition); }
+        .schedule-cta-card:hover { border-color: rgba(225,6,0,0.5); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(225,6,0,0.12); }
+        .schedule-cta-card:hover::after { opacity: 1; }
+        .schedule-cta-content { flex: 1; min-width: 0; position: relative; z-index: 2; }
+        .schedule-cta-label { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+        .schedule-cta-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3vw, 30px); letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1; margin-bottom: 10px; }
+        .schedule-cta-title .accent { color: var(--red); text-shadow: 0 0 24px var(--red-glow); }
+        .schedule-cta-desc { color: var(--text-secondary); font-size: 15px; line-height: 1.6; max-width: 560px; }
+        .schedule-cta-action { flex-shrink: 0; position: relative; z-index: 2; }
+        .schedule-cta-btn { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; background: var(--red); color: #fff; padding: 16px 30px; border-radius: 6px; white-space: nowrap; transition: all var(--transition); box-shadow: 0 0 24px var(--red-glow); }
+        .schedule-cta-btn svg { width: 16px; height: 16px; transition: transform var(--transition); }
+        .schedule-cta-card:hover .schedule-cta-btn { background: var(--red-bright); transform: translateX(4px); }
+        .schedule-cta-card:hover .schedule-cta-btn svg { transform: translateX(4px); }
+
+        /* ============================================
+           NEW: Featured Tournament Cards (with banner image)
+           ============================================ */
+        .home-tournaments-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .home-tourn-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+        .home-tourn-card:hover {
+            border-color: var(--red);
+            transform: translateY(-8px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55), 0 0 32px rgba(225, 6, 0, 0.12);
+        }
+        .home-tourn-banner {
+            position: relative;
+            height: 170px;
+            background: linear-gradient(135deg, rgba(225,6,0,0.4), rgba(0,0,0,0.9));
+            overflow: hidden;
+        }
+        .home-tourn-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .home-tourn-card:hover .home-tourn-banner img { transform: scale(1.1); }
+        .home-tourn-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 30%, rgba(15,15,15,0.98) 100%);
+            pointer-events: none;
+        }
+        .home-tourn-badge-status {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 2;
+            font-family: var(--font-display);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 5px 11px;
+            border-radius: 4px;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(8px);
+        }
+        .home-tourn-badge-status.live {
+            background: rgba(34,197,94,0.92);
+            animation: pulseLive 1.8s infinite;
+        }
+        .home-tourn-badge-status.live::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            animation: pulseDot 1.5s infinite;
+        }
+        .home-tourn-badge-status.upcoming { background: rgba(59,130,246,0.92); }
+        .home-tourn-badge-status.completed { background: rgba(107,107,107,0.92); }
+        @keyframes pulseLive {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+            50% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+        }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .home-tourn-badge-game {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+            font-family: var(--font-display);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 11px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.82);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            backdrop-filter: blur(8px);
+        }
+        .home-tourn-body { padding: 18px 20px 20px; flex: 1; display: flex; flex-direction: column; }
+        .home-tourn-category {
+            font-family: var(--font-display);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 8px;
+        }
+        .home-tourn-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.4px;
+            color: #fff;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 42px;
+        }
+        .home-tourn-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .home-tourn-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+        .home-tourn-stat { text-align: center; }
+        .home-tourn-stat-value {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 14px;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
+        .home-tourn-stat-value.accent { color: var(--red); }
+        .home-tourn-stat-label {
+            font-size: 9px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           NEW: Featured Team Cards
+           ============================================ */
+        .home-teams-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .home-team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 20px 22px;
+            text-align: center;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .home-team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--team-gradient, var(--red));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .home-team-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-8px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+        }
+        .home-team-card:hover::before { opacity: 1; }
+        .home-team-logo {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 32px;
+            color: #fff;
+            background: var(--team-gradient, linear-gradient(135deg, #e10600, #7a0400));
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+            border: 3px solid var(--bg-primary);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1px;
+        }
+        .home-team-card:hover .home-team-logo { transform: scale(1.08); }
+        .home-team-logo img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2;
+        }
+        .home-team-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            color: #fff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        .home-team-tag {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--red);
+            background: rgba(225,6,0,0.1);
+            padding: 3px 10px;
+            border-radius: 4px;
+            margin-bottom: 14px;
+        }
+        .home-team-tourn {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .home-team-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-muted);
+            width: 100%;
+            margin-top: auto;
+        }
+        .home-team-stats span { display: inline-flex; align-items: center; gap: 4px; }
+        .home-team-stats strong {
+            color: #fff;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        /* ============================================
+           NEW: Featured Result Cards
+           ============================================ */
+        .home-results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .home-result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .home-result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .home-result-card:hover {
+            border-color: var(--border-bright);
+            transform: translateY(-8px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+        }
+        .home-result-card:hover::before { opacity: 1; }
+        .home-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .home-result-round {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--red);
+            line-height: 1.3;
+        }
+        .home-result-map {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            letter-spacing: 0.5px;
+        }
+        .home-result-date {
+            font-size: 10px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            font-family: var(--font-display);
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+        .home-result-teams { display: flex; flex-direction: column; gap: 8px; }
+        .home-result-team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.25s;
+        }
+        .home-result-team.winner {
+            border-color: rgba(255, 215, 0, 0.4);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), var(--bg-secondary));
+        }
+        .home-result-team-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 11px;
+            color: #fff;
+            background: var(--team-gradient, linear-gradient(135deg, #333, #111));
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+        }
+        .home-result-team.winner .home-result-team-logo {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
+        }
+        .home-result-team-info { flex: 1; min-width: 0; }
+        .home-result-team-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: #fff;
+            letter-spacing: 0.3px;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .home-result-team-stats {
+            display: flex;
+            gap: 8px;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-family: var(--font-display);
+            letter-spacing: 0.3px;
+        }
+        .home-result-team-stats .place { color: #fbbf24; font-weight: 700; }
+        .home-result-team-stats .pts { color: var(--red); font-weight: 700; }
+        .home-result-trophy { font-size: 20px; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(255, 215, 0, 0.4)); }
+
+        /* ============================================
+           NEW: View More Button
+           ============================================ */
+        .view-more-wrap { display: flex; justify-content: center; margin-top: 36px; }
+        .view-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 14px 28px;
+            border: 1px solid var(--border-bright);
+            border-radius: 6px;
+            color: #fff;
+            background: transparent;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .view-more-btn:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: rgba(225, 6, 0, 0.05);
+            transform: translateX(4px);
+            box-shadow: 0 0 24px rgba(225, 6, 0, 0.15);
+        }
+        .view-more-btn svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.3s;
+        }
+        .view-more-btn:hover svg { transform: translateX(4px); }
+
+        /* ============================================
+           NEW: Staggered Reveal Animation
+           ============================================ */
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: slideUpFade 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .reveal-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+        .reveal-stagger > *:nth-child(2) { animation-delay: 0.18s; }
+        .reveal-stagger > *:nth-child(3) { animation-delay: 0.31s; }
+        @keyframes slideUpFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Counter stat pulse */
+        .stat-value.counting {
+            animation: countPulse 0.4s ease-out;
+        }
+        @keyframes countPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); color: var(--red); }
+            100% { transform: scale(1); }
+        }
+
+        /* ============================================
+           Responsive
+           ============================================ */
+        @media (max-width: 1024px) {
+            .organisers-grid { grid-template-columns: repeat(2, 1fr); }
+            .home-tournaments-grid,
+            .home-teams-grid,
+            .home-results-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 768px) {
+            .organisers-grid { grid-template-columns: 1fr; }
             .reg-status-form { flex-direction: column; align-items: stretch; }
             .reg-status-fields { flex-direction: column; }
+            .schedule-cta-section { padding: 32px 0; }
+            .schedule-cta-card { flex-direction: column; align-items: stretch; gap: 24px; padding: 24px 22px; }
+            .schedule-cta-title { font-size: 22px; }
+            .schedule-cta-desc { font-size: 14px; }
+            .schedule-cta-btn { width: 100%; justify-content: center; }
+            .home-tournaments-grid,
+            .home-teams-grid,
+            .home-results-grid { grid-template-columns: 1fr; }
+            .home-tourn-banner { height: 190px; }
+        }
+        @media (max-width: 480px) {
+            .home-tourn-body { padding: 16px; }
+            .home-team-card { padding: 24px 16px 20px; }
+            .home-team-logo { width: 80px; height: 80px; font-size: 26px; }
+            .home-result-card { padding: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🎵 Background Music -->
     <audio id="homeBgMusic" src="assets/audio/home-song.mp3" loop></audio>
 
     <nav class="nav">
@@ -204,8 +578,9 @@
                 </div>
             </a>
             <div class="nav-links" id="navLinks">
-                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html" class="nav-link active">Home</a>
                 <a href="tournaments.html" class="nav-link">Tournaments</a>
+                <a href="schedule.html" class="nav-link">Schedule</a>
                 <a href="teams.html" class="nav-link">Teams</a>
                 <a href="results.html" class="nav-link">Results</a>
                 <a href="certificates.html" class="nav-link">Certificates</a>
@@ -238,7 +613,7 @@
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-value" id="statTournaments">0</div><div class="stat-label">Tournaments</div></div>
                 <div class="stat-card"><div class="stat-value" id="statTeams">0</div><div class="stat-label">Teams</div></div>
-                <div class="stat-card"><div class="stat-value" id="statGames">5</div><div class="stat-label">Games</div></div>
+                <div class="stat-card"><div class="stat-value" id="statGames">0</div><div class="stat-label">Games</div></div>
                 <div class="stat-card"><div class="stat-value" id="statPrize">₹0</div><div class="stat-label">Prize Pool</div></div>
             </div>
         </div>
@@ -288,13 +663,36 @@
                 <h2 class="section-title">Upcoming <span class="accent">Tournaments</span></h2>
                 <p class="section-desc">Register your squad and battle for glory.</p>
             </div>
-            <div class="tournaments-grid reveal" id="homeTournamentsGrid">
-                <p class="data-message">No tournaments available.</p>
+            <div class="home-tournaments-grid reveal-stagger" id="homeTournamentsGrid">
+                <p class="data-message">Loading tournaments...</p>
+            </div>
+            <div class="view-more-wrap" id="tournamentsViewMore" style="display:none;">
+                <a href="tournaments.html" class="view-more-btn">
+                    View All Tournaments
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- REGISTRATION STATUS SECTION -->
+    <section class="schedule-cta-section reveal" id="schedule-cta">
+        <div class="container">
+            <a href="schedule.html" class="schedule-cta-card" aria-label="View full match schedule">
+                <div class="schedule-cta-content">
+                    <span class="schedule-cta-label">📅 Match Schedule</span>
+                    <h2 class="schedule-cta-title">Never Miss a <span class="accent">Match</span></h2>
+                    <p class="schedule-cta-desc">Follow every tournament round by round — groups, matches, live scores, and results. All in one clean, easy-to-read view.</p>
+                </div>
+                <div class="schedule-cta-action">
+                    <span class="schedule-cta-btn">
+                        View Full Schedule
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </span>
+                </div>
+            </a>
+        </div>
+    </section>
+
     <section class="section" id="reg-status" style="background:var(--bg-secondary);">
         <div class="container">
             <div class="section-header reveal">
@@ -322,8 +720,14 @@
                 <h2 class="section-title">Featured <span class="accent">Teams</span></h2>
                 <p class="section-desc">The squads representing BCE in competitive circuits.</p>
             </div>
-            <div class="teams-grid reveal" id="homeTeamsGrid">
-                <p class="data-message">No teams available.</p>
+            <div class="home-teams-grid reveal-stagger" id="homeTeamsGrid">
+                <p class="data-message">Loading teams...</p>
+            </div>
+            <div class="view-more-wrap" id="teamsViewMore" style="display:none;">
+                <a href="teams.html" class="view-more-btn">
+                    View All Teams
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>
@@ -335,8 +739,14 @@
                 <h2 class="section-title">Latest <span class="accent">Results</span></h2>
                 <p class="section-desc" id="homeResultsDesc">Recent match outcomes from completed tournaments.</p>
             </div>
-            <div class="results-grid reveal" id="homeResultsGrid">
-                <p class="data-message">No results available.</p>
+            <div class="home-results-grid reveal-stagger" id="homeResultsGrid">
+                <p class="data-message">Loading results...</p>
+            </div>
+            <div class="view-more-wrap" id="resultsViewMore" style="display:none;">
+                <a href="results.html" class="view-more-btn">
+                    View All Results
+                    <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>
@@ -360,7 +770,7 @@
                         </tr>
                     </thead>
                     <tbody id="homeLeaderboardBody">
-                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px;">No standings available.</td></tr>
+                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:40px;">Loading standings...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -375,7 +785,7 @@
                 <p class="section-desc">News, updates, and important notes from the BCE Esports team.</p>
             </div>
             <div class="announcements-grid reveal" id="homeAnnouncementsGrid">
-                <p class="data-message">No announcements available.</p>
+                <p class="data-message">Loading announcements...</p>
             </div>
         </div>
     </section>
@@ -388,12 +798,11 @@
                 <p class="section-desc">Moments from our tournaments, LAN events, and community meetups.</p>
             </div>
             <div class="gallery-grid reveal" id="homeGalleryGrid">
-                <p class="data-message">No gallery items available.</p>
+                <p class="data-message">Loading gallery...</p>
             </div>
         </div>
     </section>
 
-    <!-- MEET THE ORGANISERS (NEW SECTION) -->
     <section class="section" id="organisers" style="background:var(--bg-secondary);">
         <div class="container">
             <div class="section-header reveal">
@@ -408,7 +817,7 @@
                         <img src="assets/image/piyush.jpg" alt="Piyush Kashyap" onerror="this.style.display='none'">
                     </div>
                     <div class="organiser-name">Piyush Kashyap</div>
-                    <span class="organiser-role">Founder & Head</span>
+                    <span class="organiser-role">Founder &amp; Head</span>
                     <p class="organiser-bio">Leads overall vision, tournament strategy, and administrative oversight of BCE Esports.</p>
                 </div>
                 <div class="organiser-card">
@@ -426,7 +835,7 @@
                         <img src="assets/image/harsh.jpg" alt="Harsh Kumar" onerror="this.style.display='none'">
                     </div>
                     <div class="organiser-name">Harsh Kumar</div>
-                    <span class="organiser-role">Admin (Content & Comms)</span>
+                    <span class="organiser-role">Admin (Content &amp; Comms)</span>
                     <p class="organiser-bio">Handles announcements, social media, and community engagement across platforms.</p>
                 </div>
                 <div class="organiser-card">
@@ -470,6 +879,7 @@
                     <h4 class="footer-heading">Platform</h4>
                     <div class="footer-links">
                         <a href="tournaments.html" class="footer-link">Tournaments</a>
+                        <a href="schedule.html" class="footer-link">Schedule</a>
                         <a href="teams.html" class="footer-link">Teams</a>
                         <a href="results.html" class="footer-link">Results</a>
                         <a href="leaderboard.html" class="footer-link">Leaderboard</a>
@@ -502,7 +912,6 @@
         </div>
     </footer>
 
-    <!-- External JS -->
     <script src="assets/js/main.js"></script>
     <script src="assets/js/home.js"></script>
 </body>
