@@ -1,6 +1,6 @@
 /**
  * BCE ESPORTS — TOURNAMENT DETAIL PAGE
- * Fixed: direct fetch (no MAIN dependency), banner hero, dynamic game names
+ * With clickable team cards that open a full roster modal.
  */
 (function () {
   'use strict';
@@ -43,6 +43,10 @@
 
   let tournamentData = null;
   const gamesMap = {};
+
+  // Roster cache
+  let athletesByTeam = null; // null = not loaded yet
+  let standingsByTeam = {};  // TeamID -> { rank, matches, wins, kills, points }
 
   /* ============ AUDIO TRIGGER ============ */
   document.addEventListener('click', function (e) {
@@ -109,18 +113,37 @@
     });
   }
 
-  /* ============ LOAD GAMES (for display names) ============ */
+  /* ============ LOAD GAMES ============ */
   async function loadGames() {
     try {
       const list = await fetchAction('getGames');
       (list || []).forEach(function (g) {
-        const id = String(g.GameID != null ? g.GameID : (g.ID != null ? g.ID : '')).trim();
+        const id = String(g.GameID != null ? g.GameID : '').trim();
         if (!id) return;
         gamesMap[id] = g.Name || g.name || id;
       });
     } catch (e) {
       console.warn('[Tournament] Could not load games list:', e);
     }
+  }
+
+  /* ============ LOAD ATHLETES (once, cached) ============ */
+  async function loadAthletesOnce() {
+    if (athletesByTeam !== null) return athletesByTeam;
+    try {
+      const list = await fetchAction('getAllAthletes') || [];
+      athletesByTeam = {};
+      list.forEach(function (a) {
+        const tid = String(a.TeamID || '');
+        if (!tid) return;
+        if (!athletesByTeam[tid]) athletesByTeam[tid] = [];
+        athletesByTeam[tid].push(a);
+      });
+    } catch (e) {
+      console.warn('[Tournament] Athletes load failed:', e);
+      athletesByTeam = {};
+    }
+    return athletesByTeam;
   }
 
   /* ============ LOAD TOURNAMENT ============ */
@@ -306,6 +329,21 @@
     const container = document.getElementById('standingsContent');
     try {
       const rows = await fetchAction('getStandings', { tournamentId: tid }) || [];
+
+      // Cache standings by TeamID for use in roster modal
+      standingsByTeam = {};
+      rows.forEach(function (r) {
+        const teamId = String(r.TeamID || '');
+        if (!teamId) return;
+        standingsByTeam[teamId] = {
+          rank: Number(r.Rank) || 0,
+          matches: Number(r.MatchesPlayed || 0),
+          wins: Number(r.Wins || 0),
+          kills: Number(r.Kills || 0),
+          points: Number(r.Points || 0)
+        };
+      });
+
       if (!rows.length) {
         container.innerHTML =
           '<div class="empty-state">' +
@@ -350,7 +388,7 @@
     }
   }
 
-  /* ============ LOAD TEAMS ============ */
+  /* ============ LOAD TEAMS (clickable → roster modal) ============ */
   async function loadTeams(tid, maxTeams) {
     const container = document.getElementById('teamsContent');
     try {
@@ -369,10 +407,12 @@
       document.getElementById('t-teams').textContent = teams.length + ' / ' + (maxTeams || 0);
       container.innerHTML =
         '<div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;font-family:\'Orbitron\',sans-serif;text-transform:uppercase;letter-spacing:1px;">' +
-          teams.length + ' Team' + (teams.length !== 1 ? 's' : '') + ' Registered' +
+          teams.length + ' Team' + (teams.length !== 1 ? 's' : '') + ' Registered · Click a team to view roster' +
         '</div>' +
         '<div class="team-grid">' + teams.map(function (t) {
-          return '<div class="team-card">' +
+          return '<div class="team-card" data-team-id="' + escapeHTML(t.TeamID) + '" ' +
+                    'data-team-name="' + escapeHTML(t.TeamName || t.TeamID) + '" ' +
+                    'data-team-tag="' + escapeHTML(t.TeamTag || '') + '">' +
             '<div class="team-logo">' + escapeHTML(initials(t.TeamName)) + '</div>' +
             '<div class="team-info">' +
               '<div class="team-info-name">' + escapeHTML(t.TeamName) + '</div>' +
@@ -380,6 +420,17 @@
             '</div>' +
           '</div>';
         }).join('') + '</div>';
+
+      // Wire up clicks
+      container.querySelectorAll('.team-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+          openRosterModal(
+            card.dataset.teamId,
+            card.dataset.teamName,
+            card.dataset.teamTag
+          );
+        });
+      });
     } catch (e) {
       console.error('Teams load failed', e);
       document.getElementById('t-teams').textContent = '0 / ' + (maxTeams || 0);
@@ -388,10 +439,133 @@
     }
   }
 
+  /* ============ ROSTER MODAL ============ */
+  async function openRosterModal(teamId, teamName, teamTag) {
+    const backdrop = document.getElementById('rosterModalBackdrop');
+    if (!backdrop) return;
+
+    // Header
+    const logo = document.getElementById('rm-logo');
+    logo.textContent = initials(teamName);
+    logo.style.background = 'linear-gradient(135deg, #e10600, #7a0400)';
+
+    document.getElementById('rm-name').textContent = teamName || 'Unnamed Team';
+    document.getElementById('rm-tag').textContent = teamTag || '—';
+
+    // Stats from standings cache
+    const st = standingsByTeam[String(teamId)] || { rank: 0, matches: 0, wins: 0, points: 0 };
+    document.getElementById('rm-rank').textContent = st.rank > 0 ? '#' + st.rank : '—';
+    document.getElementById('rm-matches').textContent = st.matches;
+    document.getElementById('rm-wins').textContent = st.wins;
+    document.getElementById('rm-points').textContent = st.points;
+
+    // Show modal with loading state
+    const rosterEl = document.getElementById('rm-roster');
+    const countEl = document.getElementById('rm-count');
+    rosterEl.innerHTML =
+      '<div class="modal-loading">' +
+        '<div class="modal-loading-spinner"></div>' +
+        'Loading players...' +
+      '</div>';
+    countEl.textContent = '…';
+
+    backdrop.classList.add('show');
+    document.body.classList.add('modal-open');
+
+    // Fetch athletes (cached after first call)
+    await loadAthletesOnce();
+
+    const roster = (athletesByTeam[String(teamId)] || []).slice().sort(function (a, b) {
+      if (a.IsCaptain && !b.IsCaptain) return -1;
+      if (!a.IsCaptain && b.IsCaptain) return 1;
+      return (Number(a.Slot) || 999) - (Number(b.Slot) || 999);
+    });
+
+    countEl.textContent = roster.length;
+
+    if (!roster.length) {
+      rosterEl.innerHTML =
+        '<div class="no-roster">' +
+          '<div class="no-roster-icon">👥</div>' +
+          '<strong>No verified players yet</strong><br>' +
+          'Player roster will appear once team members complete verification.' +
+        '</div>';
+      return;
+    }
+
+    rosterEl.innerHTML = '<div class="roster-list">' + roster.map(function (p) {
+      const ign = p.IGN || 'Unknown';
+      const realName = p.RealName || '';
+      const avatar = initials(ign);
+      const captainClass = p.IsCaptain ? ' captain' : '';
+      const crownBadge = p.IsCaptain ? '<div class="player-captain-crown">👑</div>' : '';
+
+      const roleText = p.IsCaptain ? 'Captain' : ('Slot ' + (p.Slot || '?'));
+      const roleClass = p.IsCaptain ? ' captain' : '';
+
+      const uid = p.UID || p.RollNumber || '';
+
+      // Tags
+      const tags = [];
+      if (uid) {
+        tags.push('<span class="player-tag uid">🎮 ' + escapeHTML(uid) + '</span>');
+      }
+      if (p.Branch || p.Year) {
+        const branchYear = [];
+        if (p.Branch) branchYear.push(escapeHTML(p.Branch));
+        if (p.Year) branchYear.push(escapeHTML(p.Year) + ' Yr');
+        tags.push('<span class="player-tag">📚 ' + branchYear.join(' · ') + '</span>');
+      }
+      if (p.College) {
+        tags.push('<span class="player-tag">🏫 ' + escapeHTML(p.College) + '</span>');
+      }
+
+      const statusVal = String(p.Status || 'pending').toLowerCase();
+      const statusClass = ['verified', 'pending', 'rejected'].indexOf(statusVal) !== -1 ? statusVal : 'pending';
+      const statusLabel = statusClass === 'verified' ? '✓ Verified' : (statusClass === 'rejected' ? '✕ Rejected' : '⏳ Pending');
+
+      return '<div class="player-card' + captainClass + '">' +
+        '<div class="player-avatar">' +
+          escapeHTML(avatar) +
+          crownBadge +
+        '</div>' +
+        '<div class="player-content">' +
+          '<div class="player-header">' +
+            '<span class="player-ign">' + escapeHTML(ign) + '</span>' +
+            '<span class="player-role-badge' + roleClass + '">' + escapeHTML(roleText) + '</span>' +
+          '</div>' +
+          (realName ? '<div class="player-realname">' + escapeHTML(realName) + '</div>' : '') +
+          (tags.length ? '<div class="player-tags">' + tags.join('') + '</div>' : '') +
+        '</div>' +
+        '<span class="player-status ' + statusClass + '">' + statusLabel + '</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  function closeRosterModal() {
+    const backdrop = document.getElementById('rosterModalBackdrop');
+    if (backdrop) backdrop.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+
+  function bindModalEvents() {
+    const backdrop = document.getElementById('rosterModalBackdrop');
+    const closeBtn = document.getElementById('rosterModalClose');
+    if (closeBtn) closeBtn.addEventListener('click', closeRosterModal);
+    if (backdrop) {
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) closeRosterModal();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeRosterModal();
+    });
+  }
+
   /* ============ INIT ============ */
   setupTabs();
+  bindModalEvents();
 
-  // Load games first (for display names), then tournament data
   loadGames().finally(function () {
     loadTournamentData();
   });
