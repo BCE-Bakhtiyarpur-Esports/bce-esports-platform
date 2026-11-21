@@ -20,6 +20,9 @@
   .games-header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
   .games-count-wrap { display:flex; align-items:center; gap:8px; }
   .games-count-input { width:70px; padding:6px 8px; background:var(--bg-primary); border:1px solid var(--border-bright); color:#fff; border-radius:4px; text-align:center; font-weight:700; }
+  .round-preview { background:rgba(34,211,238,.06); border:1px dashed rgba(34,211,238,.3); border-radius:6px; padding:8px 12px; font-size:11.5px; color:#67e8f9; margin-top:6px; }
+  .round-preview strong { color:#22d3ee; font-family:'Orbitron',sans-serif; letter-spacing:.5px; }
+  .filter-status-note { font-size:11px; color:var(--text-muted); margin-top:4px; }
   @media (max-width:640px) {
     .hide-sm { display:none; }
     .game-row { grid-template-columns:1fr; gap:6px; }
@@ -121,16 +124,18 @@
             <option value="3v3">3v3 (2 teams)</option>
             <option value="4v4">4v4 (2 teams)</option>
             <option value="5v5">5v5 (2 teams)</option>
-            <option value="Squad" selected>Squad (4–25 teams)</option>
-            <option value="Battle Royale">Battle Royale (16–25 teams)</option>
+            <option value="Squad" selected>Squad (4+ teams)</option>
+            <option value="Battle Royale">Battle Royale (16+ teams)</option>
             <option value="Custom">Custom</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Round / Match Day Name *</label>
-        <input type="text" id="mRound" class="form-input" required placeholder="e.g. Day 1 / Group A / Upper Bracket">
+        <label class="form-label">Round / Group / Match Day Name *</label>
+        <input type="text" id="mRound" class="form-input" required placeholder="e.g. Group A / Day 1 / Upper Bracket" oninput="updateRoundPreview()">
+        <p class="filter-status-note">💡 Tip: use "Group A" and "Group B" as separate round names to show groups on the public schedule.</p>
+        <div id="roundPreview"></div>
       </div>
 
       <!-- Games Section (multi-game) -->
@@ -229,6 +234,28 @@
     return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   }
 
+  /* ---------- FORMAT VALIDATION ---------- */
+  function getFormatRequirement(fmt) {
+    const fixed2 = ['1v1', '2v2', '3v3', '4v4', '5v5'];
+    if (fixed2.indexOf(fmt) !== -1) return { exact: 2, label: 'exactly 2 teams' };
+    if (fmt === 'Squad') return { min: 4, label: '4 or more teams' };
+    if (fmt === 'Battle Royale') return { min: 16, label: '16 or more teams' };
+    return { min: 2, label: 'at least 2 teams' };
+  }
+
+  function validateTeamCount() {
+    const fmt = document.getElementById('mFormat').value;
+    const req = getFormatRequirement(fmt);
+    const count = selectedTeams.size;
+    if (req.exact && count !== req.exact) {
+      return 'Format "' + fmt + '" requires ' + req.label + ' — you have ' + count + ' selected.';
+    }
+    if (req.min && count < req.min) {
+      return 'Format "' + fmt + '" requires ' + req.label + ' — you have ' + count + ' selected.';
+    }
+    return null;
+  }
+
   /* ---------- LOADERS ---------- */
   async function loadTournaments() {
     try {
@@ -323,6 +350,7 @@
     document.getElementById('teamsCheckList').innerHTML = '<p style="color:var(--text-muted);font-size:13px;margin:0;">Select a tournament first to load teams.</p>';
     document.getElementById('teamCountBadge').textContent = '';
     document.getElementById('teamSearch').value = '';
+    document.getElementById('roundPreview').innerHTML = '';
     allTeams = [];
     selectedTeams = new Set();
     gameRows = [{ Map: '', ScheduledAt: '' }];
@@ -339,10 +367,19 @@
     while (gameRows.length < count) gameRows.push({ Map: '', ScheduledAt: '' });
     while (gameRows.length > count) gameRows.pop();
     renderGameRows();
+    updateRoundPreview();
   };
 
   window.updateGameRow = (idx, field, val) => {
     if (gameRows[idx]) gameRows[idx][field] = val;
+  };
+
+  window.updateRoundPreview = () => {
+    const round = document.getElementById('mRound').value.trim();
+    const preview = document.getElementById('roundPreview');
+    if (!round || gameRows.length <= 1) { preview.innerHTML = ''; return; }
+    const names = gameRows.map((_, i) => round + ' · Game ' + (i + 1));
+    preview.innerHTML = '<div class="round-preview">Round will be saved as: <strong>' + names.map(escapeHtml).join('</strong>, <strong>') + '</strong></div>';
   };
 
   function renderGameRows() {
@@ -362,6 +399,7 @@
     gameRows.splice(idx, 1);
     document.getElementById('gamesCount').value = gameRows.length;
     renderGameRows();
+    updateRoundPreview();
   };
 
   window.updateFormatHint = () => {
@@ -372,8 +410,8 @@
       '3v3': 'Exactly 2 teams required (3 players each).',
       '4v4': 'Exactly 2 teams required (4 players each).',
       '5v5': 'Exactly 2 teams required (5 players each).',
-      'Squad': 'Select 4+ teams. Each team has ~4 players.',
-      'Battle Royale': 'Select all participating teams (16–25).',
+      'Squad': 'Select 4 or more teams.',
+      'Battle Royale': 'Select all participating teams (16+).',
       'Custom': 'Select any number of teams.'
     };
     document.getElementById('teamFormatHint').textContent = hints[fmt] || '';
@@ -465,7 +503,10 @@
 
     if (!tournamentId) return alert('Select a tournament.');
     if (!round) return alert('Round name is required.');
-    if (selectedTeams.size < 2) return alert('Select at least 2 teams.');
+
+    // Validate team count against format
+    const v = validateTeamCount();
+    if (v) return alert(v);
 
     const teams = Array.from(selectedTeams).map(tid => {
       const t = allTeams.find(x => x.TeamID === tid);
@@ -476,7 +517,6 @@
 
     try {
       if (isEdit) {
-        // Single match edit
         btn.textContent = 'Updating…';
         const g = gameRows[0] || {};
         if (!g.Map) return alert('Map name is required.');
@@ -495,7 +535,6 @@
         const r = await ADMIN_API.post('admin.updateMatch', { data, teams });
         if (!r.success) return alert(r.message || 'Update failed');
       } else {
-        // Create — possibly multiple games
         btn.textContent = 'Creating…';
         for (let i = 0; i < gameRows.length; i++) {
           if (!gameRows[i].Map) return alert('Game ' + (i + 1) + ': Map name is required.');
@@ -534,6 +573,8 @@
     document.getElementById('mQualifySlots').value = m.QualifySlots || '';
     document.getElementById('mStatus').value = m.Status || 'upcoming';
     document.getElementById('gamesCountWrap').style.display = 'none';
+    document.getElementById('roundPreview').innerHTML = '';
+    document.getElementById('teamSearch').value = '';
 
     gameRows = [{ Map: m.Map || '', ScheduledAt: toLocalInput(m.ScheduledAt) }];
     renderGameRows();
