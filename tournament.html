@@ -54,46 +54,95 @@
         .meta-item { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 6px; border: 1px solid #222; }
         .meta-item svg { width: 16px; height: 16px; color: var(--red); }
 
-        /* Right Side: Character */
-        .hero-visual-right { position: relative; display: flex; align-items: flex-end; justify-content: flex-end; padding-right: 10px; z-index: 1; }
+        /* Right Side: Character & Platform */
+        .hero-visual-right { 
+            position: relative; display: flex; align-items: flex-end; justify-content: center; 
+            padding-bottom: 10px; z-index: 1;
+        }
         
-        /* Character Float & Glow Animations */
-        .char-glow-bg {
-            position: absolute; bottom: 0; right: 0; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(225,6,0,0.5) 0%, transparent 60%);
-            filter: blur(40px); z-index: 0; pointer-events: none;
-            animation: pulseGlow 4s ease-in-out infinite;
+        /* 3D Sci-Fi Platform */
+        .platform-wrapper {
+            position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+            width: clamp(200px, 25vw, 320px); height: clamp(60px, 8vw, 100px);
+            z-index: 0; pointer-events: none;
+            perspective: 600px;
         }
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.7; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.05); }
+        .platform-glow {
+            position: absolute; inset: -20px;
+            background: radial-gradient(circle, rgba(225,6,0,0.6) 0%, transparent 60%);
+            filter: blur(20px); z-index: 0;
+            animation: pulseGlow 3s ease-in-out infinite alternate;
         }
+        .platform {
+            position: absolute; inset: 0; transform: rotateX(75deg); transform-style: preserve-3d; z-index: 1;
+        }
+        .platform-core {
+            position: absolute; inset: 15px; border-radius: 50%;
+            background: radial-gradient(circle at center, #2a2a2a 0%, #0a0a0a 80%, #000 100%);
+            border: 2px solid rgba(225, 6, 0, 0.4);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 1), 0 0 30px rgba(225, 6, 0, 0.4);
+        }
+        .platform-center {
+            position: absolute; inset: 35%; border-radius: 50%;
+            background: #e10600; box-shadow: 0 0 20px #e10600, inset 0 0 10px #fff; opacity: 0.8;
+        }
+        .ring {
+            position: absolute; inset: 0; border-radius: 50%;
+            border: 2px dashed rgba(225, 6, 0, 0.7);
+            box-shadow: 0 0 15px rgba(225, 6, 0, 0.5), inset 0 0 10px rgba(225, 6, 0, 0.3);
+            animation: spinRing 15s linear infinite;
+        }
+        .ring-inner {
+            inset: 20px; border-width: 2px; border-style: solid; border-color: transparent;
+            border-top-color: rgba(255, 255, 255, 0.6); border-bottom-color: rgba(255, 255, 255, 0.6);
+            animation: spinRing 10s linear infinite reverse; box-shadow: none;
+        }
+        @keyframes spinRing { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
+        @keyframes pulseGlow { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
 
-        .hero-character-img {
-            position: relative; z-index: 1; width: 100%; max-width: 320px; height: auto;
-            object-fit: contain; object-position: bottom right;
-            filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.9));
+        /* Character Floating & Recoil */
+        .character-holder {
+            position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: center;
             animation: floatChar 5s ease-in-out infinite;
         }
-        @keyframes floatChar {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+        @keyframes floatChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        .recoil-wrapper {
+            position: relative; animation: shootRecoil 6s infinite; transform-origin: bottom center;
+        }
+        .hero-character-img {
+            position: relative; width: 100%; max-width: 320px; height: auto;
+            object-fit: contain; filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.9)); z-index: 2;
+        }
+        
+        /* Muzzle Flash */
+        .muzzle-flash {
+            position: absolute; top: 35%; right: 10%; width: 40px; height: 40px;
+            background: radial-gradient(circle, #fff, #ffaa00 30%, #e10600 60%, transparent 100%);
+            border-radius: 50%; opacity: 0; mix-blend-mode: screen; pointer-events: none;
+            transform: scale(0.5); animation: flashAnim 6s infinite; z-index: 3;
+        }
+        @keyframes shootRecoil {
+            0%, 91%, 100% { transform: translateY(0) rotate(0deg); }
+            92% { transform: translateY(3px) rotate(-1deg); } 
+            94% { transform: translateY(-2px) rotate(0.5deg); }
+            96% { transform: translateY(0) rotate(0deg); }
+        }
+        @keyframes flashAnim {
+            0%, 90%, 100% { opacity: 0; transform: scale(0.5); }
+            92% { opacity: 1; transform: scale(1.5); }
+            94% { opacity: 0.8; transform: scale(1.2); }
+            96% { opacity: 0; transform: scale(0.5); }
         }
 
-        /* CTA Button Animation */
+        /* CTA Button */
         .hero-cta-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
         .hero-cta-section .btn {
             width: 100%; padding: 16px; font-size: 16px; border-radius: 10px;
             transition: all 0.3s ease; position: relative;
         }
-        .hero-cta-section .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(225,6,0,0.4);
-        }
-        .hero-cta-section .btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 10px rgba(225,6,0,0.3);
-        }
+        .hero-cta-section .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(225,6,0,0.4); }
+        .hero-cta-section .btn:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(225,6,0,0.3); }
         .cta-note { text-align: center; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
         /* Mobile Optimization (Horizontal Preserved) */
@@ -113,9 +162,10 @@
             .meta-item { padding: 4px 8px; }
             .meta-item svg { width: 12px; height: 12px; }
 
-            .hero-visual-right { padding-right: 0; }
+            .hero-visual-right { padding-right: 0; padding-bottom: 5px; }
+            .platform-wrapper { width: clamp(150px, 40vw, 220px); height: clamp(50px, 12vw, 70px); }
             .hero-character-img { max-width: 180px; }
-            .char-glow-bg { width: 150px; height: 150px; }
+            .muzzle-flash { width: 24px; height: 24px; right: 5%; top: 40%; }
         }
 
         /* ===== TEAM CARDS & MODAL (Preserved) ===== */
@@ -169,10 +219,28 @@
         ⏳ Loading tournament data from server...
     </div>
 
-    <!-- NAVBAR (Auto-injected by main.js) -->
     <nav class="nav">
         <div class="container nav-inner">
-            <!-- Main.js will fill this -->
+            <a href="index.html" class="logo">
+                <div class="logo-mark">B</div>
+                <div class="logo-text">
+                    <span class="logo-main">BCE</span>
+                    <span class="logo-sub">ESPORTS</span>
+                </div>
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="tournaments.html" class="nav-link active">Tournaments</a>
+                <a href="teams.html" class="nav-link">Teams</a>
+                <a href="results.html" class="nav-link">Results</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
+                    <path d="M3 6h18M3 12h18M3 18h18"/>
+                </svg>
+            </button>
         </div>
     </nav>
 
@@ -202,7 +270,6 @@
                         <span class="hero-badge badge-scope-public" id="t-scope-badge" style="display:none;">PUBLIC</span>
                     </div>
                     
-                    <!-- Dynamic Title -->
                     <h1 class="tournament-hero-title hero-title-stacked" id="t-name">Loading...</h1>
 
                     <div class="hero-meta-compact">
@@ -211,11 +278,28 @@
                     </div>
                 </div>
 
-                <!-- RIGHT: Character -->
+                <!-- RIGHT: Character & Platform -->
                 <div class="hero-visual-right">
                     <div class="char-glow-bg"></div>
-                    <!-- Make sure this image is transparent -->
-                    <img src="assets/images/ff-character.png" class="hero-character-img" alt="Character" onerror="this.style.display='none'">
+                    
+                    <!-- Sci-Fi Platform Layer -->
+                    <div class="platform-wrapper">
+                        <div class="platform-glow"></div>
+                        <div class="platform">
+                            <div class="ring ring-outer"></div>
+                            <div class="ring ring-inner"></div>
+                            <div class="platform-core"></div>
+                            <div class="platform-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- Character & Shooting Layer -->
+                    <div class="character-holder">
+                        <div class="recoil-wrapper">
+                            <img src="assets/images/ff-character.png" class="hero-character-img" alt="Character" onerror="this.style.display='none'">
+                            <div class="muzzle-flash"></div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -417,7 +501,7 @@
     <script src="assets/js/main.js"></script>
     <script src="assets/js/tournament.js"></script>
     
-    <!-- DYNAMIC TITLE FORMATTING (Backend से डेटा आने पर टाइटल को स्टैक करेगा) -->
+    <!-- DYNAMIC TITLE FORMATTING -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const titleEl = document.getElementById('t-name');
@@ -426,11 +510,9 @@
             const formatTitle = () => {
                 let text = titleEl.textContent.trim();
                 
-                // अगर टाइटल खाली नहीं है और पहले से फॉर्मेटेड नहीं है
                 if (text && text !== 'Loading...' && !titleEl.querySelector('.line1')) {
                     let words = text.split(' ');
                     if (words.length >= 3) {
-                        // Split into 3 lines (e.g., BCE | RANBHOOMI | 2026)
                         let line1 = words.slice(0, words.length - 2).join(' ');
                         let line2 = words[words.length - 2];
                         let line3 = words[words.length - 1];
@@ -448,10 +530,8 @@
                 }
             };
 
-            // 1. Turant check karo
             formatTitle();
 
-            // 2. Agar data thodi der me aata hai (API call), toh observe karo
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.type === 'childList' || mutation.type === 'characterData') {
