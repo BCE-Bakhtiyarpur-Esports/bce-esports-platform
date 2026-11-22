@@ -184,7 +184,7 @@
 @media (prefers-reduced-motion: reduce) {
   .tournament-hero::before, .tournament-hero::after,
   .hero-character-img, .char-glow-bg, .hero-title-stacked,
-  .hero-cta-section .btn {
+  .hero-cta-section .btn, .ring, .platform-center, .recoil-wrapper, .muzzle-flash {
     animation: none !important;
     transition: none !important;
     transform: none !important;
