@@ -15,12 +15,73 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/tournament.css">
 
-    <!-- ===== Banner Hero + Roster Modal Styles ===== -->
+    <!-- ===== Custom Styles: Character Hero + Banner + Roster Modal ===== -->
     <style>
+        /* --- HERO LAYOUT WITH CHARACTER --- */
+        .hero-flex-wrapper {
+            position: relative;
+            display: flex;
+            align-items: flex-end; /* Aligns character's feet to the bottom of the banner */
+            justify-content: space-between;
+            min-height: 500px; /* Ensures enough space for the character */
+            margin-top: 20px;
+        }
+
+        .hero-content-wrapper {
+            flex: 1;
+            position: relative;
+            z-index: 3;
+            padding-bottom: 40px;
+            max-width: 100%;
+        }
+
+        .hero-character-layer {
+            position: relative;
+            width: 420px;
+            flex-shrink: 0;
+            z-index: 2;
+            pointer-events: none; /* Allows clicking elements behind the character if needed */
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        /* Character Image Styling */
+        .hero-character-img {
+            width: 100%;
+            height: auto;
+            max-height: 700px;
+            object-fit: contain;
+            object-position: bottom center;
+            /* Deep shadows + red rim lighting */
+            filter: drop-shadow(-15px 15px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 20px rgba(225,6,0,0.3));
+            transform-origin: bottom center;
+            animation: floatChar 5s ease-in-out infinite;
+        }
+
+        /* Red Cinematic Glow Behind Character */
+        .hero-char-glow {
+            position: absolute;
+            bottom: 10px;
+            right: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(225,6,0,0.45) 0%, transparent 65%);
+            filter: blur(60px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes floatChar {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+        }
+
+        /* --- BANNER STYLING --- */
         .hero-banner {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 320px;
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 32px;
@@ -28,24 +89,63 @@
             background: linear-gradient(135deg, rgba(225,6,0,.35), rgba(0,0,0,.85));
             box-shadow: 0 12px 40px rgba(0,0,0,.55);
         }
-        .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-banner img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
         .hero-banner::after {
             content: '';
             position: absolute;
             inset: 0;
             pointer-events: none;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(10,10,10,.92) 100%);
-        }
-        @media (max-width: 640px) {
-            .hero-banner { height: 190px; border-radius: 12px; margin-bottom: 24px; }
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(10,10,10,.95) 100%);
         }
 
-        /* Make team cards clickable */
+        /* --- RESPONSIVE HERO LAYOUT --- */
+        @media (max-width: 1200px) {
+            .hero-character-layer { width: 340px; }
+            .hero-character-img { max-height: 550px; }
+            .hero-char-glow { width: 300px; height: 300px; }
+        }
+
+        @media (max-width: 1024px) {
+            .hero-flex-wrapper { min-height: 450px; }
+            .hero-character-layer { width: 280px; }
+            .hero-character-img { max-height: 450px; }
+        }
+
+        @media (max-width: 768px) {
+            /* On mobile, character becomes a background element so text stays readable */
+            .hero-flex-wrapper { display: block; min-height: auto; }
+            .hero-content-wrapper { padding-bottom: 0; }
+            .hero-character-layer {
+                position: absolute;
+                right: -10px;
+                bottom: 0;
+                width: 240px;
+                opacity: 0.3; /* Faded so it doesn't block text/buttons */
+                z-index: 1;
+            }
+            .hero-character-img { 
+                max-height: 380px; 
+                animation: none; 
+                filter: drop-shadow(0 0 10px rgba(225,6,0,0.5)); 
+            }
+            .hero-char-glow { display: none; }
+            .hero-banner { height: 220px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-character-img { animation: none; }
+        }
+
+        /* --- TEAM CARDS & ROSTER MODAL (Aapka purana CSS) --- */
         .team-card { cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
         .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
         .team-card:active { transform: translateY(-1px); }
 
-        /* ============ ROSTER MODAL ============ */
         .modal-backdrop {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.88);
@@ -163,7 +263,6 @@
             padding: 2px 10px; border-radius: 10px; letter-spacing: 1px;
         }
 
-        /* Player roster cards */
         .roster-list { display: flex; flex-direction: column; gap: 10px; }
 
         .player-card {
@@ -350,36 +449,54 @@
 
     <section class="tournament-hero">
         <div class="container">
-            <div class="breadcrumb">
-                <a href="index.html">Home</a> <span class="sep">/</span>
-                <a href="tournaments.html">Tournaments</a> <span class="sep">/</span>
-                <span class="current" id="t-breadcrumb-name">Loading...</span>
-            </div>
-
-            <div class="hero-banner" id="t-banner-wrap" style="display:none;">
-                <img id="t-banner-img" alt="Tournament Banner">
-            </div>
-
-            <div class="hero-grid">
-                <div>
-                    <div class="hero-badges">
-                        <span class="badge badge-status-upcoming" id="t-status">Upcoming</span>
-                        <span class="badge badge-game" id="t-game">Game</span>
-                        <span class="badge badge-category" id="t-category">Category</span>
-                        <span class="badge badge-scope-public" id="t-scope-badge">🌐 Public</span>
+            
+            <!-- ===== NEW FLEX WRAPPER: BANNER LEFT, CHARACTER RIGHT ===== -->
+            <div class="hero-flex-wrapper">
+                
+                <!-- LEFT SIDE: Banner & Content -->
+                <div class="hero-content-wrapper">
+                    <div class="breadcrumb">
+                        <a href="index.html">Home</a> <span class="sep">/</span>
+                        <a href="tournaments.html">Tournaments</a> <span class="sep">/</span>
+                        <span class="current" id="t-breadcrumb-name">Loading...</span>
                     </div>
-                    <h1 class="tournament-hero-title" id="t-name">Loading...</h1>
-                    <div class="tournament-hero-meta">
-                        <span id="t-dates">Dates Loading...</span>
-                        <span id="t-format">Format Loading...</span>
+
+                    <div class="hero-banner" id="t-banner-wrap" style="display:none;">
+                        <img id="t-banner-img" alt="Tournament Banner">
+                    </div>
+
+                    <div class="hero-grid">
+                        <div>
+                            <div class="hero-badges">
+                                <span class="badge badge-status-upcoming" id="t-status">Upcoming</span>
+                                <span class="badge badge-game" id="t-game">Game</span>
+                                <span class="badge badge-category" id="t-category">Category</span>
+                                <span class="badge badge-scope-public" id="t-scope-badge">🌐 Public</span>
+                            </div>
+                            <h1 class="tournament-hero-title" id="t-name">Loading...</h1>
+                            <div class="tournament-hero-meta">
+                                <span id="t-dates">Dates Loading...</span>
+                                <span id="t-format">Format Loading...</span>
+                            </div>
+                        </div>
+
+                        <div class="hero-actions">
+                            <a href="#" id="t-register-btn" class="btn btn-primary">Register Team</a>
+                            <div class="hero-register-note" id="t-register-note">Registration status will be checked</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="hero-actions">
-                    <a href="#" id="t-register-btn" class="btn btn-primary">Register Team</a>
-                    <div class="hero-register-note" id="t-register-note">Registration status will be checked</div>
+                <!-- RIGHT SIDE: Character Layer -->
+                <div class="hero-character-layer">
+                    <div class="hero-char-glow"></div>
+                    <!-- Character Image: Aapko isko assets/images/ff-character.png par upload karna hai -->
+                    <img src="assets/images/ff-character.png" alt="FF Ranbhoomi 2026 Character" class="hero-character-img" onerror="this.style.display='none'">
                 </div>
+
             </div>
+            <!-- ===== END FLEX WRAPPER ===== -->
+
         </div>
     </section>
 
