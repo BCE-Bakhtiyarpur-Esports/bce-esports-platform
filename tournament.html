@@ -54,13 +54,49 @@
         .meta-item { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 6px; border: 1px solid #222; }
         .meta-item svg { width: 16px; height: 16px; color: var(--red); }
 
-        /* Right Side: Character & Platform */
+        /* Right Side: 3D Character & Platform */
         .hero-visual-right { 
             position: relative; display: flex; align-items: flex-end; justify-content: center; 
-            padding-bottom: 10px; z-index: 1;
+            padding-bottom: 10px; z-index: 1; overflow: hidden;
         }
         
-        /* 3D Sci-Fi Platform */
+        /* 3D Canvas Container */
+        #three-canvas-container {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        #three-canvas {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        /* Loading State for 3D Model */
+        .model-loader {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            border: 3px solid rgba(225,6,0,0.2);
+            border-top-color: var(--red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 5;
+        }
+
+        /* Fallback PNG (Hidden by default, shown if model fails) */
+        .fallback-img {
+            position: absolute; bottom: 10px; right: 10px;
+            width: 100%; max-width: 320px; height: auto;
+            object-fit: contain; filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.9));
+            z-index: 3; display: none;
+        }
+
+        /* 3D Sci-Fi CSS Platform */
         .platform-wrapper {
             position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
             width: clamp(200px, 25vw, 320px); height: clamp(60px, 8vw, 100px);
@@ -99,41 +135,7 @@
         }
         @keyframes spinRing { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
         @keyframes pulseGlow { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
-
-        /* Character Floating & Recoil */
-        .character-holder {
-            position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: center;
-            animation: floatChar 5s ease-in-out infinite;
-        }
-        @keyframes floatChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-
-        .recoil-wrapper {
-            position: relative; animation: shootRecoil 6s infinite; transform-origin: bottom center;
-        }
-        .hero-character-img {
-            position: relative; width: 100%; max-width: 320px; height: auto;
-            object-fit: contain; filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.9)); z-index: 2;
-        }
-        
-        /* Muzzle Flash */
-        .muzzle-flash {
-            position: absolute; top: 35%; right: 10%; width: 40px; height: 40px;
-            background: radial-gradient(circle, #fff, #ffaa00 30%, #e10600 60%, transparent 100%);
-            border-radius: 50%; opacity: 0; mix-blend-mode: screen; pointer-events: none;
-            transform: scale(0.5); animation: flashAnim 6s infinite; z-index: 3;
-        }
-        @keyframes shootRecoil {
-            0%, 91%, 100% { transform: translateY(0) rotate(0deg); }
-            92% { transform: translateY(3px) rotate(-1deg); } 
-            94% { transform: translateY(-2px) rotate(0.5deg); }
-            96% { transform: translateY(0) rotate(0deg); }
-        }
-        @keyframes flashAnim {
-            0%, 90%, 100% { opacity: 0; transform: scale(0.5); }
-            92% { opacity: 1; transform: scale(1.5); }
-            94% { opacity: 0.8; transform: scale(1.2); }
-            96% { opacity: 0; transform: scale(0.5); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* CTA Button */
         .hero-cta-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
@@ -145,7 +147,7 @@
         .hero-cta-section .btn:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(225,6,0,0.3); }
         .cta-note { text-align: center; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-        /* Mobile Optimization (Horizontal Preserved) */
+        /* Mobile Optimization */
         @media (max-width: 768px) {
             .hero-banner { height: 200px; }
             .tournament-hero-card { grid-template-columns: 1.2fr 1fr; }
@@ -164,8 +166,7 @@
 
             .hero-visual-right { padding-right: 0; padding-bottom: 5px; }
             .platform-wrapper { width: clamp(150px, 40vw, 220px); height: clamp(50px, 12vw, 70px); }
-            .hero-character-img { max-width: 180px; }
-            .muzzle-flash { width: 24px; height: 24px; right: 5%; top: 40%; }
+            .fallback-img { max-width: 180px; }
         }
 
         /* ===== TEAM CARDS & MODAL (Preserved) ===== */
@@ -208,8 +209,17 @@
         .no-roster { background: var(--bg-secondary); border: 1px dashed var(--border-bright); border-radius: var(--radius-md); padding: 28px 20px; text-align: center; font-size: 13px; color: var(--text-secondary); }
         .modal-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; color: var(--text-secondary); font-size: 13px; }
         .modal-loading-spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
+
+    <!-- THREE.JS IMPORT MAP -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
 </head>
 <body>
 
@@ -278,11 +288,10 @@
                     </div>
                 </div>
 
-                <!-- RIGHT: Character & Platform -->
+                <!-- RIGHT: 3D Character & CSS Platform -->
                 <div class="hero-visual-right">
-                    <div class="char-glow-bg"></div>
                     
-                    <!-- Sci-Fi Platform Layer -->
+                    <!-- Futuristic CSS Platform -->
                     <div class="platform-wrapper">
                         <div class="platform-glow"></div>
                         <div class="platform">
@@ -293,13 +302,17 @@
                         </div>
                     </div>
 
-                    <!-- Character & Shooting Layer -->
-                    <div class="character-holder">
-                        <div class="recoil-wrapper">
-                            <img src="assets/images/ff-character.png" class="hero-character-img" alt="Character" onerror="this.style.display='none'">
-                            <div class="muzzle-flash"></div>
-                        </div>
+                    <!-- Loading Spinner -->
+                    <div class="model-loader" id="modelLoader"></div>
+
+                    <!-- Fallback Image (In case 3D fails) -->
+                    <img src="assets/images/ff-character.png" id="fallbackImg" class="fallback-img" alt="Character">
+
+                    <!-- 3D Canvas -->
+                    <div id="three-canvas-container">
+                        <canvas id="three-canvas"></canvas>
                     </div>
+
                 </div>
 
             </div>
@@ -509,7 +522,6 @@
 
             const formatTitle = () => {
                 let text = titleEl.textContent.trim();
-                
                 if (text && text !== 'Loading...' && !titleEl.querySelector('.line1')) {
                     let words = text.split(' ');
                     if (words.length >= 3) {
@@ -529,17 +541,174 @@
                     }
                 }
             };
-
             formatTitle();
-
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                        formatTitle();
-                    }
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') formatTitle();
                 });
             });
             observer.observe(titleEl, { childList: true, characterData: true, subtree: true });
+        });
+    </script>
+
+    <!-- ==================================================
+         3D CHARACTER INTEGRATION SCRIPT
+         ================================================== -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('three-canvas-container');
+            const canvas = document.getElementById('three-canvas');
+            const loaderSpinner = document.getElementById('modelLoader');
+            const fallbackImg = document.getElementById('fallbackImg');
+            
+            // Check for reduced motion
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (!container || !canvas) return;
+
+            // 1. Scene Setup
+            const scene = new THREE.Scene();
+            
+            // 2. Camera Setup
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+            camera.position.set(0, 1.5, 5); // Adjust Z to zoom in/out
+            camera.lookAt(0, 1, 0);
+
+            // 3. Renderer Setup (Optimized for mobile)
+            const renderer = new THREE.WebGLRenderer({ 
+                canvas: canvas, 
+                alpha: true, // Transparent background
+                antialias: window.devicePixelRatio < 2 // Disable AA on high-res mobile to save performance
+            });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            // Optimize pixel ratio: Max 1.5 to prevent GPU overload with 490k triangles
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.shadowMap.enabled = false; // Shadows are heavy, disable for 490k model
+
+            // 4. Lighting Setup (Premium Cinematic)
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Soft base light
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 2); // Key light from top-right
+            dirLight.position.set(5, 10, 5);
+            scene.add(dirLight);
+
+            const redLight = new THREE.PointLight(0xe10600, 15, 10); // Red esports rim light from bottom
+            redLight.position.set(0, -1, 2);
+            scene.add(redLight);
+
+            const blueLight = new THREE.PointLight(0x22d3ee, 5, 10); // Subtle cyan edge light
+            blueLight.position.set(-2, 2, -2);
+            scene.add(blueLight);
+
+            // 5. Model Loader
+            const loader = new GLTFLoader();
+            let characterModel = null;
+            let clock = new THREE.Clock();
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetRotationX = 0;
+            let targetRotationY = 0;
+
+            // Mouse move event for interactive rotation
+            document.addEventListener('mousemove', (e) => {
+                // Normalize mouse position to -1 to 1
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+                
+                // Restrict rotation angles so it doesn't look weird
+                targetRotationY = mouseX * 0.5; // Max 0.5 radians (approx 28 degrees)
+                targetRotationX = mouseY * 0.2; // Max 0.2 radians
+            });
+
+            loader.load(
+                'assets/models/female-soldier.glb',
+                (gltf) => {
+                    characterModel = gltf.scene;
+                    
+                    // Auto-center and scale model
+                    const box = new THREE.Box3().setFromObject(characterModel);
+                    const size = box.getSize(new THREE.Vector3());
+                    const center = box.getCenter(new THREE.Vector3());
+                    
+                    // Scale down if the model is too huge
+                    const maxDim = Math.max(size.x, size.y, size.z);
+                    const scale = 3.5 / maxDim; // Fit within ~3.5 units height
+                    characterModel.scale.setScalar(scale);
+                    
+                    // Center the model geometry
+                    characterModel.position.x = -center.x * scale;
+                    characterModel.position.y = -center.y * scale + 1.5; // Move up slightly to sit on platform
+                    characterModel.position.z = -center.z * scale;
+
+                    // Wrap in a group for easier animation
+                    const wrapper = new THREE.Group();
+                    wrapper.add(characterModel);
+                    scene.add(wrapper);
+
+                    // Hide loader, hide fallback
+                    loaderSpinner.style.display = 'none';
+                    fallbackImg.style.display = 'none';
+                    
+                    // Start animation loop
+                    animate();
+                },
+                (xhr) => {
+                    // Progress
+                    const percent = (xhr.loaded / xhr.total) * 100;
+                    console.log(`Loading 3D Model: ${percent.toFixed(2)}%`);
+                },
+                (error) => {
+                    console.error('Error loading 3D model:', error);
+                    loaderSpinner.style.display = 'none';
+                    fallbackImg.style.display = 'block'; // Show PNG if 3D fails
+                }
+            );
+
+            // 6. Animation Loop
+            function animate() {
+                requestAnimationFrame(animate);
+
+                if (characterModel && !prefersReducedMotion) {
+                    const time = clock.getElapsedTime();
+                    
+                    // Procedural Idle Floating (Up and down)
+                    const floatY = Math.sin(time * 1.5) * 0.08; // 0.08 units amplitude
+                    
+                    // Smoothly interpolate rotation towards target mouse rotation
+                    characterModel.rotation.y += (targetRotationY - characterModel.rotation.y) * 0.05;
+                    characterModel.rotation.x += (targetRotationX - characterModel.rotation.x) * 0.05;
+                    
+                    // Apply floating to position
+                    characterModel.position.y = (-characterModel.position.y || 1.5) + floatY; 
+                    // (Note: Fixing position calculation for floating relative to base pos)
+                    // Actually, better to animate the wrapper
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            // 7. Handle Resize
+            window.addEventListener('resize', () => {
+                if (!container) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+            
+            // If reduced motion is preferred, just render a static frame
+            if (prefersReducedMotion) {
+                 // We need to wait for model to load before rendering
+                 const checkModelInterval = setInterval(() => {
+                     if (characterModel) {
+                         renderer.render(scene, camera);
+                         clearInterval(checkModelInterval);
+                     }
+                 }, 500);
+            }
         });
     </script>
 </body>
