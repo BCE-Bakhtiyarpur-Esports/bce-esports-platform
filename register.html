@@ -9,12 +9,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- External CSS -->
+    <!-- ✅ YE LINK MISSING THA, ISLIYE WHITE BACKGROUND AA RAHA THA -->
     <link rel="stylesheet" href="assets/css/main.css">
     
     <style>
-        /* Page-specific styles for Registration */
-        :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225,6,0,.35); --text-primary: #fff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333; --green: #22c55e; --cyan: #22d3ee; --red-error: #ef4444; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; }
+        /* Base Reset (Fallback agar main.css load na ho) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body, 'Rajdhani', sans-serif); background-color: var(--bg-primary, #0a0a0a); color: var(--text-primary, #fff); font-size: 16px; line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+        :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225,6,0,.35); --text-primary: #fff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333; --green: #22c55e; --cyan: #22d3ee; --red-error: #ef4444; --orange: #fbbf24; --purple: #c084fc; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; }
 
         .loading-overlay { position: fixed; inset: 0; background: rgba(10,10,10,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
         .loading-overlay.active { display: flex; }
@@ -38,6 +41,9 @@
         .scope-badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
         .scope-badge.public { background: rgba(34,211,238,.12); color: var(--cyan); border: 1px solid rgba(34,211,238,.35); }
         .scope-badge.intra { background: rgba(225,6,0,.12); color: var(--red); border: 1px solid rgba(225,6,0,.35); }
+        .fee-badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
+        .fee-badge.free { background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.35); }
+        .fee-badge.paid { background: rgba(245,158,11,.12); color: #fbbf24; border: 1px solid rgba(245,158,11,.35); }
 
         .page-hero { padding: 60px 24px 40px; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(225,6,0,.15) 0%, transparent 60%); }
         .page-hero-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(28px, 5vw, 44px); text-transform: uppercase; }
@@ -46,16 +52,16 @@
         .progress-wrap { background: var(--bg-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 0; position: sticky; top: 72px; z-index: 40; }
         .progress { display: flex; justify-content: space-between; max-width: 720px; margin: 0 auto; position: relative; }
         .progress-step { display: flex; flex-direction: column; align-items: center; flex: 1; z-index: 2; }
-        .progress-num { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 14px; color: var(--text-muted); }
+        .progress-num { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 14px; color: var(--text-muted); transition: all .3s; }
         .progress-step.completed .progress-num { background: var(--red); border-color: var(--red); color: #fff; }
-        .progress-step.current .progress-num { border-color: var(--red); color: var(--red); }
-        .progress-label { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 8px; text-transform: uppercase; }
+        .progress-step.current .progress-num { border-color: var(--red); color: var(--red); box-shadow: 0 0 0 4px rgba(225,6,0,.15); }
+        .progress-label { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 8px; text-transform: uppercase; transition: color .3s; }
         .progress-step.completed .progress-label, .progress-step.current .progress-label { color: #fff; }
         .progress-line { position: absolute; top: 20px; left: 12.5%; right: 12.5%; height: 2px; background: var(--border); z-index: 1; }
         .progress-line-fill { height: 100%; background: var(--red); width: 0; transition: width .4s; }
 
         .step-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .step-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3vw, 28px); text-transform: uppercase; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .step-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3vw, 28px); text-transform: uppercase; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; color: #fff; }
 
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -74,10 +80,16 @@
         .intra-banner-desc { font-size: 13px; color: var(--text-secondary); }
 
         .player-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px; }
+        .player-block.captain-block { border-color: rgba(192, 132, 252, 0.35); background: linear-gradient(135deg, rgba(168,85,247,0.05), var(--bg-secondary)); }
         .player-block-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
         .player-badge { width: 44px; height: 44px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; color: var(--red); flex-shrink: 0; font-size: 16px; }
+        .player-block.captain-block .player-badge { color: var(--purple); border-color: rgba(192, 132, 252, 0.5); background: rgba(168,85,247,0.1); }
         .player-title { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 15px; letter-spacing: .5px; }
+        .player-block.captain-block .player-title { color: var(--purple); }
         .player-subtitle { font-size: 12px; color: var(--text-muted); }
+
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (max-width: 600px) { .form-grid-2 { grid-template-columns: 1fr; } }
         
         .student-fields { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-bright); }
         .student-fields.show { display: block; }
@@ -97,30 +109,59 @@
         .sub-toggle input:checked + .sub-toggle-check { background: var(--red); border-color: var(--red); }
         .sub-form { display: none; margin-top: 16px; } .sub-form.show { display: block; }
 
-        .payment-info { background: rgba(225,6,0,.08); border: 1px solid rgba(225,6,0,.3); padding: 24px; border-radius: var(--radius-md); margin-bottom: 24px; }
-        .payment-info-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .payment-info-row:last-child { border: none; }
         .free-banner { display: none; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.35); padding: 20px; border-radius: var(--radius-md); margin-bottom: 24px; text-align: center; }
         .free-banner.active { display: block; }
         .free-banner-title { font-family: var(--font-display); color: var(--green); font-weight: 700; font-size: 15px; }
 
-        .upload-zone { border: 2px dashed var(--border-bright); border-radius: var(--radius-md); padding: 40px; text-align: center; cursor: pointer; background: var(--bg-secondary); }
-        .upload-zone.has-file { border-color: var(--green); }
+        .payment-info { background: rgba(225,6,0,.08); border: 1px solid rgba(225,6,0,.3); padding: 24px; border-radius: var(--radius-md); margin-bottom: 24px; }
+        .payment-info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px; flex-wrap: wrap; }
+        .payment-info-row:last-child { border: none; }
+        .payment-info-row > span:first-child { color: var(--text-secondary); font-family: var(--font-display); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .pay-amount-big { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--red); text-shadow: 0 0 20px var(--red-glow); }
+        .upi-id-wrap { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        #upiIdValue { font-family: var(--font-display); color: var(--cyan); font-weight: 700; letter-spacing: 0.5px; font-size: 14px; word-break: break-all; }
+        .copy-btn { background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.35); color: var(--cyan); padding: 6px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase; }
+        .copy-btn:hover { background: rgba(34,211,238,0.2); transform: translateY(-1px); }
+        .copy-btn:disabled { opacity: 0.6; cursor: default; }
+
+        .qr-panel { background: linear-gradient(135deg, rgba(34,211,238,0.06), var(--bg-secondary)); border: 1px solid rgba(34,211,238,0.25); border-radius: var(--radius-md); padding: 28px 20px; text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
+        .qr-panel::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 50%), radial-gradient(circle at 80% 80%, rgba(225,6,0,0.06), transparent 50%); pointer-events: none; }
+        .qr-label { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 18px; position: relative; z-index: 1; }
+        .qr-wrap { display: inline-block; padding: 14px; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 4px rgba(34,211,238,0.15); position: relative; z-index: 1; }
+        .qr-wrap img { display: block; width: 240px; height: 240px; border-radius: 6px; }
+        .qr-hint { font-size: 12px; color: var(--text-secondary); margin-top: 16px; position: relative; z-index: 1; }
+        .qr-amount-note { display: inline-block; margin-top: 12px; padding: 8px 16px; background: rgba(225,6,0,0.12); border: 1px solid rgba(225,6,0,0.3); border-radius: 6px; font-size: 12.5px; color: var(--text-secondary); position: relative; z-index: 1; }
+        .qr-amount-note strong { color: var(--red); font-family: var(--font-display); font-weight: 900; font-size: 14px; }
+        .qr-fallback { margin-top: 14px; padding: 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; color: #f87171; font-size: 13px; line-height: 1.5; position: relative; z-index: 1; }
+        .qr-fallback strong { color: #fff; font-family: var(--font-display); word-break: break-all; }
+
+        .upload-zone { border: 2px dashed var(--border-bright); border-radius: var(--radius-md); padding: 40px; text-align: center; cursor: pointer; background: var(--bg-secondary); transition: all 0.3s; }
+        .upload-zone:hover { border-color: var(--cyan); }
+        .upload-zone.has-file { border-color: var(--green); background: rgba(34,197,94,0.05); }
         .upload-zone input { display: none; }
 
         .review-block { background: var(--bg-secondary); border: 1px solid var(--border); padding: 24px; border-radius: var(--radius-md); margin-bottom: 16px; }
         .review-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; gap: 12px; }
         .review-row:last-child { border-bottom: none; }
+        .review-row > span:first-child { color: var(--text-secondary); }
+        .review-row > span:last-child { color: #fff; font-weight: 600; text-align: right; word-break: break-word; }
         .review-verify-block { background: rgba(34,211,238,.05); border: 1px solid rgba(34,211,238,.3); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; }
         .review-verify-title { font-family: var(--font-display); font-size: 12px; color: var(--cyan); font-weight: 700; margin-bottom: 10px; }
-        .review-verify-row { font-size: 13px; padding: 8px 0; color: var(--text-secondary); border-bottom: 1px dashed rgba(255,255,255,.05); }
+        .review-verify-row { font-size: 13px; padding: 10px 0; color: var(--text-secondary); border-bottom: 1px dashed rgba(255,255,255,.05); line-height: 1.7; }
         .review-verify-row:last-child { border-bottom: none; }
         .review-verify-row strong { color: #fff; }
+        .review-verify-row .tag { display: inline-block; font-family: var(--font-display); font-size: 10px; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.5px; margin-right: 6px; }
+        .tag.name { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .tag.ign { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .tag.uid { background: rgba(34,211,238,0.15); color: #67e8f9; }
+        /* NAYE COLORS */
+        .tag.role { background: rgba(245,158,11,0.15); color: var(--orange); }
+        .tag.captain { background: rgba(168,85,247,0.15); color: var(--purple); }
 
         .agree-box { display: flex; gap: 14px; padding: 20px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 24px; cursor: pointer; align-items: center; }
-        .agree-box input { width: 20px; height: 20px; accent-color: var(--red); cursor: pointer; }
+        .agree-box input { width: 20px; height: 20px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
 
-        .step-nav { display: flex; justify-content: space-between; margin-top: 24px; }
+        .step-nav { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; flex-wrap: wrap; }
 
         .success-panel { display: none; text-align: center; padding: 60px 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 0 40px rgba(34,197,94,0.1); }
         .success-panel.show { display: block; }
@@ -132,12 +173,16 @@
             .form-grid { grid-template-columns: 1fr; }
             .step-card { padding: 24px; }
             .success-panel { padding: 40px 20px; }
+            .qr-wrap img { width: 200px; height: 200px; }
+            .pay-amount-big { font-size: 22px; }
+            .progress-label { font-size: 9px; }
+            .progress-num { width: 34px; height: 34px; font-size: 12px; }
+            .progress-line { top: 17px; }
         }
     </style>
 </head>
 <body>
 
-<!-- 🎵 Background Music for Registration Page -->
 <audio id="bgMusic" src="assets/audio/register-song.mp3" preload="auto" autoplay loop></audio>
 
 <div id="loadingOverlay" class="loading-overlay">
@@ -157,7 +202,7 @@
 
 <div id="mainContent" style="display:none;">
     
-    <!-- Navigation (Injected by main.js) -->
+    <!-- NAV WILL AUTO-INJECT HERE BY MAIN.JS -->
     <nav class="nav"><div class="container nav-inner"></div></nav>
 
     <div class="strip">
@@ -169,6 +214,7 @@
                     <span id="strip-dates"></span>
                     <span id="strip-format"></span>
                     <span id="strip-scope"></span>
+                    <span id="strip-fee"></span>
                 </div>
             </div>
             <a href="tournaments.html" class="strip-back" id="back-link">← Back</a>
@@ -263,34 +309,59 @@
                 </div>
             </div>
 
-            <!-- STEP 3 -->
+            <!-- STEP 3 — PAYMENT -->
             <div class="step-card" id="step3" style="display:none;">
                 <h2 class="step-title">Payment</h2>
+
                 <div class="free-banner" id="freeBanner">
-                    <div class="free-banner-title">✓ This tournament is FREE</div>
+                    <div class="free-banner-title">✓ This tournament is FREE — No payment required</div>
                 </div>
+
                 <div id="paymentFields">
                     <div class="payment-info">
-                        <div class="payment-info-row"><span>Amount</span><span id="pay-amount">₹0</span></div>
-                        <div class="payment-info-row"><span>UPI ID</span><span>bce.esports@upi</span></div>
+                        <div class="payment-info-row">
+                            <span>Amount to Pay</span>
+                            <span class="pay-amount-big" id="pay-amount">₹0</span>
+                        </div>
+                        <div class="payment-info-row">
+                            <span>UPI ID</span>
+                            <span class="upi-id-wrap">
+                                <span id="upiIdValue">piyushkumar1477@naviaxis</span>
+                                <button type="button" class="copy-btn" onclick="copyUpiId(this)">📋 Copy</button>
+                            </span>
+                        </div>
                     </div>
+
+                    <div class="qr-panel">
+                        <div class="qr-label">📱 Scan QR to Pay</div>
+                        <div class="qr-wrap" id="qrWrap">
+                            <img id="upiQrImg" alt="UPI QR Code" onerror="handleQrError()" />
+                        </div>
+                        <div class="qr-hint">Use any UPI app — GPay, PhonePe, Paytm, BHIM, Amazon Pay</div>
+                        <div class="qr-amount-note">Pay exactly <strong id="qrAmountNote">₹0</strong> — any other amount may cause delays</div>
+                        <div class="qr-fallback" id="qrFallback" style="display:none;">
+                            ⚠️ QR couldn't load. Please pay manually to UPI ID: <strong>piyushkumar1477@naviaxis</strong>
+                        </div>
+                    </div>
+
                     <div class="form-grid">
                         <div class="form-group full">
                             <label class="form-label">UPI UTR / Ref No. <span class="req">*</span></label>
-                            <input type="text" id="utr" class="form-input" placeholder="Enter UTR or Reference Number">
+                            <input type="text" id="utr" class="form-input" placeholder="Enter 12-digit UTR or Reference Number from your payment app">
                             <div class="form-error" id="err-utr">UTR is required.</div>
                         </div>
                         <div class="form-group full">
-                            <label class="form-label">Screenshot <span class="req">*</span></label>
+                            <label class="form-label">Payment Screenshot <span class="req">*</span></label>
                             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('screenshotInput').click()">
                                 <input type="file" id="screenshotInput" accept="image/*">
                                 <div style="font-size:36px;">📸</div>
-                                <div id="uploadTitle">Click to upload</div>
+                                <div id="uploadTitle">Click to upload payment screenshot</div>
                                 <div class="form-error" id="err-screenshot" style="color:red;margin-top:10px;">Screenshot required.</div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div class="step-nav" style="margin-top:24px;">
                     <button class="btn btn-outline" onclick="goToStep(2)">← Back</button>
                     <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
@@ -305,10 +376,11 @@
                     <div class="review-row"><span>Email</span><span id="revCaptainEmail">—</span></div>
                     <div class="review-row"><span>Team</span><span id="revTeamName">—</span></div>
                     <div class="review-row"><span>Roster</span><span id="revRoster">—</span></div>
+                    <div class="review-row"><span>Entry Fee</span><span id="revFee">—</span></div>
                     <div class="review-row" id="revUtrRow"><span>UTR</span><span id="revUtr">—</span></div>
                 </div>
-                <div class="review-verify-block" id="revVerifyBlock" style="display:none;">
-                    <div class="review-verify-title">🎓 Student Verification</div>
+                <div class="review-verify-block" id="revVerifyBlock">
+                    <div class="review-verify-title">👥 Player Details</div>
                     <div id="revVerifyList"></div>
                 </div>
                 <label class="agree-box">
@@ -339,7 +411,7 @@
         </div>
     </section>
     
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
@@ -383,15 +455,14 @@
     </footer>
 </div>
 
-<!-- External JS -->
+<!-- ✅ MAIN JS LINK (NAVBAR LOAD KARNE KE LIYE) -->
 <script src="assets/js/main.js"></script>
 
 <script>
-// --- 🎵 Audio Continuity Logic ---
+/* ============ AUDIO ============ */
 (function initAudio() {
     const music = document.getElementById('bgMusic');
     if (!music) return;
-
     const playPromise = music.play();
     if (playPromise !== undefined) {
         playPromise.catch(() => {
@@ -406,8 +477,11 @@
     }
 })();
 
-// --- Existing Registration Logic ---
+/* ============ CONSTANTS ============ */
 const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
+const UPI_ID = "piyushkumar1477@naviaxis";
+const UPI_NAME = "BCE Esports";
+
 const urlParams = new URLSearchParams(window.location.search);
 const tournamentId = urlParams.get('tid') || urlParams.get('id') || '';
 
@@ -425,6 +499,7 @@ const state = {
     idCards: {}
 };
 
+/* ============ HELPERS ============ */
 function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -455,6 +530,7 @@ async function fetchJSON(url, opts) {
     }
 }
 
+/* ============ LOAD TOURNAMENT ============ */
 async function loadTournament() {
     if (!tournamentId) {
         showError('Missing Tournament ID', 'URL me ?tid=XXXX hona chahiye.\nExample: register.html?tid=TRN-XXXX');
@@ -468,13 +544,11 @@ async function loadTournament() {
         
         tournament = json.data;
         
-        // Determine scope
         const scopeRaw = String(tournament.Scope || '').trim();
         const collegeRaw = String(tournament.CollegeName || '').trim();
         isIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
         paymentRequired = (Number(tournament.EntryFee) || 0) > 0;
         
-        // Strip
         document.getElementById('strip-title').textContent = tournament.Name || 'Tournament';
         document.getElementById('strip-format').textContent = '👥 ' + (tournament.TeamFormat || 'Squad');
         document.getElementById('strip-dates').textContent = tournament.TournamentStartAt ? '📅 ' + new Date(tournament.TournamentStartAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : '';
@@ -487,17 +561,38 @@ async function loadTournament() {
         } else {
             scopeBadge.innerHTML = '<span class="scope-badge public">🌐 Public</span>';
         }
-        
-        // Payment UI
+
+        const feeBadge = document.getElementById('strip-fee');
         if (paymentRequired) {
-            document.getElementById('pay-amount').textContent = '₹' + tournament.EntryFee;
+            feeBadge.innerHTML = '<span class="fee-badge paid">₹' + (Number(tournament.EntryFee) || 0) + ' Entry</span>';
         } else {
+            feeBadge.innerHTML = '<span class="fee-badge free">FREE Entry</span>';
+        }
+
+        if (paymentRequired) {
+            const amount = Number(tournament.EntryFee) || 0;
+            document.getElementById('pay-amount').textContent = '₹' + amount;
+            document.getElementById('qrAmountNote').textContent = '₹' + amount;
+            generateQrCode(amount, tournament.Name || 'Tournament');
+            document.getElementById('revUtrRow').style.display = 'flex';
+        } else {
+            const paymentStep = document.querySelector('.progress-step[data-step="3"]');
+            if (paymentStep) paymentStep.style.display = 'none';
+            const reviewStep = document.querySelector('.progress-step[data-step="4"]');
+            if (reviewStep) {
+                reviewStep.querySelector('.progress-num').textContent = '3';
+                reviewStep.querySelector('.progress-label').textContent = 'Review';
+            }
+            const line = document.querySelector('.progress-line');
+            if (line) {
+                line.style.left = '16.66%';
+                line.style.right = '16.66%';
+            }
             document.getElementById('freeBanner').classList.add('active');
             document.getElementById('paymentFields').style.display = 'none';
             document.getElementById('revUtrRow').style.display = 'none';
         }
         
-        // Render roster
         renderRoster();
         
         hideLoading();
@@ -507,30 +602,78 @@ async function loadTournament() {
     }
 }
 
+/* ============ QR CODE ============ */
+function generateQrCode(amount, tourName) {
+    const note = encodeURIComponent((tourName || 'Tournament') + ' Registration');
+    const upiString = 'upi://pay?pa=' + UPI_ID +
+        '&pn=' + encodeURIComponent(UPI_NAME) +
+        '&am=' + amount +
+        '&cu=INR' +
+        '&tn=' + note;
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&bgcolor=FFFFFF&color=0A0A0A&data=' + encodeURIComponent(upiString);
+    const img = document.getElementById('upiQrImg');
+    if (img) { img.style.display = 'block'; img.src = qrUrl; }
+    const wrap = document.getElementById('qrWrap');
+    if (wrap) wrap.style.display = 'inline-block';
+    const fallback = document.getElementById('qrFallback');
+    if (fallback) fallback.style.display = 'none';
+}
+
+window.handleQrError = function() {
+    const img = document.getElementById('upiQrImg');
+    const wrap = document.getElementById('qrWrap');
+    const fallback = document.getElementById('qrFallback');
+    if (img) img.style.display = 'none';
+    if (wrap) wrap.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+};
+
+window.copyUpiId = function(btn) {
+    if (!navigator.clipboard) { alert('UPI ID: ' + UPI_ID); return; }
+    navigator.clipboard.writeText(UPI_ID).then(function() {
+        const original = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        btn.disabled = true;
+        setTimeout(function() { btn.textContent = original; btn.disabled = false; }, 1800);
+    }).catch(function() { alert('Copy failed. UPI ID: ' + UPI_ID); });
+};
+
+/* ============ ROSTER ============ */
 function renderRoster() {
     const players = ['P1', 'P2', 'P3', 'P4'];
-    
     document.getElementById('rosterContainer').innerHTML = players.map((slot, i) => {
         const n = i + 1;
         const titles = ['Player 1 (Captain)', 'Player 2', 'Player 3', 'Player 4'];
+        const isCaptain = i === 0;
         return `
-            <div class="player-block">
+            <div class="player-block ${isCaptain ? 'captain-block' : ''}">
                 <div class="player-block-header">
                     <div class="player-badge">${slot}</div>
                     <div>
                         <div class="player-title">${titles[i]}</div>
-                        <div class="player-subtitle">${isIntra ? 'Student verification required' : 'In-game name required'}</div>
+                        <div class="player-subtitle">${isIntra ? 'Player details + student verification' : 'Player name, IGN & Game UID required'}</div>
                     </div>
                 </div>
-                <div class="form-grid">
+
+                <div class="form-grid-2">
                     <div class="form-group">
-                        <label class="form-label">IGN / Game UID <span class="req">*</span></label>
-                        <input type="text" id="roster${n}" class="form-input" placeholder="In-game name / UID">
-                        <div class="form-error" id="err-roster${n}">Required.</div>
+                        <label class="form-label">Player Name <span class="req">*</span></label>
+                        <input type="text" id="realName${n}" class="form-input" placeholder="Enter real name">
+                        <div class="form-error" id="err-realName${n}">Required.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Game Name (IGN) <span class="req">*</span></label>
+                        <input type="text" id="ign${n}" class="form-input" placeholder="In-game name">
+                        <div class="form-error" id="err-ign${n}">Required.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Game UID <span class="req">*</span></label>
+                        <input type="text" id="uid${n}" class="form-input" placeholder="Enter game UID">
+                        <div class="form-error" id="err-uid${n}">Required.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Role</label>
-                        <select id="roster${n}role" class="form-input">
+                        <select id="role${n}" class="form-input">
                             <option value="IGL">IGL</option>
                             <option value="Assaulter">Assaulter</option>
                             <option value="Sniper">Sniper</option>
@@ -538,28 +681,25 @@ function renderRoster() {
                         </select>
                     </div>
                 </div>
+
                 <div class="student-fields ${isIntra ? 'show' : ''}" id="studentFields${n}">
                     <div class="student-fields-header">🎓 Student Details</div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Real Name <span class="req">*</span></label>
-                            <input type="text" id="v${n}realName" class="form-input" placeholder="As per ID card">
+                            <label class="form-label">Roll Number <span class="req">*</span></label>
+                            <input type="text" id="rollNumber${n}" class="form-input" placeholder="e.g. 21BCE1234">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Roll Number <span class="req">*</span></label>
-                            <input type="text" id="v${n}rollNumber" class="form-input" placeholder="e.g. 21BCE1234">
-                        </div>
-                        <div class="form-group full">
                             <label class="form-label">College Name <span class="req">*</span></label>
-                            <input type="text" id="v${n}collegeName" class="form-input" placeholder="Enter your college name">
+                            <input type="text" id="collegeName${n}" class="form-input" placeholder="Enter your college name">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Branch <span class="req">*</span></label>
-                            <input type="text" id="v${n}branch" class="form-input" placeholder="e.g. CSE, ECE, ME">
+                            <input type="text" id="branch${n}" class="form-input" placeholder="e.g. CSE, ECE, ME">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Year <span class="req">*</span></label>
-                            <select id="v${n}year" class="form-input">
+                            <select id="year${n}" class="form-input">
                                 <option value="">Select...</option>
                                 <option value="1st">1st Year</option>
                                 <option value="2nd">2nd Year</option>
@@ -569,14 +709,14 @@ function renderRoster() {
                         </div>
                         <div class="form-group full">
                             <label class="form-label">ID Card Photo <span class="req">*</span></label>
-                            <div class="id-upload" id="v${n}uploadBox" onclick="document.getElementById('v${n}idCard').click()">
-                                <input type="file" id="v${n}idCard" accept="image/*" onchange="handleIdUpload(event, ${n})">
+                            <div class="id-upload" id="uploadBox${n}" onclick="document.getElementById('idCard${n}').click()">
+                                <input type="file" id="idCard${n}" accept="image/*" onchange="handleIdUpload(event, ${n})">
                                 <div class="id-upload-icon">🪪</div>
-                                <div class="id-upload-text" id="v${n}uploadText">Click to upload (max 2 MB)</div>
+                                <div class="id-upload-text" id="uploadText${n}">Click to upload (max 2 MB)</div>
                             </div>
                         </div>
                     </div>
-                    <div class="form-error" id="err-v${n}">Complete all student fields + upload ID.</div>
+                    <div class="form-error" id="err-student${n}">Complete all student fields + upload ID.</div>
                 </div>
             </div>
         `;
@@ -590,18 +730,29 @@ function renderSubForm() {
                 <div class="player-badge">SUB</div>
                 <div>
                     <div class="player-title">Substitute Player</div>
-                    <div class="player-subtitle">${isIntra ? 'Student verification required' : 'In-game name required'}</div>
+                    <div class="player-subtitle">${isIntra ? 'Player details + student verification' : 'Player name, IGN & Game UID required'}</div>
                 </div>
             </div>
-            <div class="form-grid">
+
+            <div class="form-grid-2">
                 <div class="form-group">
-                    <label class="form-label">IGN / Game UID <span class="req">*</span></label>
-                    <input type="text" id="subIgn" class="form-input" placeholder="In-game name / UID">
-                    <div class="form-error" id="err-subIgn">Required.</div>
+                    <label class="form-label">Player Name <span class="req">*</span></label>
+                    <input type="text" id="realNamesub" class="form-input" placeholder="Enter real name">
+                    <div class="form-error" id="err-realNamesub">Required.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Game Name (IGN) <span class="req">*</span></label>
+                    <input type="text" id="ignsub" class="form-input" placeholder="In-game name">
+                    <div class="form-error" id="err-ignsub">Required.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Game UID <span class="req">*</span></label>
+                    <input type="text" id="uidsub" class="form-input" placeholder="Enter game UID">
+                    <div class="form-error" id="err-uidsub">Required.</div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Role</label>
-                    <select id="subRole" class="form-input">
+                    <select id="rolesub" class="form-input">
                         <option value="Sub">Substitute</option>
                         <option value="IGL">IGL</option>
                         <option value="Assaulter">Assaulter</option>
@@ -610,15 +761,25 @@ function renderSubForm() {
                     </select>
                 </div>
             </div>
+
             <div class="student-fields ${isIntra ? 'show' : ''}" id="studentFieldssub">
                 <div class="student-fields-header">🎓 Student Details</div>
                 <div class="form-grid">
-                    <div class="form-group"><label class="form-label">Real Name <span class="req">*</span></label><input type="text" id="vsubrealName" class="form-input" placeholder="As per ID card"></div>
-                    <div class="form-group"><label class="form-label">Roll Number <span class="req">*</span></label><input type="text" id="vsubrollNumber" class="form-input" placeholder="e.g. 21BCE1234"></div>
-                    <div class="form-group full"><label class="form-label">College Name <span class="req">*</span></label><input type="text" id="vsubcollegeName" class="form-input" placeholder="Enter your college name"></div>
-                    <div class="form-group"><label class="form-label">Branch <span class="req">*</span></label><input type="text" id="vsubbranch" class="form-input" placeholder="e.g. CSE"></div>
-                    <div class="form-group"><label class="form-label">Year <span class="req">*</span></label>
-                        <select id="vsubyear" class="form-input">
+                    <div class="form-group">
+                        <label class="form-label">Roll Number <span class="req">*</span></label>
+                        <input type="text" id="rollNumbersub" class="form-input" placeholder="e.g. 21BCE1234">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">College Name <span class="req">*</span></label>
+                        <input type="text" id="collegeNamesub" class="form-input" placeholder="Enter your college name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Branch <span class="req">*</span></label>
+                        <input type="text" id="branchsub" class="form-input" placeholder="e.g. CSE">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year <span class="req">*</span></label>
+                        <select id="yearsub" class="form-input">
                             <option value="">Select...</option>
                             <option value="1st">1st Year</option>
                             <option value="2nd">2nd Year</option>
@@ -628,14 +789,14 @@ function renderSubForm() {
                     </div>
                     <div class="form-group full">
                         <label class="form-label">ID Card Photo <span class="req">*</span></label>
-                        <div class="id-upload" id="vsubuploadBox" onclick="document.getElementById('vsubidCard').click()">
-                            <input type="file" id="vsubidCard" accept="image/*" onchange="handleIdUpload(event, 'sub')">
+                        <div class="id-upload" id="uploadBoxsub" onclick="document.getElementById('idCardsub').click()">
+                            <input type="file" id="idCardsub" accept="image/*" onchange="handleIdUpload(event, 'sub')">
                             <div class="id-upload-icon">🪪</div>
-                            <div class="id-upload-text" id="vsubuploadText">Click to upload (max 2 MB)</div>
+                            <div class="id-upload-text" id="uploadTextsub">Click to upload (max 2 MB)</div>
                         </div>
                     </div>
                 </div>
-                <div class="form-error" id="err-vsub">Complete all student fields + upload ID.</div>
+                <div class="form-error" id="err-studentsub">Complete all student fields + upload ID.</div>
             </div>
         </div>
     `;
@@ -655,24 +816,47 @@ window.handleIdUpload = function(evt, key) {
     const reader = new FileReader();
     reader.onload = function(e) {
         state.idCards[key] = { base64: e.target.result.split(',')[1], fileName: file.name, mimeType: file.type };
-        const box = document.getElementById('v' + key + 'uploadBox');
-        const text = document.getElementById('v' + key + 'uploadText');
+        const box = document.getElementById('uploadBox' + key);
+        const text = document.getElementById('uploadText' + key);
         if (box) box.classList.add('has-file');
         if (text) text.textContent = '✓ ' + file.name;
     };
     reader.readAsDataURL(file);
 };
 
+/* ============ NAVIGATION ============ */
 window.goToStep = function(target) {
+    if (!paymentRequired) {
+        if (currentStep === 2 && target === 3) target = 4;
+        if (currentStep === 4 && target === 3) target = 2;
+    }
+    
     if (target > currentStep) {
         if (currentStep === 1 && !validateStep1()) return;
         if (currentStep === 2 && !validateStep2()) return;
         if (currentStep === 3 && !validateStep3()) return;
     }
     captureStep();
-    for (let i = 1; i <= 4; i++) document.getElementById('step' + i).style.display = (i === target) ? 'block' : 'none';
+    for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById('step' + i);
+        if (card) card.style.display = (i === target) ? 'block' : 'none';
+    }
     currentStep = target;
-    document.getElementById('progressFill').style.width = ((currentStep - 1) / 3) * 100 + '%';
+
+    const visualStep = paymentRequired ? target : (target === 4 ? 3 : target);
+    const totalSteps = paymentRequired ? 4 : 3;
+    const pct = ((visualStep - 1) / (totalSteps - 1)) * 100;
+    const fill = document.getElementById('progressFill');
+    if (fill) fill.style.width = pct + '%';
+
+    document.querySelectorAll('.progress-step').forEach(step => {
+        const stepNum = parseInt(step.dataset.step, 10);
+        const vs = paymentRequired ? stepNum : (stepNum === 4 ? 3 : stepNum);
+        step.classList.remove('current', 'completed');
+        if (vs < visualStep) step.classList.add('completed');
+        else if (vs === visualStep) step.classList.add('current');
+    });
+
     if (target === 4) renderReview();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
@@ -689,13 +873,17 @@ function captureStep() {
     if (currentStep === 2) {
         state.team = { name: document.getElementById('teamName').value.trim(), tag: document.getElementById('teamTag').value.trim().toUpperCase() };
         state.roster = [1,2,3,4].map(i => {
-            const r = { ign: document.getElementById('roster' + i).value.trim(), role: document.getElementById('roster' + i + 'role').value };
+            const r = {
+                realName: document.getElementById('realName' + i).value.trim(),
+                ign: document.getElementById('ign' + i).value.trim(),
+                gameUID: document.getElementById('uid' + i).value.trim(),
+                role: document.getElementById('role' + i).value
+            };
             if (isIntra) {
-                r.realName = document.getElementById('v' + i + 'realName').value.trim();
-                r.rollNumber = document.getElementById('v' + i + 'rollNumber').value.trim();
-                r.collegeName = document.getElementById('v' + i + 'collegeName').value.trim();
-                r.branch = document.getElementById('v' + i + 'branch').value.trim();
-                r.year = document.getElementById('v' + i + 'year').value;
+                r.rollNumber = document.getElementById('rollNumber' + i).value.trim();
+                r.collegeName = document.getElementById('collegeName' + i).value.trim();
+                r.branch = document.getElementById('branch' + i).value.trim();
+                r.year = document.getElementById('year' + i).value;
                 const card = state.idCards[i] || {};
                 r.idCardBase64 = card.base64 || '';
                 r.idCardFileName = card.fileName || '';
@@ -705,13 +893,17 @@ function captureStep() {
         });
         state.substitute = null;
         if (document.getElementById('subCheckbox').checked) {
-            const s = { ign: document.getElementById('subIgn').value.trim(), role: document.getElementById('subRole').value };
+            const s = {
+                realName: document.getElementById('realNamesub').value.trim(),
+                ign: document.getElementById('ignsub').value.trim(),
+                gameUID: document.getElementById('uidsub').value.trim(),
+                role: document.getElementById('rolesub').value
+            };
             if (isIntra) {
-                s.realName = document.getElementById('vsubrealName').value.trim();
-                s.rollNumber = document.getElementById('vsubrollNumber').value.trim();
-                s.collegeName = document.getElementById('vsubcollegeName').value.trim();
-                s.branch = document.getElementById('vsubbranch').value.trim();
-                s.year = document.getElementById('vsubyear').value;
+                s.rollNumber = document.getElementById('rollNumbersub').value.trim();
+                s.collegeName = document.getElementById('collegeNamesub').value.trim();
+                s.branch = document.getElementById('branchsub').value.trim();
+                s.year = document.getElementById('yearsub').value;
                 const card = state.idCards['sub'] || {};
                 s.idCardBase64 = card.base64 || '';
                 s.idCardFileName = card.fileName || '';
@@ -721,7 +913,8 @@ function captureStep() {
         }
     }
     if (currentStep === 3) {
-        state.payment.utr = document.getElementById('utr').value.trim();
+        const utrEl = document.getElementById('utr');
+        if (utrEl) state.payment.utr = utrEl.value.trim();
     }
 }
 
@@ -739,37 +932,49 @@ function validateStep2() {
     if (document.getElementById('teamTag').value.length < 2) { document.getElementById('err-teamTag').classList.add('show'); ok = false; } else document.getElementById('err-teamTag').classList.remove('show');
     
     for (let i = 1; i <= 4; i++) {
-        if (document.getElementById('roster' + i).value.length < 2) { document.getElementById('err-roster' + i).classList.add('show'); ok = false; } else document.getElementById('err-roster' + i).classList.remove('show');
-        
+        const realName = document.getElementById('realName' + i).value.trim();
+        const ign = document.getElementById('ign' + i).value.trim();
+        const uid = document.getElementById('uid' + i).value.trim();
+
+        if (!realName) { document.getElementById('err-realName' + i).classList.add('show'); ok = false; } else document.getElementById('err-realName' + i).classList.remove('show');
+        if (!ign) { document.getElementById('err-ign' + i).classList.add('show'); ok = false; } else document.getElementById('err-ign' + i).classList.remove('show');
+        if (!uid) { document.getElementById('err-uid' + i).classList.add('show'); ok = false; } else document.getElementById('err-uid' + i).classList.remove('show');
+
         if (isIntra) {
-            const real = document.getElementById('v' + i + 'realName').value.trim();
-            const roll = document.getElementById('v' + i + 'rollNumber').value.trim();
-            const college = document.getElementById('v' + i + 'collegeName').value.trim();
-            const branch = document.getElementById('v' + i + 'branch').value.trim();
-            const year = document.getElementById('v' + i + 'year').value;
+            const roll = document.getElementById('rollNumber' + i).value.trim();
+            const college = document.getElementById('collegeName' + i).value.trim();
+            const branch = document.getElementById('branch' + i).value.trim();
+            const year = document.getElementById('year' + i).value;
             const card = state.idCards[i];
-            const errEl = document.getElementById('err-v' + i);
-            if (!real || !roll || !college || !branch || !year || !card) {
-                errEl.classList.add('show'); ok = false;
+            if (!roll || !college || !branch || !year || !card) {
+                document.getElementById('err-student' + i).classList.add('show'); ok = false;
             } else {
-                errEl.classList.remove('show');
+                document.getElementById('err-student' + i).classList.remove('show');
             }
         }
     }
     
     const subChecked = document.getElementById('subCheckbox').checked;
     if (subChecked) {
-        if (document.getElementById('subIgn').value.length < 2) { document.getElementById('err-subIgn').classList.add('show'); ok = false; } else document.getElementById('err-subIgn').classList.remove('show');
+        const realName = document.getElementById('realNamesub').value.trim();
+        const ign = document.getElementById('ignsub').value.trim();
+        const uid = document.getElementById('uidsub').value.trim();
+
+        if (!realName) { document.getElementById('err-realNamesub').classList.add('show'); ok = false; } else document.getElementById('err-realNamesub').classList.remove('show');
+        if (!ign) { document.getElementById('err-ignsub').classList.add('show'); ok = false; } else document.getElementById('err-ignsub').classList.remove('show');
+        if (!uid) { document.getElementById('err-uidsub').classList.add('show'); ok = false; } else document.getElementById('err-uidsub').classList.remove('show');
+
         if (isIntra) {
-            const real = document.getElementById('vsubrealName').value.trim();
-            const roll = document.getElementById('vsubrollNumber').value.trim();
-            const college = document.getElementById('vsubcollegeName').value.trim();
-            const branch = document.getElementById('vsubbranch').value.trim();
-            const year = document.getElementById('vsubyear').value;
+            const roll = document.getElementById('rollNumbersub').value.trim();
+            const college = document.getElementById('collegeNamesub').value.trim();
+            const branch = document.getElementById('branchsub').value.trim();
+            const year = document.getElementById('yearsub').value;
             const card = state.idCards['sub'];
-            const errEl = document.getElementById('err-vsub');
-            if (!real || !roll || !college || !branch || !year || !card) { errEl.classList.add('show'); ok = false; }
-            else errEl.classList.remove('show');
+            if (!roll || !college || !branch || !year || !card) {
+                document.getElementById('err-studentsub').classList.add('show'); ok = false;
+            } else {
+                document.getElementById('err-studentsub').classList.remove('show');
+            }
         }
     }
     return ok;
@@ -799,6 +1004,7 @@ document.getElementById('screenshotInput').addEventListener('change', function(e
     reader.readAsDataURL(file);
 });
 
+/* ============ REVIEW ============ */
 function renderReview() {
     document.getElementById('revCaptainName').textContent = state.captain.name;
     document.getElementById('revCaptainEmail').textContent = state.captain.email;
@@ -806,24 +1012,41 @@ function renderReview() {
     let str = state.roster.map(p => p.ign).join(', ');
     if (state.substitute) str += ' + Sub: ' + state.substitute.ign;
     document.getElementById('revRoster').textContent = str;
+    document.getElementById('revFee').textContent = paymentRequired ? '₹' + (Number(tournament.EntryFee) || 0) : 'FREE';
     document.getElementById('revUtr').textContent = paymentRequired ? (state.payment.utr || '—') : 'FREE';
-    
-    if (isIntra) {
-        document.getElementById('revVerifyBlock').style.display = 'block';
-        const rows = state.roster.map((p, i) => `
-            <div class="review-verify-row">
-                <strong>P${i+1} ${esc(p.ign)}</strong> — ${esc(p.realName)} · Roll: ${esc(p.rollNumber)} · ${esc(p.collegeName)} · ${esc(p.branch)} · ${esc(p.year)} Year · 🪪
-            </div>
-        `);
-        if (state.substitute) {
-            rows.push(`<div class="review-verify-row"><strong>SUB ${esc(state.substitute.ign)}</strong> — ${esc(state.substitute.realName)} · Roll: ${esc(state.substitute.rollNumber)} · ${esc(state.substitute.collegeName)} · ${esc(state.substitute.branch)} · ${esc(state.substitute.year)} Year · 🪪</div>`);
+
+    const rows = state.roster.map((p, i) => {
+        const isCaptain = i === 0;
+        let line = '';
+        if (isCaptain) {
+            line += '<span class="tag captain">Captain</span>';
         }
-        document.getElementById('revVerifyList').innerHTML = rows.join('');
-    } else {
-        document.getElementById('revVerifyBlock').style.display = 'none';
+        line += '<strong>P' + (i + 1) + '</strong>: ' +
+            '<span class="tag name">Name</span>' + esc(p.realName || '—') + ' · ' +
+            '<span class="tag ign">IGN</span>' + esc(p.ign || '—') + ' · ' +
+            '<span class="tag uid">UID</span>' + esc(p.gameUID || '—') + ' · ' +
+            '<span class="tag role">Role</span>' + esc(p.role || '—');
+        if (isIntra) {
+            line += '<br><span style="color:var(--text-muted);font-size:12px;">Roll: ' + esc(p.rollNumber) + ' · ' + esc(p.collegeName) + ' · ' + esc(p.branch) + ' · ' + esc(p.year) + ' Year · 🪪 ID Uploaded</span>';
+        }
+        return '<div class="review-verify-row">' + line + '</div>';
+    });
+    if (state.substitute) {
+        let line = '<span class="tag captain">Sub</span><strong>SUB</strong>: ' +
+            '<span class="tag name">Name</span>' + esc(state.substitute.realName || '—') + ' · ' +
+            '<span class="tag ign">IGN</span>' + esc(state.substitute.ign || '—') + ' · ' +
+            '<span class="tag uid">UID</span>' + esc(state.substitute.gameUID || '—') + ' · ' +
+            '<span class="tag role">Role</span>' + esc(state.substitute.role || '—');
+        if (isIntra) {
+            line += '<br><span style="color:var(--text-muted);font-size:12px;">Roll: ' + esc(state.substitute.rollNumber) + ' · ' + esc(state.substitute.collegeName) + ' · ' + esc(state.substitute.branch) + ' · ' + esc(state.substitute.year) + ' Year · 🪪 ID Uploaded</span>';
+        }
+        rows.push('<div class="review-verify-row">' + line + '</div>');
     }
+    document.getElementById('revVerifyList').innerHTML = rows.join('');
+    document.getElementById('revVerifyBlock').style.display = 'block';
 }
 
+/* ============ SUBMIT ============ */
 window.submitRegistration = async function() {
     if (!document.getElementById('agreeCheckbox').checked) {
         document.getElementById('err-agree').classList.add('show');
@@ -837,23 +1060,43 @@ window.submitRegistration = async function() {
     showLoading('Submitting registration...');
     
     const verification = [];
-    if (isIntra) {
-        state.roster.forEach((p, i) => {
-            verification.push({
-                slot: 'P' + (i + 1),
-                ign: p.ign, realName: p.realName, collegeName: p.collegeName, rollNumber: p.rollNumber,
-                branch: p.branch, year: p.year,
-                idCardBase64: p.idCardBase64, idCardFileName: p.idCardFileName, idCardMimeType: p.idCardMimeType
-            });
-        });
-        if (state.substitute) {
-            verification.push({
-                slot: 'SUB',
-                ign: state.substitute.ign, realName: state.substitute.realName, collegeName: state.substitute.collegeName, rollNumber: state.substitute.rollNumber,
-                branch: state.substitute.branch, year: state.substitute.year,
-                idCardBase64: state.substitute.idCardBase64, idCardFileName: state.substitute.idCardFileName, idCardMimeType: state.substitute.idCardMimeType
-            });
+    state.roster.forEach((p, i) => {
+        const v = {
+            slot: 'P' + (i + 1),
+            realName: p.realName || '',
+            ign: p.ign || '',
+            gameUID: p.gameUID || '',
+            role: p.role || ''
+        };
+        if (isIntra) {
+            v.collegeName = p.collegeName || '';
+            v.rollNumber = p.rollNumber || '';
+            v.branch = p.branch || '';
+            v.year = p.year || '';
+            v.idCardBase64 = p.idCardBase64 || '';
+            v.idCardFileName = p.idCardFileName || '';
+            v.idCardMimeType = p.idCardMimeType || '';
         }
+        verification.push(v);
+    });
+    if (state.substitute) {
+        const v = {
+            slot: 'SUB',
+            realName: state.substitute.realName || '',
+            ign: state.substitute.ign || '',
+            gameUID: state.substitute.gameUID || '',
+            role: state.substitute.role || ''
+        };
+        if (isIntra) {
+            v.collegeName = state.substitute.collegeName || '';
+            v.rollNumber = state.substitute.rollNumber || '';
+            v.branch = state.substitute.branch || '';
+            v.year = state.substitute.year || '';
+            v.idCardBase64 = state.substitute.idCardBase64 || '';
+            v.idCardFileName = state.substitute.idCardFileName || '';
+            v.idCardMimeType = state.substitute.idCardMimeType || '';
+        }
+        verification.push(v);
     }
     
     const payload = {
@@ -861,8 +1104,8 @@ window.submitRegistration = async function() {
         tid: tournamentId,
         captain: state.captain,
         team: state.team,
-        roster: state.roster.map(p => ({ ign: p.ign, role: p.role })),
-        substitute: state.substitute ? { ign: state.substitute.ign, role: state.substitute.role } : null,
+        roster: state.roster.map(p => ({ ign: p.ign, role: p.role, realName: p.realName, gameUID: p.gameUID })),
+        substitute: state.substitute ? { ign: state.substitute.ign, role: state.substitute.role, realName: state.substitute.realName, gameUID: state.substitute.gameUID } : null,
         verification: verification,
         payment: paymentRequired ? {
             utr: state.payment.utr, fileBase64: state.payment.fileBase64, fileName: state.payment.fileName, mimeType: state.payment.mimeType,
