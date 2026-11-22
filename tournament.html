@@ -18,150 +18,85 @@
     <!-- ===== PREMIUM CINEMATIC HERO CARD STYLES ===== -->
     <style>
         .hero-banner {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-            background: #000;
+            position: relative; width: 100%; height: 300px; border-radius: 16px; overflow: hidden;
+            margin-bottom: 24px; border: 1px solid var(--border); background: #000;
         }
         .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .hero-banner::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(10,10,10,1) 100%);
-        }
+        .hero-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(10,10,10,1) 100%); }
 
         /* The Main Card */
         .tournament-hero-card {
-            position: relative;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr; /* Info left, char right */
+            position: relative; display: grid; grid-template-columns: 1.2fr 0.8fr;
             background: radial-gradient(circle at 100% 100%, rgba(225,6,0,0.15) 0%, transparent 60%), #0d0d0d;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            margin-bottom: 16px;
+            border: 1px solid #2a2a2a; border-radius: 16px; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); margin-bottom: 16px;
         }
 
         /* Left Side: Info */
-        .hero-info-left {
-            padding: 40px 24px 40px 32px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
+        .hero-info-left { padding: 40px 24px 40px 32px; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
+        .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        
         .hero-badge {
-            font-family: var(--font-display);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 6px 12px;
-            border-radius: 4px;
+            font-family: var(--font-display); font-size: 10px; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; padding: 6px 12px; border-radius: 4px;
         }
-        /* Default styles for JS injected badges */
         .badge-status-upcoming, .badge-upcoming { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.4); }
         .badge-game { background: #1a1a1a; color: #fff; border: 1px solid #333; }
-        .badge-college { background: rgba(225,6,0,.15); color: var(--red); border: 1px solid rgba(225,6,0,.4); }
 
         /* Dynamic Stacked Title */
-        .hero-title-stacked {
-            font-family: var(--font-display);
-            line-height: 1.05;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-        }
+        .hero-title-stacked { font-family: var(--font-display); line-height: 1.05; margin-bottom: 24px; text-transform: uppercase; }
         .hero-title-stacked span { display: block; }
-        .hero-title-stacked .line1 { font-size: clamp(20px, 4vw, 32px); color: #fff; letter-spacing: 2px; font-weight: 700; margin-bottom: 4px;}
-        .hero-title-stacked .line2 { font-size: clamp(36px, 7vw, 64px); color: var(--red); font-weight: 900; letter-spacing: -1px; text-shadow: 0 0 20px rgba(225,6,0,0.4); margin-bottom: 4px;}
-        .hero-title-stacked .line3 { font-size: clamp(28px, 5vw, 48px); color: #fff; letter-spacing: 4px; font-weight: 900;}
+        .hero-title-stacked .line1 { font-size: clamp(20px, 4vw, 32px); color: #fff; letter-spacing: 2px; font-weight: 700; margin-bottom: 4px; }
+        .hero-title-stacked .line2 { font-size: clamp(36px, 7vw, 64px); color: var(--red); font-weight: 900; letter-spacing: -1px; text-shadow: 0 0 20px rgba(225,6,0,0.4); margin-bottom: 4px; }
+        .hero-title-stacked .line3 { font-size: clamp(28px, 5vw, 48px); color: #fff; letter-spacing: 4px; font-weight: 900; }
 
-        .hero-meta-compact {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.03);
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid #222;
-        }
+        .hero-meta-compact { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--text-secondary); }
+        .meta-item { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 6px; border: 1px solid #222; }
         .meta-item svg { width: 16px; height: 16px; color: var(--red); }
 
         /* Right Side: Character */
-        .hero-visual-right {
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
-            padding-right: 10px;
-            z-index: 1;
-        }
-
-        /* Red Glow Behind Character */
+        .hero-visual-right { position: relative; display: flex; align-items: flex-end; justify-content: flex-end; padding-right: 10px; z-index: 1; }
+        
+        /* Character Float & Glow Animations */
         .char-glow-bg {
-            position: absolute;
-            bottom: 0; right: 0;
-            width: 300px; height: 300px;
+            position: absolute; bottom: 0; right: 0; width: 300px; height: 300px;
             background: radial-gradient(circle, rgba(225,6,0,0.5) 0%, transparent 60%);
-            filter: blur(40px);
-            z-index: 0;
-            pointer-events: none;
+            filter: blur(40px); z-index: 0; pointer-events: none;
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.7; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
         .hero-character-img {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 320px;
-            height: auto;
-            object-fit: contain;
-            object-position: bottom right;
+            position: relative; z-index: 1; width: 100%; max-width: 320px; height: auto;
+            object-fit: contain; object-position: bottom right;
             filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.9));
+            animation: floatChar 5s ease-in-out infinite;
+        }
+        @keyframes floatChar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
         }
 
-        /* CTA Section Below Card */
-        .hero-cta-section {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 32px;
-        }
+        /* CTA Button Animation */
+        .hero-cta-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
         .hero-cta-section .btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 16px;
-            border-radius: 10px;
+            width: 100%; padding: 16px; font-size: 16px; border-radius: 10px;
+            transition: all 0.3s ease; position: relative;
         }
-        .cta-note {
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+        .hero-cta-section .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(225,6,0,0.4);
         }
+        .hero-cta-section .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(225,6,0,0.3);
+        }
+        .cta-note { text-align: center; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
 
-        /* ===== MOBILE OPTIMIZATION ===== */
+        /* Mobile Optimization (Horizontal Preserved) */
         @media (max-width: 768px) {
             .hero-banner { height: 200px; }
             .tournament-hero-card { grid-template-columns: 1.2fr 1fr; }
@@ -234,28 +169,10 @@
         ⏳ Loading tournament data from server...
     </div>
 
+    <!-- NAVBAR (Auto-injected by main.js) -->
     <nav class="nav">
         <div class="container nav-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-mark">B</div>
-                <div class="logo-text">
-                    <span class="logo-main">BCE</span>
-                    <span class="logo-sub">ESPORTS</span>
-                </div>
-            </a>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About</a>
-                <a href="tournaments.html" class="nav-link active">Tournaments</a>
-                <a href="teams.html" class="nav-link">Teams</a>
-                <a href="results.html" class="nav-link">Results</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-            </div>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
-                <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
-                    <path d="M3 6h18M3 12h18M3 18h18"/>
-                </svg>
-            </button>
+            <!-- Main.js will fill this -->
         </div>
     </nav>
 
@@ -279,14 +196,13 @@
                 <!-- LEFT: Info -->
                 <div class="hero-info-left">
                     <div class="hero-badges">
-                        <!-- Added hidden IDs so tournament.js doesn't crash -->
                         <span class="hero-badge badge-upcoming badge-status-upcoming" id="t-status">UPCOMING</span>
-                        <span class="hero-badge badge-game" id="t-game">FREE FIRE</span>
+                        <span class="hero-badge badge-game" id="t-game">GAME</span>
                         <span class="hero-badge badge-category" id="t-category" style="display:none;">CATEGORY</span>
                         <span class="hero-badge badge-scope-public" id="t-scope-badge" style="display:none;">PUBLIC</span>
-                        <span class="hero-badge badge-college">BCE BAKHTIYARPUR</span>
                     </div>
                     
+                    <!-- Dynamic Title -->
                     <h1 class="tournament-hero-title hero-title-stacked" id="t-name">Loading...</h1>
 
                     <div class="hero-meta-compact">
@@ -308,7 +224,7 @@
             <div class="hero-cta-section">
                 <a href="#" id="t-register-btn" class="btn btn-primary">REGISTER TEAM</a>
                 <div class="cta-note" id="t-register-note">
-                    🎓 Student ID verification required
+                    Checking registration status...
                 </div>
             </div>
 
@@ -501,28 +417,41 @@
     <script src="assets/js/main.js"></script>
     <script src="assets/js/tournament.js"></script>
     
-    <!-- Safely format the dynamically loaded title -->
+    <!-- DYNAMIC TITLE FORMATTING (Backend से डेटा आने पर टाइटल को स्टैक करेगा) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const titleEl = document.getElementById('t-name');
             if (!titleEl) return;
 
             const formatTitle = () => {
-                // Agar title me data aa chuka hai aur abhi format nahi hua hai
                 let text = titleEl.textContent.trim();
-                if (text.includes('RANBHOOMI') && !titleEl.querySelector('.line1')) {
-                    titleEl.innerHTML = `
-                        <span class="line1">BCE FF</span>
-                        <span class="line2">RANBHOOMI</span>
-                        <span class="line3">2026</span>
-                    `;
+                
+                // अगर टाइटल खाली नहीं है और पहले से फॉर्मेटेड नहीं है
+                if (text && text !== 'Loading...' && !titleEl.querySelector('.line1')) {
+                    let words = text.split(' ');
+                    if (words.length >= 3) {
+                        // Split into 3 lines (e.g., BCE | RANBHOOMI | 2026)
+                        let line1 = words.slice(0, words.length - 2).join(' ');
+                        let line2 = words[words.length - 2];
+                        let line3 = words[words.length - 1];
+                        titleEl.innerHTML = `
+                            <span class="line1">${line1}</span>
+                            <span class="line2">${line2}</span>
+                            <span class="line3">${line3}</span>
+                        `;
+                    } else if (words.length === 2) {
+                        titleEl.innerHTML = `
+                            <span class="line1">${words[0]}</span>
+                            <span class="line2">${words[1]}</span>
+                        `;
+                    }
                 }
             };
 
             // 1. Turant check karo
             formatTitle();
 
-            // 2. Agar data thodi der me aata hai, toh observe karo
+            // 2. Agar data thodi der me aata hai (API call), toh observe karo
             const observer = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.type === 'childList' || mutation.type === 'characterData') {
