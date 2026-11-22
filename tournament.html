@@ -15,37 +15,155 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/tournament.css">
 
-    <!-- ===== Banner Hero + Roster Modal Styles ===== -->
+    <!-- ===== Custom Styles: Hero Grid + Character + Roster Modal ===== -->
     <style>
+        /* --- BANNER STYLING --- */
         .hero-banner {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 320px;
             border-radius: 16px;
             overflow: hidden;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
             border: 1px solid var(--border);
             background: linear-gradient(135deg, rgba(225,6,0,.35), rgba(0,0,0,.85));
             box-shadow: 0 12px 40px rgba(0,0,0,.55);
         }
-        .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-banner img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
         .hero-banner::after {
             content: '';
             position: absolute;
             inset: 0;
             pointer-events: none;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(10,10,10,.92) 100%);
-        }
-        @media (max-width: 640px) {
-            .hero-banner { height: 190px; border-radius: 12px; margin-bottom: 24px; }
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(10,10,10,.95) 100%);
         }
 
-        /* Make team cards clickable */
+        /* --- HERO GRID LAYOUT (Title Left, Char Right) --- */
+        .hero-title-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; /* 60/40 Split */
+            align-items: flex-end;
+            gap: 16px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .hero-text-left {
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .hero-char-right {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        /* Character Image Settings */
+        .hero-character-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            /* No white/grey background baked in */
+            filter: drop-shadow(-10px 15px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 20px rgba(225,6,0,0.3));
+        }
+
+        /* Red Glow Behind Character */
+        .hero-char-glow {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(225,6,0,0.4) 0%, transparent 70%);
+            filter: blur(50px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- ACTIONS (Button Below Everything) --- */
+        .hero-actions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            z-index: 10;
+            background: var(--bg-primary); /* Solid background to prevent bleed */
+            padding-top: 10px;
+            padding-bottom: 20px;
+        }
+
+        .hero-actions-container .btn {
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .hero-register-note {
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-align: center;
+            max-width: 320px;
+            margin-top: 4px;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (min-width: 769px) {
+            .hero-title-grid {
+                grid-template-columns: 1.4fr 1fr;
+                gap: 30px;
+                margin-top: 10px;
+                margin-bottom: 30px;
+            }
+            .hero-character-img {
+                max-height: 480px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner { height: 220px; }
+            .hero-title-grid {
+                grid-template-columns: 1.2fr 1fr; /* Keep split on mobile */
+                gap: 10px;
+            }
+            .hero-character-img {
+                max-height: 260px; /* Smaller on mobile */
+            }
+            .tournament-hero-title {
+                font-size: 22px;
+                line-height: 1.15;
+            }
+            .hero-badges {
+                margin-bottom: 12px;
+            }
+            .tournament-hero-meta {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                align-items: flex-start;
+                font-size: 12px;
+            }
+            .hero-char-glow {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* --- TEAM CARDS & ROSTER MODAL (Existing CSS preserved) --- */
         .team-card { cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
         .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
         .team-card:active { transform: translateY(-1px); }
 
-        /* ============ ROSTER MODAL ============ */
         .modal-backdrop {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.88);
@@ -81,7 +199,6 @@
             z-index: 3; cursor: pointer;
         }
         .modal-close:hover { background: var(--red); border-color: var(--red); transform: rotate(90deg); }
-        .modal-close svg { width: 18px; height: 18px; }
 
         .modal-team-hero {
             padding: 40px 28px 28px;
@@ -163,7 +280,6 @@
             padding: 2px 10px; border-radius: 10px; letter-spacing: 1px;
         }
 
-        /* Player roster cards */
         .roster-list { display: flex; flex-direction: column; gap: 10px; }
 
         .player-card {
@@ -350,18 +466,23 @@
 
     <section class="tournament-hero">
         <div class="container">
+            
             <div class="breadcrumb">
                 <a href="index.html">Home</a> <span class="sep">/</span>
                 <a href="tournaments.html">Tournaments</a> <span class="sep">/</span>
                 <span class="current" id="t-breadcrumb-name">Loading...</span>
             </div>
 
+            <!-- Banner -->
             <div class="hero-banner" id="t-banner-wrap" style="display:none;">
                 <img id="t-banner-img" alt="Tournament Banner">
             </div>
 
-            <div class="hero-grid">
-                <div>
+            <!-- NEW CLEAN GRID: TITLE LEFT, CHARACTER RIGHT -->
+            <div class="hero-title-grid">
+                
+                <!-- Left Side: Badges + Title + Meta -->
+                <div class="hero-text-left">
                     <div class="hero-badges">
                         <span class="badge badge-status-upcoming" id="t-status">Upcoming</span>
                         <span class="badge badge-game" id="t-game">Game</span>
@@ -375,11 +496,20 @@
                     </div>
                 </div>
 
-                <div class="hero-actions">
-                    <a href="#" id="t-register-btn" class="btn btn-primary">Register Team</a>
-                    <div class="hero-register-note" id="t-register-note">Registration status will be checked</div>
+                <!-- Right Side: Character Cutout -->
+                <div class="hero-char-right">
+                    <div class="hero-char-glow"></div>
+                    <img src="assets/images/ff-character.png" class="hero-character-img" alt="Character" onerror="this.style.display='none'">
                 </div>
+
             </div>
+
+            <!-- ACTIONS (Strictly Below Character and Title) -->
+            <div class="hero-actions-container">
+                <a href="#" id="t-register-btn" class="btn btn-primary">Register Team</a>
+                <div class="hero-register-note" id="t-register-note">Registration status will be checked</div>
+            </div>
+
         </div>
     </section>
 
