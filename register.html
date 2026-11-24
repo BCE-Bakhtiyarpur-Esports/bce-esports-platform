@@ -1,195 +1,1381 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Registration — BCE Esports</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- ✅ YE LINK MISSING THA, ISLIYE WHITE BACKGROUND AA RAHA THA -->
-    <link rel="stylesheet" href="assets/css/main.css">
-    
-    <style>
-        /* Base Reset (Fallback agar main.css load na ho) */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-body, 'Rajdhani', sans-serif); background-color: var(--bg-primary, #0a0a0a); color: var(--text-primary, #fff); font-size: 16px; line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#0a0a0a">
+<title>Team Registration — BCE Esports</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+/* ============================================================
+   ROOT & RESET
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #111111;
+    --bg-card: #171717;
+    --bg-elevated: #1d1d1d;
+    --red: #e10600;
+    --red-bright: #ff2020;
+    --red-glow: rgba(225,6,0,.35);
+    --red-soft: rgba(225,6,0,.08);
+    --text-primary: #ffffff;
+    --text-secondary: #a8a8a8;
+    --text-muted: #6b6b6b;
+    --border: #242424;
+    --border-bright: #333333;
+    --green: #22c55e;
+    --cyan: #22d3ee;
+    --orange: #fbbf24;
+    --purple: #c084fc;
+    --error: #ef4444;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+html { -webkit-text-size-adjust: 100%; }
+body {
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(225,6,0,.06), transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(225,6,0,.04), transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+button, input, select, textarea { font-family: inherit; font-size: inherit; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
 
-        :root { --bg-primary: #0a0a0a; --bg-secondary: #121212; --bg-card: #171717; --red: #e10600; --red-bright: #ff2020; --red-glow: rgba(225,6,0,.35); --text-primary: #fff; --text-secondary: #b0b0b0; --text-muted: #6b6b6b; --border: #232323; --border-bright: #333; --green: #22c55e; --cyan: #22d3ee; --red-error: #ef4444; --orange: #fbbf24; --purple: #c084fc; --font-display: 'Orbitron', sans-serif; --font-body: 'Rajdhani', sans-serif; --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px; }
+/* ============================================================
+   LOADING OVERLAY & SKELETON
+   ============================================================ */
+.loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,.98);
+    z-index: 9999;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    padding: 24px;
+}
+.loading-overlay.active { display: flex; }
+.spinner {
+    width: 48px; height: 48px;
+    border: 3px solid rgba(225,6,0,.15);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loadingMessage {
+    font-family: var(--font-display);
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 12px;
+    text-align: center;
+}
 
-        .loading-overlay { position: fixed; inset: 0; background: rgba(10,10,10,.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
-        .loading-overlay.active { display: flex; }
-        .spinner { width: 54px; height: 54px; border: 4px solid rgba(225,6,0,.2); border-top-color: var(--red); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #loadingMessage { font-family: var(--font-display); color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; font-size: 13px; }
+.skeleton-strip {
+    display: none;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 16px;
+}
+.skeleton-strip.active { display: block; }
+.skeleton-line {
+    height: 14px;
+    background: linear-gradient(90deg, #1a1a1a 25%, #232323 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+.skeleton-line.w-40 { width: 40%; }
+.skeleton-line.w-70 { width: 70%; height: 22px; margin-top: 8px; margin-bottom: 14px; }
+.skeleton-line.w-50 { width: 50%; }
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
 
-        .error-panel { display: none; max-width: 640px; margin: 60px auto; background: var(--bg-card); border: 2px solid rgba(239,68,68,.4); border-radius: var(--radius-lg); padding: 40px 28px; text-align: center; }
-        .error-panel.active { display: block; }
-        .error-icon { font-size: 48px; margin-bottom: 16px; }
-        .error-title { font-family: var(--font-display); font-size: 18px; color: #f87171; margin-bottom: 12px; text-transform: uppercase; }
-        .error-message { color: var(--text-secondary); margin-bottom: 20px; white-space: pre-wrap; text-align: left; font-size: 14px; }
-        .error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+/* ============================================================
+   ERROR PANEL
+   ============================================================ */
+.error-panel {
+    display: none;
+    max-width: 560px;
+    margin: 60px auto;
+    background: var(--bg-card);
+    border: 1px solid rgba(239,68,68,.35);
+    border-radius: var(--radius-lg);
+    padding: 40px 24px;
+    text-align: center;
+    margin-left: 16px; margin-right: 16px;
+}
+.error-panel.active { display: block; }
+.error-icon { font-size: 44px; margin-bottom: 12px; }
+.error-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: #f87171;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.error-message {
+    color: var(--text-secondary);
+    margin-bottom: 22px;
+    white-space: pre-wrap;
+    font-size: 13.5px;
+    line-height: 1.6;
+    text-align: left;
+}
+.error-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-        .strip { background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 20px 0; }
-        .strip-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .strip-label { font-family: var(--font-display); font-size: 10px; color: var(--red); }
-        .strip-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; }
-        .strip-meta { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; align-items: center; }
-        .strip-back { font-family: var(--font-display); font-size: 11px; color: var(--text-secondary); }
-        .scope-badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
-        .scope-badge.public { background: rgba(34,211,238,.12); color: var(--cyan); border: 1px solid rgba(34,211,238,.35); }
-        .scope-badge.intra { background: rgba(225,6,0,.12); color: var(--red); border: 1px solid rgba(225,6,0,.35); }
-        .fee-badge { display: inline-block; font-family: var(--font-display); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; }
-        .fee-badge.free { background: rgba(34,197,94,.12); color: var(--green); border: 1px solid rgba(34,197,94,.35); }
-        .fee-badge.paid { background: rgba(245,158,11,.12); color: #fbbf24; border: 1px solid rgba(245,158,11,.35); }
+/* ============================================================
+   TOURNAMENT STRIP (compact hero)
+   ============================================================ */
+.strip {
+    position: relative;
+    background:
+        linear-gradient(135deg, rgba(225,6,0,.06) 0%, transparent 50%),
+        var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0 22px;
+    z-index: 1;
+}
+.strip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+}
+.strip-inner {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.strip-main { flex: 1; min-width: 0; }
+.strip-label {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+}
+.strip-title {
+    font-family: var(--font-display);
+    font-size: clamp(18px, 4.5vw, 24px);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    line-height: 1.25;
+    color: #fff;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+.strip-meta {
+    display: flex;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+    align-items: center;
+}
+.strip-meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 4px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    line-height: 1;
+}
+.strip-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border-bright);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.2s var(--ease);
+}
+.strip-back:hover, .strip-back:active {
+    background: rgba(225,6,0,.1);
+    border-color: rgba(225,6,0,.4);
+    color: var(--red);
+}
 
-        .page-hero { padding: 60px 24px 40px; text-align: center; background: radial-gradient(ellipse at 50% 0%, rgba(225,6,0,.15) 0%, transparent 60%); }
-        .page-hero-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(28px, 5vw, 44px); text-transform: uppercase; }
-        .page-hero-title .accent { color: var(--red); }
+.scope-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+.scope-badge.public { background: rgba(34,211,238,.1); color: var(--cyan); border: 1px solid rgba(34,211,238,.3); }
+.scope-badge.intra { background: rgba(225,6,0,.1); color: var(--red); border: 1px solid rgba(225,6,0,.3); }
 
-        .progress-wrap { background: var(--bg-secondary); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 0; position: sticky; top: 72px; z-index: 40; }
-        .progress { display: flex; justify-content: space-between; max-width: 720px; margin: 0 auto; position: relative; }
-        .progress-step { display: flex; flex-direction: column; align-items: center; flex: 1; z-index: 2; }
-        .progress-num { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 14px; color: var(--text-muted); transition: all .3s; }
-        .progress-step.completed .progress-num { background: var(--red); border-color: var(--red); color: #fff; }
-        .progress-step.current .progress-num { border-color: var(--red); color: var(--red); box-shadow: 0 0 0 4px rgba(225,6,0,.15); }
-        .progress-label { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 8px; text-transform: uppercase; transition: color .3s; }
-        .progress-step.completed .progress-label, .progress-step.current .progress-label { color: #fff; }
-        .progress-line { position: absolute; top: 20px; left: 12.5%; right: 12.5%; height: 2px; background: var(--border); z-index: 1; }
-        .progress-line-fill { height: 100%; background: var(--red); width: 0; transition: width .4s; }
+.fee-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+.fee-badge.free { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
+.fee-badge.paid { background: rgba(245,158,11,.1); color: var(--orange); border: 1px solid rgba(245,158,11,.3); }
 
-        .step-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 40px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .step-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3vw, 28px); text-transform: uppercase; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; color: #fff; }
+/* ============================================================
+   PROGRESS INDICATOR
+   ============================================================ */
+.progress-wrap {
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    z-index: 40;
+}
+.progress {
+    display: flex;
+    justify-content: space-between;
+    max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    padding: 0 8px;
+}
+.progress-line {
+    position: absolute;
+    top: 16px;
+    left: calc(16px + 8px);
+    right: calc(16px + 8px);
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+.progress-line-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--red-bright));
+    width: 0;
+    transition: width 0.5s var(--ease);
+    border-radius: 2px;
+}
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    flex: 1;
+    max-width: 90px;
+}
+.progress-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.3s var(--ease);
+    position: relative;
+}
+.progress-num svg { width: 14px; height: 14px; }
+.progress-step.completed .progress-num {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(225,6,0,.4);
+}
+.progress-step.current .progress-num {
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 0 0 3px rgba(225,6,0,.15), 0 0 16px rgba(225,6,0,.25);
+}
+.progress-label {
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 8px;
+    text-align: center;
+    transition: color 0.3s;
+    line-height: 1.2;
+}
+.progress-step.completed .progress-label,
+.progress-step.current .progress-label { color: #fff; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group.full { grid-column: 1 / -1; }
-        .form-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); }
-        .form-label .req { color: var(--red); }
-        .form-input { width: 100%; font-size: 15px; background: var(--bg-primary); border: 1px solid var(--border-bright); border-radius: var(--radius-sm); padding: 12px 16px; color: #fff; font-family: inherit; transition: all 0.3s; }
-        .form-input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 10px rgba(225,6,0,0.2); }
-        .form-error { font-size: 12px; color: var(--red-error); display: none; }
-        .form-error.show { display: block; }
+/* ============================================================
+   SECTION / STEP CARDS
+   ============================================================ */
+.section {
+    position: relative;
+    z-index: 1;
+    padding: 24px 0 48px;
+}
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.step-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    animation: cardIn 0.35s var(--ease);
+}
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.step-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(20px, 4vw, 24px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.2;
+}
+.step-title::before {
+    content: '';
+    width: 3px;
+    height: 22px;
+    background: var(--red);
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(225,6,0,.5);
+    flex-shrink: 0;
+}
 
-        .intra-banner { display: none; background: linear-gradient(135deg, rgba(225,6,0,.15), rgba(225,6,0,.05)); border: 1px solid rgba(225,6,0,.4); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 20px; }
-        .intra-banner.show { display: block; }
-        .intra-banner-title { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
-        .intra-banner-title strong { color: var(--red); }
-        .intra-banner-desc { font-size: 13px; color: var(--text-secondary); }
+/* ============================================================
+   FORM INPUTS
+   ============================================================ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    padding-left: 2px;
+}
+.form-label .req { color: var(--red); margin-left: 2px; }
+.form-input {
+    width: 100%;
+    font-size: 15px;
+    font-weight: 500;
+    background: var(--bg-primary);
+    border: 1.5px solid var(--border-bright);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    min-height: 48px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.form-input::placeholder { color: var(--text-muted); font-weight: 400; }
+.form-input:focus {
+    outline: none;
+    border-color: var(--red);
+    background: rgba(225,6,0,.03);
+    box-shadow: 0 0 0 3px rgba(225,6,0,.1);
+}
+.form-input:invalid:not(:placeholder-shown) { border-color: rgba(239,68,68,.5); }
+select.form-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+.form-error {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--error);
+    display: none;
+    padding-left: 2px;
+    line-height: 1.3;
+}
+.form-error.show { display: block; animation: errShake 0.3s; }
+@keyframes errShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
 
-        .player-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 24px; }
-        .player-block.captain-block { border-color: rgba(192, 132, 252, 0.35); background: linear-gradient(135deg, rgba(168,85,247,0.05), var(--bg-secondary)); }
-        .player-block-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-        .player-badge { width: 44px; height: 44px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--border-bright); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; color: var(--red); flex-shrink: 0; font-size: 16px; }
-        .player-block.captain-block .player-badge { color: var(--purple); border-color: rgba(192, 132, 252, 0.5); background: rgba(168,85,247,0.1); }
-        .player-title { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 15px; letter-spacing: .5px; }
-        .player-block.captain-block .player-title { color: var(--purple); }
-        .player-subtitle { font-size: 12px; color: var(--text-muted); }
+/* ============================================================
+   INTRA-COLLEGE BANNER
+   ============================================================ */
+.intra-banner {
+    display: none;
+    background: linear-gradient(135deg, rgba(225,6,0,.1), rgba(225,6,0,.03));
+    border: 1px solid rgba(225,6,0,.3);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+    gap: 12px;
+}
+.intra-banner.show { display: flex; }
+.intra-banner-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(225,6,0,.15);
+    border: 1px solid rgba(225,6,0,.35);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+.intra-banner-body { flex: 1; min-width: 0; }
+.intra-banner-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 12px;
+    color: #fff;
+    letter-spacing: 0.3px;
+    margin-bottom: 3px;
+}
+.intra-banner-desc {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
 
-        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        @media (max-width: 600px) { .form-grid-2 { grid-template-columns: 1fr; } }
-        
-        .student-fields { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-bright); }
-        .student-fields.show { display: block; }
-        .student-fields-header { font-family: var(--font-display); font-size: 11px; color: var(--cyan); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+/* ============================================================
+   PLAYER CARDS
+   ============================================================ */
+.roster-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 24px 0 14px;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+}
+.roster-header::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: var(--red);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+.roster-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+}
 
-        .id-upload { border: 2px dashed var(--border-bright); border-radius: var(--radius-sm); padding: 24px; text-align: center; cursor: pointer; background: var(--bg-primary); transition: all .3s; }
-        .id-upload:hover { border-color: var(--cyan); }
-        .id-upload.has-file { border-color: var(--green); background: rgba(34,197,94,.05); }
-        .id-upload input { display: none; }
-        .id-upload-icon { font-size: 28px; margin-bottom: 6px; }
-        .id-upload-text { font-size: 13px; color: var(--text-muted); }
-        .id-upload.has-file .id-upload-text { color: var(--green); }
+.player-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 16px;
+    margin-bottom: 14px;
+    position: relative;
+    transition: border-color 0.2s;
+    overflow: hidden;
+}
+.player-block.captain-block {
+    border-color: rgba(192,132,252,.3);
+    background: linear-gradient(135deg, rgba(168,85,247,.06), var(--bg-secondary));
+}
+.player-block.captain-block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--purple), transparent);
+}
+.player-block-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.player-badge {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 900;
+    color: var(--red);
+    flex-shrink: 0;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+.player-block.captain-block .player-badge {
+    color: var(--purple);
+    border-color: rgba(192,132,252,.4);
+    background: rgba(168,85,247,.08);
+}
+.player-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+.player-block.captain-block .player-title { color: var(--purple); }
+.player-subtitle {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    line-height: 1.3;
+}
 
-        .sub-toggle { display: flex; gap: 12px; padding: 16px; background: var(--bg-secondary); border: 1px dashed var(--border-bright); border-radius: var(--radius-md); cursor: pointer; margin-top: 20px; align-items: center; }
-        .sub-toggle input { display: none; }
-        .sub-toggle-check { width: 22px; height: 22px; border: 2px solid var(--border-bright); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .sub-toggle input:checked + .sub-toggle-check { background: var(--red); border-color: var(--red); }
-        .sub-form { display: none; margin-top: 16px; } .sub-form.show { display: block; }
+/* Student fields */
+.student-fields {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-bright);
+}
+.student-fields.show { display: block; }
+.student-fields-header {
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-        .free-banner { display: none; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.35); padding: 20px; border-radius: var(--radius-md); margin-bottom: 24px; text-align: center; }
-        .free-banner.active { display: block; }
-        .free-banner-title { font-family: var(--font-display); color: var(--green); font-weight: 700; font-size: 15px; }
+/* ID Upload */
+.id-upload {
+    border: 1.5px dashed var(--border-bright);
+    border-radius: var(--radius-md);
+    padding: 20px 16px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg-primary);
+    transition: all 0.25s;
+    min-height: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.id-upload:hover, .id-upload:active { border-color: var(--cyan); background: rgba(34,211,238,.02); }
+.id-upload.has-file { border-color: var(--green); background: rgba(34,197,94,.04); }
+.id-upload input { display: none; }
+.id-upload-icon { font-size: 22px; margin-bottom: 6px; }
+.id-upload-text {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.id-upload.has-file .id-upload-text { color: var(--green); }
 
-        .payment-info { background: rgba(225,6,0,.08); border: 1px solid rgba(225,6,0,.3); padding: 24px; border-radius: var(--radius-md); margin-bottom: 24px; }
-        .payment-info-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px; flex-wrap: wrap; }
-        .payment-info-row:last-child { border: none; }
-        .payment-info-row > span:first-child { color: var(--text-secondary); font-family: var(--font-display); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-        .pay-amount-big { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--red); text-shadow: 0 0 20px var(--red-glow); }
-        .upi-id-wrap { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        #upiIdValue { font-family: var(--font-display); color: var(--cyan); font-weight: 700; letter-spacing: 0.5px; font-size: 14px; word-break: break-all; }
-        .copy-btn { background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.35); color: var(--cyan); padding: 6px 12px; border-radius: 4px; font-family: var(--font-display); font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; text-transform: uppercase; }
-        .copy-btn:hover { background: rgba(34,211,238,0.2); transform: translateY(-1px); }
-        .copy-btn:disabled { opacity: 0.6; cursor: default; }
+/* Substitute toggle */
+.sub-toggle {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-secondary);
+    border: 1.5px dashed var(--border-bright);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-top: 8px;
+    align-items: center;
+    transition: all 0.2s;
+    min-height: 52px;
+}
+.sub-toggle:active { background: var(--bg-elevated); }
+.sub-toggle input { display: none; }
+.sub-toggle-check {
+    width: 22px; height: 22px;
+    border: 1.5px solid var(--border-bright);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+.sub-toggle-check svg { opacity: 0; transition: opacity 0.2s; }
+.sub-toggle input:checked + .sub-toggle-check {
+    background: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 0 12px rgba(225,6,0,.4);
+}
+.sub-toggle input:checked + .sub-toggle-check svg { opacity: 1; }
+.sub-toggle-label {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    line-height: 1.3;
+}
+.sub-form { display: none; margin-top: 14px; }
+.sub-form.show { display: block; animation: cardIn 0.3s var(--ease); }
 
-        .qr-panel { background: linear-gradient(135deg, rgba(34,211,238,0.06), var(--bg-secondary)); border: 1px solid rgba(34,211,238,0.25); border-radius: var(--radius-md); padding: 28px 20px; text-align: center; margin-bottom: 24px; position: relative; overflow: hidden; }
-        .qr-panel::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 20%, rgba(34,211,238,0.08), transparent 50%), radial-gradient(circle at 80% 80%, rgba(225,6,0,0.06), transparent 50%); pointer-events: none; }
-        .qr-label { font-family: var(--font-display); font-size: 12px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 18px; position: relative; z-index: 1; }
-        .qr-wrap { display: inline-block; padding: 14px; background: #fff; border-radius: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 4px rgba(34,211,238,0.15); position: relative; z-index: 1; }
-        .qr-wrap img { display: block; width: 240px; height: 240px; border-radius: 6px; }
-        .qr-hint { font-size: 12px; color: var(--text-secondary); margin-top: 16px; position: relative; z-index: 1; }
-        .qr-amount-note { display: inline-block; margin-top: 12px; padding: 8px 16px; background: rgba(225,6,0,0.12); border: 1px solid rgba(225,6,0,0.3); border-radius: 6px; font-size: 12.5px; color: var(--text-secondary); position: relative; z-index: 1; }
-        .qr-amount-note strong { color: var(--red); font-family: var(--font-display); font-weight: 900; font-size: 14px; }
-        .qr-fallback { margin-top: 14px; padding: 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; color: #f87171; font-size: 13px; line-height: 1.5; position: relative; z-index: 1; }
-        .qr-fallback strong { color: #fff; font-family: var(--font-display); word-break: break-all; }
+/* ============================================================
+   PAYMENT SECTION
+   ============================================================ */
+.free-banner {
+    display: none;
+    background: linear-gradient(135deg, rgba(34,197,94,.1), rgba(34,197,94,.03));
+    border: 1px solid rgba(34,197,94,.3);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    text-align: center;
+}
+.free-banner.active { display: block; }
+.free-banner-title {
+    font-family: var(--font-display);
+    color: var(--green);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
 
-        .upload-zone { border: 2px dashed var(--border-bright); border-radius: var(--radius-md); padding: 40px; text-align: center; cursor: pointer; background: var(--bg-secondary); transition: all 0.3s; }
-        .upload-zone:hover { border-color: var(--cyan); }
-        .upload-zone.has-file { border-color: var(--green); background: rgba(34,197,94,0.05); }
-        .upload-zone input { display: none; }
+.payment-info {
+    background: linear-gradient(135deg, rgba(225,6,0,.06), var(--bg-secondary));
+    border: 1px solid rgba(225,6,0,.25);
+    padding: 20px 18px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+.payment-info::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--red), transparent);
+}
+.payment-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.payment-info-row + .payment-info-row {
+    border-top: 1px solid rgba(255,255,255,.05);
+    margin-top: 4px;
+    padding-top: 14px;
+}
+.payment-info-label {
+    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+}
+.pay-amount-big {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--red);
+    letter-spacing: 0.5px;
+    line-height: 1;
+    text-shadow: 0 0 24px rgba(225,6,0,.4);
+}
+.upi-id-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+#upiIdValue {
+    font-family: var(--font-display);
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    font-size: 13px;
+    word-break: break-all;
+    text-align: right;
+}
+.copy-btn {
+    background: rgba(34,211,238,.1);
+    border: 1px solid rgba(34,211,238,.3);
+    color: var(--cyan);
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.copy-btn:hover, .copy-btn:active {
+    background: rgba(34,211,238,.2);
+    border-color: rgba(34,211,238,.5);
+}
+.copy-btn:disabled { opacity: 0.7; cursor: default; }
 
-        .review-block { background: var(--bg-secondary); border: 1px solid var(--border); padding: 24px; border-radius: var(--radius-md); margin-bottom: 16px; }
-        .review-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; gap: 12px; }
-        .review-row:last-child { border-bottom: none; }
-        .review-row > span:first-child { color: var(--text-secondary); }
-        .review-row > span:last-child { color: #fff; font-weight: 600; text-align: right; word-break: break-word; }
-        .review-verify-block { background: rgba(34,211,238,.05); border: 1px solid rgba(34,211,238,.3); padding: 16px; border-radius: var(--radius-md); margin-top: 16px; }
-        .review-verify-title { font-family: var(--font-display); font-size: 12px; color: var(--cyan); font-weight: 700; margin-bottom: 10px; }
-        .review-verify-row { font-size: 13px; padding: 10px 0; color: var(--text-secondary); border-bottom: 1px dashed rgba(255,255,255,.05); line-height: 1.7; }
-        .review-verify-row:last-child { border-bottom: none; }
-        .review-verify-row strong { color: #fff; }
-        .review-verify-row .tag { display: inline-block; font-family: var(--font-display); font-size: 10px; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.5px; margin-right: 6px; }
-        .tag.name { background: rgba(34,197,94,0.15); color: #4ade80; }
-        .tag.ign { background: rgba(59,130,246,0.15); color: #60a5fa; }
-        .tag.uid { background: rgba(34,211,238,0.15); color: #67e8f9; }
-        /* NAYE COLORS */
-        .tag.role { background: rgba(245,158,11,0.15); color: var(--orange); }
-        .tag.captain { background: rgba(168,85,247,0.15); color: var(--purple); }
+/* QR Panel */
+.qr-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 18px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+.qr-label {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.qr-wrap {
+    display: inline-block;
+    padding: 12px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 3px rgba(34,211,238,.15);
+    position: relative;
+}
+.qr-wrap img {
+    display: block;
+    width: 200px;
+    height: 200px;
+    border-radius: 6px;
+}
+.qr-hint {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    margin-top: 14px;
+    line-height: 1.5;
+}
+.qr-amount-note {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: rgba(225,6,0,.1);
+    border: 1px solid rgba(225,6,0,.25);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+.qr-amount-note strong {
+    color: var(--red);
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 13px;
+}
+.qr-fallback {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(239,68,68,.08);
+    border: 1px solid rgba(239,68,68,.3);
+    border-radius: 6px;
+    color: #f87171;
+    font-size: 12px;
+    line-height: 1.5;
+}
+.qr-fallback strong {
+    color: #fff;
+    font-family: var(--font-display);
+    word-break: break-all;
+    font-weight: 700;
+}
 
-        .agree-box { display: flex; gap: 14px; padding: 20px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 24px; cursor: pointer; align-items: center; }
-        .agree-box input { width: 20px; height: 20px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
+/* Upload zone (payment screenshot) */
+.upload-zone {
+    border: 1.5px dashed var(--border-bright);
+    border-radius: var(--radius-md);
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--bg-primary);
+    transition: all 0.25s;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.upload-zone:hover, .upload-zone:active { border-color: var(--cyan); background: rgba(34,211,238,.02); }
+.upload-zone.has-file { border-color: var(--green); background: rgba(34,197,94,.04); }
+.upload-zone input { display: none; }
+.upload-zone-icon { font-size: 26px; margin-bottom: 6px; }
+#uploadTitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.upload-zone.has-file #uploadTitle { color: var(--green); }
 
-        .step-nav { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; flex-wrap: wrap; }
+/* ============================================================
+   REVIEW SECTION
+   ============================================================ */
+.review-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+.review-group {
+    padding: 16px 18px;
+}
+.review-group + .review-group {
+    border-top: 1px solid var(--border);
+}
+.review-group-title {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.review-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    font-size: 13.5px;
+    gap: 12px;
+}
+.review-row > span:first-child {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    flex-shrink: 0;
+}
+.review-row > span:last-child {
+    color: #fff;
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+    min-width: 0;
+}
+.review-row + .review-row { border-top: 1px solid rgba(255,255,255,.03); }
 
-        .success-panel { display: none; text-align: center; padding: 60px 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 0 40px rgba(34,197,94,0.1); }
-        .success-panel.show { display: block; }
-        .success-icon { width: 80px; height: 80px; border-radius: 50%; background: rgba(34,197,94,.15); border: 2px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
-        .success-id-box { background: var(--bg-secondary); padding: 20px 32px; border-radius: var(--radius-md); display: inline-block; margin-bottom: 32px; border: 1px solid var(--green); }
-        .success-id-value { font-family: var(--font-display); font-weight: 900; font-size: 24px; color: var(--green); }
+.review-verify-block {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+}
+.review-verify-title {
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--cyan);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.review-player-card {
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.04);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+}
+.review-player-card:last-child { margin-bottom: 0; }
+.review-player-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+.review-player-slot {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--red);
+    background: rgba(225,6,0,.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+.review-player-slot.captain-slot { color: var(--purple); background: rgba(168,85,247,.12); }
+.review-player-ign {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    letter-spacing: 0.3px;
+}
+.review-player-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+.review-player-tag {
+    display: inline-flex;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    color: var(--text-secondary);
+    line-height: 1.3;
+}
+.review-player-tag.name { color: #4ade80; }
+.review-player-tag.uid { color: var(--cyan); font-family: var(--font-display); font-weight: 600; }
+.review-player-tag.role { color: var(--orange); }
+.review-player-tag.extra {
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    padding: 3px 0;
+    font-size: 10.5px;
+    width: 100%;
+}
 
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .step-card { padding: 24px; }
-            .success-panel { padding: 40px 20px; }
-            .qr-wrap img { width: 200px; height: 200px; }
-            .pay-amount-big { font-size: 22px; }
-            .progress-label { font-size: 9px; }
-            .progress-num { width: 34px; height: 34px; font-size: 12px; }
-            .progress-line { top: 17px; }
-        }
-    </style>
+/* Agree box */
+.agree-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 18px;
+    cursor: pointer;
+    align-items: flex-start;
+    transition: all 0.2s;
+}
+.agree-box:active { background: var(--bg-elevated); }
+.agree-box input {
+    width: 20px; height: 20px;
+    accent-color: var(--red);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.agree-box-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* ============================================================
+   BUTTONS & NAV
+   ============================================================ */
+.step-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.step-nav .btn { flex: 1; min-width: 120px; }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 14px 22px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s var(--ease);
+    min-height: 48px;
+    line-height: 1.2;
+    text-align: center;
+    -webkit-appearance: none;
+    appearance: none;
+    white-space: nowrap;
+}
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.btn-primary {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(225,6,0,.25);
+}
+.btn-primary:hover:not(:disabled), .btn-primary:active:not(:disabled) {
+    background: var(--red-bright);
+    box-shadow: 0 6px 24px rgba(225,6,0,.4);
+    transform: translateY(-1px);
+}
+.btn-primary:active:not(:disabled) { transform: translateY(0); }
+.btn-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-bright);
+}
+.btn-outline:hover:not(:disabled), .btn-outline:active:not(:disabled) {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(225,6,0,.03);
+}
+
+/* ============================================================
+   SUCCESS PANEL
+   ============================================================ */
+.success-panel {
+    display: none;
+    text-align: center;
+    padding: 40px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 0 60px rgba(34,197,94,.06);
+    animation: cardIn 0.4s var(--ease);
+}
+.success-panel.show { display: block; }
+.success-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(34,197,94,.12);
+    border: 2px solid var(--green);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    animation: successPop 0.5s var(--ease) 0.1s both;
+}
+@keyframes successPop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.success-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(18px, 4vw, 24px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.success-subtitle {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+.success-id-box {
+    background: var(--bg-secondary);
+    padding: 18px 24px;
+    border-radius: var(--radius-md);
+    display: inline-block;
+    margin-bottom: 24px;
+    border: 1px dashed rgba(34,197,94,.4);
+    min-width: 200px;
+}
+.success-id-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+.success-id-value {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--green);
+    letter-spacing: 1px;
+    word-break: break-all;
+}
+.success-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+.success-actions .btn { flex: 1; min-width: 140px; max-width: 200px; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 32px 0 20px;
+    margin-top: 40px;
+}
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.footer-brand .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.footer-brand .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--red);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 18px;
+    color: #fff;
+}
+.footer-brand .logo-text { display: flex; flex-direction: column; line-height: 1; }
+.footer-brand .logo-main {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: #fff;
+}
+.footer-brand .logo-sub {
+    font-family: var(--font-display);
+    font-size: 8px;
+    color: var(--red);
+    letter-spacing: 3px;
+    margin-top: 2px;
+}
+.footer-tagline {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 280px;
+}
+.footer-heading {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+.footer-links { display: flex; flex-direction: column; gap: 6px; }
+.footer-link {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+.footer-link:hover { color: var(--red); }
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.footer-copy, .footer-note {
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+.footer-copy strong { color: var(--text-secondary); }
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+   ============================================================ */
+@media (max-width: 640px) {
+    .form-grid, .form-grid-2 { grid-template-columns: 1fr; }
+    .container { padding: 0 14px; }
+    .step-card { padding: 20px 16px; border-radius: var(--radius-lg); }
+    .step-title { font-size: 20px; padding-bottom: 14px; margin-bottom: 18px; }
+    .strip { padding: 16px 0 18px; }
+    .strip-title { font-size: 18px; }
+    .strip-meta > span { font-size: 10.5px; padding: 4px 8px; }
+    .progress-wrap { padding: 12px 0; }
+    .progress-num { width: 30px; height: 30px; font-size: 12px; }
+    .progress-num svg { width: 12px; height: 12px; }
+    .progress-line { top: 14px; }
+    .progress-label { font-size: 8.5px; margin-top: 6px; letter-spacing: 0.5px; }
+    .form-input { padding: 13px 14px; font-size: 15px; min-height: 48px; }
+    .form-label { font-size: 9.5px; }
+    .player-block { padding: 16px 14px; }
+    .player-badge { width: 34px; height: 34px; font-size: 12px; border-radius: 9px; }
+    .player-title { font-size: 12.5px; }
+    .qr-wrap img { width: 180px; height: 180px; }
+    .pay-amount-big { font-size: 22px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+    .footer-tagline { max-width: 100%; }
+    .success-actions { flex-direction: column; }
+    .success-actions .btn { max-width: 100%; }
+    .step-nav .btn { min-width: 0; padding: 14px 16px; font-size: 11px; }
+}
+
+@media (max-width: 380px) {
+    .container { padding: 0 12px; }
+    .step-card { padding: 18px 14px; }
+    .strip-title { font-size: 16px; }
+    .progress-label { font-size: 8px; }
+    .btn { padding: 13px 16px; font-size: 11px; }
+}
+
+@media (min-width: 641px) {
+    .container { padding: 0 24px; }
+    .step-card { padding: 32px 28px; }
+    .strip { padding: 24px 0 26px; }
+    .progress-num { width: 38px; height: 38px; font-size: 14px; }
+    .progress-line { top: 18px; }
+    .progress-label { font-size: 10px; }
+    .qr-wrap img { width: 220px; height: 220px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+</style>
 </head>
 <body>
 
-<audio id="bgMusic" src="assets/audio/register-song.mp3" preload="auto" autoplay loop></audio>
+<audio id="bgMusic" src="assets/audio/register-song.mp3" preload="none" loop></audio>
 
+<!-- Skeleton loader -->
+<div id="skeletonStrip" class="skeleton-strip">
+    <div class="skeleton-line w-40"></div>
+    <div class="skeleton-line w-70"></div>
+    <div class="skeleton-line w-50"></div>
+</div>
+
+<!-- Loading overlay -->
 <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner"></div>
     <div id="loadingMessage">Loading tournament...</div>
 </div>
 
+<!-- Error panel -->
 <div id="errorPanel" class="error-panel">
     <div class="error-icon">⚠️</div>
     <h2 id="errorTitle" class="error-title">Error</h2>
@@ -201,13 +1387,14 @@
 </div>
 
 <div id="mainContent" style="display:none;">
-    
-    <!-- NAV WILL AUTO-INJECT HERE BY MAIN.JS -->
+
+    <!-- Nav injected by main.js -->
     <nav class="nav"><div class="container nav-inner"></div></nav>
 
+    <!-- Tournament Strip -->
     <div class="strip">
         <div class="container strip-inner">
-            <div>
+            <div class="strip-main">
                 <span class="strip-label">Registering For</span>
                 <div class="strip-title" id="strip-title">Loading...</div>
                 <div class="strip-meta">
@@ -217,22 +1404,31 @@
                     <span id="strip-fee"></span>
                 </div>
             </div>
-            <a href="tournaments.html" class="strip-back" id="back-link">← Back</a>
+            <a href="tournaments.html" class="strip-back" id="back-link" aria-label="Back">←</a>
         </div>
     </div>
 
-    <section class="page-hero">
-        <h1 class="page-hero-title">Team <span class="accent">Registration</span></h1>
-    </section>
-
+    <!-- Progress indicator -->
     <div class="progress-wrap">
         <div class="container">
             <div class="progress">
                 <div class="progress-line"><div class="progress-line-fill" id="progressFill"></div></div>
-                <div class="progress-step current" data-step="1"><div class="progress-num">1</div><div class="progress-label">Captain</div></div>
-                <div class="progress-step" data-step="2"><div class="progress-num">2</div><div class="progress-label">Team</div></div>
-                <div class="progress-step" data-step="3"><div class="progress-num">3</div><div class="progress-label">Payment</div></div>
-                <div class="progress-step" data-step="4"><div class="progress-num">4</div><div class="progress-label">Review</div></div>
+                <div class="progress-step current" data-step="1">
+                    <div class="progress-num">1</div>
+                    <div class="progress-label">Captain</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="progress-num">2</div>
+                    <div class="progress-label">Team</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="progress-num">3</div>
+                    <div class="progress-label">Payment</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="progress-num">4</div>
+                    <div class="progress-label">Review</div>
+                </div>
             </div>
         </div>
     </div>
@@ -246,21 +1442,21 @@
                 <div class="form-grid">
                     <div class="form-group full">
                         <label class="form-label">Full Name <span class="req">*</span></label>
-                        <input type="text" id="captainName" class="form-input" placeholder="e.g. Rohit Kumar">
+                        <input type="text" id="captainName" class="form-input" placeholder="e.g. Rohit Kumar" autocomplete="name">
                         <div class="form-error" id="err-captainName">Please enter your full name.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Email <span class="req">*</span></label>
-                        <input type="email" id="captainEmail" class="form-input" placeholder="you@gmail.com">
+                        <input type="email" id="captainEmail" class="form-input" placeholder="you@gmail.com" autocomplete="email" inputmode="email">
                         <div class="form-error" id="err-captainEmail">Enter a valid email.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Phone <span class="req">*</span></label>
-                        <input type="tel" id="captainPhone" class="form-input" placeholder="10-digit mobile" maxlength="10">
+                        <input type="tel" id="captainPhone" class="form-input" placeholder="10-digit mobile" maxlength="10" autocomplete="tel" inputmode="numeric">
                         <div class="form-error" id="err-captainPhone">Enter valid 10-digit number.</div>
                     </div>
                     <div class="form-group full">
-                        <label class="form-label">Discord Username (optional)</label>
+                        <label class="form-label">Discord Username <span style="color:var(--text-muted);text-transform:none;letter-spacing:0;">(optional)</span></label>
                         <input type="text" id="captainDiscord" class="form-input" placeholder="e.g. rohit#1234">
                     </div>
                 </div>
@@ -275,35 +1471,39 @@
                 <h2 class="step-title">Team & Roster</h2>
 
                 <div class="intra-banner" id="intraBanner">
-                    <div class="intra-banner-title">🎓 Intra-College Tournament</div>
-                    <div class="intra-banner-desc">Every player must provide <strong>Real Name, Roll Number, College Name, Branch, Year</strong> and upload their <strong>ID Card</strong>.</div>
+                    <div class="intra-banner-icon">🎓</div>
+                    <div class="intra-banner-body">
+                        <div class="intra-banner-title">Intra-College Tournament</div>
+                        <div class="intra-banner-desc">Every player must provide Real Name, Roll Number, College Name, Branch, Year and upload their ID Card.</div>
+                    </div>
                 </div>
 
-                <div class="form-grid" style="margin-bottom:24px;">
+                <div class="form-grid" style="margin-bottom:20px;">
                     <div class="form-group">
                         <label class="form-label">Team Name <span class="req">*</span></label>
-                        <input type="text" id="teamName" class="form-input" placeholder="e.g. BCE Vipers">
+                        <input type="text" id="teamName" class="form-input" placeholder="e.g. BCE Vipers" autocomplete="off">
                         <div class="form-error" id="err-teamName">Required (min 3 chars).</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Team Tag <span class="req">*</span></label>
-                        <input type="text" id="teamTag" class="form-input" placeholder="e.g. BCEV" maxlength="6" style="text-transform:uppercase;">
+                        <input type="text" id="teamTag" class="form-input" placeholder="e.g. BCEV" maxlength="6" style="text-transform:uppercase;" autocomplete="off">
                         <div class="form-error" id="err-teamTag">Required (2-6 chars).</div>
                     </div>
                 </div>
 
-                <h3 style="margin-bottom:12px;font-family:'Orbitron',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:1px;">Main Roster (4 Players)</h3>
-
+                <div class="roster-header">Main Roster · 4 Players</div>
                 <div id="rosterContainer"></div>
 
                 <label class="sub-toggle">
                     <input type="checkbox" id="subCheckbox" onchange="toggleSub()">
-                    <div class="sub-toggle-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <div>Add a substitute player (optional)</div>
+                    <div class="sub-toggle-check">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="sub-toggle-label">Add a substitute player (optional)</div>
                 </label>
                 <div class="sub-form" id="subForm"></div>
 
-                <div class="step-nav" style="margin-top:24px;">
+                <div class="step-nav" style="margin-top:20px;">
                     <button class="btn btn-outline" onclick="goToStep(1)">← Back</button>
                     <button class="btn btn-primary" onclick="goToStep(3)">Continue →</button>
                 </div>
@@ -320,11 +1520,11 @@
                 <div id="paymentFields">
                     <div class="payment-info">
                         <div class="payment-info-row">
-                            <span>Amount to Pay</span>
+                            <span class="payment-info-label">Amount to Pay</span>
                             <span class="pay-amount-big" id="pay-amount">₹0</span>
                         </div>
                         <div class="payment-info-row">
-                            <span>UPI ID</span>
+                            <span class="payment-info-label">UPI ID</span>
                             <span class="upi-id-wrap">
                                 <span id="upiIdValue">piyushkumar1477@naviaxis</span>
                                 <button type="button" class="copy-btn" onclick="copyUpiId(this)">📋 Copy</button>
@@ -333,36 +1533,36 @@
                     </div>
 
                     <div class="qr-panel">
-                        <div class="qr-label">📱 Scan QR to Pay</div>
+                        <div class="qr-label">📱 Scan to Pay</div>
                         <div class="qr-wrap" id="qrWrap">
-                            <img id="upiQrImg" alt="UPI QR Code" onerror="handleQrError()" />
+                            <img id="upiQrImg" alt="UPI QR Code" onerror="handleQrError()">
                         </div>
-                        <div class="qr-hint">Use any UPI app — GPay, PhonePe, Paytm, BHIM, Amazon Pay</div>
-                        <div class="qr-amount-note">Pay exactly <strong id="qrAmountNote">₹0</strong> — any other amount may cause delays</div>
+                        <div class="qr-hint">Use any UPI app — GPay, PhonePe, Paytm, BHIM</div>
+                        <div class="qr-amount-note">Pay exactly <strong id="qrAmountNote">₹0</strong> — other amounts may cause delays</div>
                         <div class="qr-fallback" id="qrFallback" style="display:none;">
-                            ⚠️ QR couldn't load. Please pay manually to UPI ID: <strong>piyushkumar1477@naviaxis</strong>
+                            ⚠️ QR couldn't load. Pay manually to UPI ID: <strong>piyushkumar1477@naviaxis</strong>
                         </div>
                     </div>
 
                     <div class="form-grid">
                         <div class="form-group full">
                             <label class="form-label">UPI UTR / Ref No. <span class="req">*</span></label>
-                            <input type="text" id="utr" class="form-input" placeholder="Enter 12-digit UTR or Reference Number from your payment app">
+                            <input type="text" id="utr" class="form-input" placeholder="12-digit UTR from your payment app" inputmode="numeric">
                             <div class="form-error" id="err-utr">UTR is required.</div>
                         </div>
                         <div class="form-group full">
                             <label class="form-label">Payment Screenshot <span class="req">*</span></label>
                             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('screenshotInput').click()">
                                 <input type="file" id="screenshotInput" accept="image/*">
-                                <div style="font-size:36px;">📸</div>
-                                <div id="uploadTitle">Click to upload payment screenshot</div>
-                                <div class="form-error" id="err-screenshot" style="color:red;margin-top:10px;">Screenshot required.</div>
+                                <div class="upload-zone-icon">📸</div>
+                                <div id="uploadTitle">Tap to upload screenshot</div>
+                                <div class="form-error" id="err-screenshot" style="color:red;margin-top:8px;">Screenshot required.</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="step-nav" style="margin-top:24px;">
+                <div class="step-nav" style="margin-top:20px;">
                     <button class="btn btn-outline" onclick="goToStep(2)">← Back</button>
                     <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
                 </div>
@@ -371,23 +1571,37 @@
             <!-- STEP 4 -->
             <div class="step-card" id="step4" style="display:none;">
                 <h2 class="step-title">Review & Submit</h2>
+
                 <div class="review-block">
-                    <div class="review-row"><span>Captain</span><span id="revCaptainName">—</span></div>
-                    <div class="review-row"><span>Email</span><span id="revCaptainEmail">—</span></div>
-                    <div class="review-row"><span>Team</span><span id="revTeamName">—</span></div>
-                    <div class="review-row"><span>Roster</span><span id="revRoster">—</span></div>
-                    <div class="review-row"><span>Entry Fee</span><span id="revFee">—</span></div>
-                    <div class="review-row" id="revUtrRow"><span>UTR</span><span id="revUtr">—</span></div>
+                    <div class="review-group">
+                        <div class="review-group-title">👤 Captain</div>
+                        <div class="review-row"><span>Name</span><span id="revCaptainName">—</span></div>
+                        <div class="review-row"><span>Email</span><span id="revCaptainEmail">—</span></div>
+                        <div class="review-row"><span>Phone</span><span id="revCaptainPhone">—</span></div>
+                    </div>
+                    <div class="review-group">
+                        <div class="review-group-title">🏆 Team</div>
+                        <div class="review-row"><span>Team</span><span id="revTeamName">—</span></div>
+                        <div class="review-row"><span>Players</span><span id="revRoster">—</span></div>
+                    </div>
+                    <div class="review-group">
+                        <div class="review-group-title">💳 Payment</div>
+                        <div class="review-row"><span>Entry Fee</span><span id="revFee">—</span></div>
+                        <div class="review-row" id="revUtrRow"><span>UTR</span><span id="revUtr">—</span></div>
+                    </div>
                 </div>
+
                 <div class="review-verify-block" id="revVerifyBlock">
-                    <div class="review-verify-title">👥 Player Details</div>
+                    <div class="review-verify-title">👥 Player Roster</div>
                     <div id="revVerifyList"></div>
                 </div>
+
                 <label class="agree-box">
                     <input type="checkbox" id="agreeCheckbox">
-                    <div>I confirm all information is accurate.</div>
+                    <div class="agree-box-text">I confirm all information above is accurate and I agree to the tournament rules.</div>
                 </label>
-                <div class="form-error" id="err-agree" style="margin-bottom:16px;">You must accept.</div>
+                <div class="form-error" id="err-agree" style="margin-bottom:14px;">You must accept to continue.</div>
+
                 <div class="step-nav">
                     <button class="btn btn-outline" onclick="goToStep(3)">← Back</button>
                     <button class="btn btn-primary" id="submitBtn" onclick="submitRegistration()">Submit Registration</button>
@@ -396,45 +1610,45 @@
 
             <!-- SUCCESS -->
             <div class="success-panel" id="successPanel">
-                <div class="success-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <h2 style="font-family:'Orbitron';margin-bottom:16px;">Registration Submitted</h2>
+                <div class="success-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h2 class="success-title">Registration Submitted</h2>
+                <p class="success-subtitle">Your team has been registered. Our team will review and verify your submission.</p>
                 <div class="success-id-box">
-                    <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Your Registration ID</div>
+                    <div class="success-id-label">Registration ID</div>
                     <div class="success-id-value" id="regIdDisplay">—</div>
                 </div>
-                <div style="margin-top:24px;">
-                    <a href="registration-status.html" class="btn btn-outline" style="margin-right:12px;">Check Status</a>
+                <div class="success-actions">
+                    <a href="registration-status.html" class="btn btn-outline">Check Status</a>
                     <a href="index.html" class="btn btn-primary">Back to Home</a>
                 </div>
             </div>
 
         </div>
     </section>
-    
-    <!-- FOOTER -->
+
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="index.html" class="logo"><div class="logo-mark">B</div><div class="logo-text"><span class="logo-main">BCE</span><span class="logo-sub">ESPORTS</span></div></a>
+                    <a href="index.html" class="logo">
+                        <div class="logo-mark">B</div>
+                        <div class="logo-text">
+                            <span class="logo-main">BCE</span>
+                            <span class="logo-sub">ESPORTS</span>
+                        </div>
+                    </a>
                     <p class="footer-tagline">The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.</p>
                 </div>
                 <div>
                     <h4 class="footer-heading">Platform</h4>
                     <div class="footer-links">
-                        <a href="about.html" class="footer-link">About Us</a>
                         <a href="tournaments.html" class="footer-link">Tournaments</a>
                         <a href="teams.html" class="footer-link">Teams</a>
                         <a href="rules.html" class="footer-link">Rules</a>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="footer-heading">Games</h4>
-                    <div class="footer-links">
-                        <a href="index.html#games" class="footer-link">Free Fire</a>
-                        <a href="index.html#games" class="footer-link">BGMI</a>
-                        <a href="index.html#games" class="footer-link">Valorant</a>
-                        <a href="index.html#games" class="footer-link">COD Mobile</a>
                     </div>
                 </div>
                 <div>
@@ -442,45 +1656,48 @@
                     <div class="footer-links">
                         <a href="index.html#community" class="footer-link">Discord</a>
                         <a href="index.html#community" class="footer-link">Instagram</a>
-                        <a href="index.html#community" class="footer-link">YouTube</a>
                         <a href="index.html#announcements" class="footer-link">News</a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
-                <p class="footer-note">Design Preview · Sample data</p>
+                <p class="footer-note">Live Platform</p>
             </div>
         </div>
     </footer>
 </div>
 
-<!-- ✅ MAIN JS LINK (NAVBAR LOAD KARNE KE LIYE) -->
 <script src="assets/js/main.js"></script>
 
 <script>
-/* ============ AUDIO ============ */
+/* ============================================================
+   AUDIO
+   ============================================================ */
 (function initAudio() {
     const music = document.getElementById('bgMusic');
     if (!music) return;
-    const playPromise = music.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(() => {
-            const playOnInteraction = () => {
-                music.play().catch(e => console.log('Audio play failed:', e));
-                document.removeEventListener('click', playOnInteraction);
-                document.removeEventListener('touchstart', playOnInteraction);
-            };
-            document.addEventListener('click', playOnInteraction);
-            document.addEventListener('touchstart', playOnInteraction);
-        });
-    }
+    music.volume = 0.4;
+    const tryPlay = () => {
+        music.play().catch(() => {});
+        document.removeEventListener('click', tryPlay);
+        document.removeEventListener('touchstart', tryPlay);
+        document.removeEventListener('keydown', tryPlay);
+    };
+    document.addEventListener('click', tryPlay, { passive: true });
+    document.addEventListener('touchstart', tryPlay, { passive: true });
+    document.addEventListener('keydown', tryPlay);
 })();
 
-/* ============ CONSTANTS ============ */
+/* ============================================================
+   CONSTANTS
+   ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 const UPI_ID = "piyushkumar1477@naviaxis";
 const UPI_NAME = "BCE Esports";
+
+const CACHE_KEY_PREFIX = 'bce_tourn_cache_';
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 const urlParams = new URLSearchParams(window.location.search);
 const tournamentId = urlParams.get('tid') || urlParams.get('id') || '';
@@ -489,6 +1706,7 @@ let tournament = null;
 let isIntra = false;
 let paymentRequired = false;
 let currentStep = 1;
+let isFetching = false;
 
 const state = {
     captain: {},
@@ -499,12 +1717,20 @@ const state = {
     idCards: {}
 };
 
-/* ============ HELPERS ============ */
+/* ============================================================
+   HELPERS
+   ============================================================ */
 function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function showLoading(msg) { document.getElementById('loadingMessage').textContent = msg || 'Loading...'; document.getElementById('loadingOverlay').classList.add('active'); }
-function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+function showLoading(msg) {
+    const el = document.getElementById('loadingMessage');
+    if (el) el.textContent = msg || 'Loading...';
+    document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
 function showError(title, msg) {
     hideLoading();
     document.getElementById('errorPanel').classList.add('active');
@@ -518,91 +1744,208 @@ async function fetchJSON(url, opts) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 30000);
     try {
-        const res = await fetch(url, { method: opts.method || 'GET', body: opts.body, headers: opts.headers || {}, mode: 'cors', credentials: 'omit', signal: controller.signal });
+        const res = await fetch(url, {
+            method: opts.method || 'GET',
+            body: opts.body,
+            headers: opts.headers || {},
+            mode: 'cors',
+            credentials: 'omit',
+            signal: controller.signal
+        });
         clearTimeout(timer);
         const text = await res.text();
-        if (text.trim().startsWith('<')) throw new Error('Server returned HTML. Deployment not public or wrong URL.');
-        try { return JSON.parse(text); } catch (e) { throw new Error('Invalid JSON: ' + text.substring(0, 200)); }
+        if (text.trim().startsWith('<')) throw new Error('Server returned HTML. Deployment not public.');
+        try { return JSON.parse(text); }
+        catch (e) { throw new Error('Invalid JSON response'); }
     } catch (e) {
         clearTimeout(timer);
-        if (e.name === 'AbortError') throw new Error('Request timed out (30s). Please retry.');
+        if (e.name === 'AbortError') throw new Error('Request timed out. Please retry.');
         throw e;
     }
 }
 
-/* ============ LOAD TOURNAMENT ============ */
-async function loadTournament() {
-    if (!tournamentId) {
-        showError('Missing Tournament ID', 'URL me ?tid=XXXX hona chahiye.\nExample: register.html?tid=TRN-XXXX');
-        return;
-    }
-    showLoading('Loading tournament...');
+/* ============================================================
+   LOCALSTORAGE SWR CACHE
+   ============================================================ */
+function getCachedTournament(tid) {
     try {
-        const json = await fetchJSON(API_URL + '?action=getTournament&id=' + encodeURIComponent(tournamentId));
-        if (!json.success) throw new Error(json.message || 'getTournament failed');
-        if (!json.data) throw new Error('Tournament not found: ' + tournamentId);
-        
-        tournament = json.data;
-        
-        const scopeRaw = String(tournament.Scope || '').trim();
-        const collegeRaw = String(tournament.CollegeName || '').trim();
-        isIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
-        paymentRequired = (Number(tournament.EntryFee) || 0) > 0;
-        
-        document.getElementById('strip-title').textContent = tournament.Name || 'Tournament';
-        document.getElementById('strip-format').textContent = '👥 ' + (tournament.TeamFormat || 'Squad');
-        document.getElementById('strip-dates').textContent = tournament.TournamentStartAt ? '📅 ' + new Date(tournament.TournamentStartAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'}) : '';
-        document.getElementById('back-link').href = 'tournament.html?tid=' + tournament.TournamentID;
-        
-        const scopeBadge = document.getElementById('strip-scope');
-        if (isIntra) {
-            scopeBadge.innerHTML = '<span class="scope-badge intra">🎓 Intra College</span>';
-            document.getElementById('intraBanner').classList.add('show');
-        } else {
-            scopeBadge.innerHTML = '<span class="scope-badge public">🌐 Public</span>';
-        }
-
-        const feeBadge = document.getElementById('strip-fee');
-        if (paymentRequired) {
-            feeBadge.innerHTML = '<span class="fee-badge paid">₹' + (Number(tournament.EntryFee) || 0) + ' Entry</span>';
-        } else {
-            feeBadge.innerHTML = '<span class="fee-badge free">FREE Entry</span>';
-        }
-
-        if (paymentRequired) {
-            const amount = Number(tournament.EntryFee) || 0;
-            document.getElementById('pay-amount').textContent = '₹' + amount;
-            document.getElementById('qrAmountNote').textContent = '₹' + amount;
-            generateQrCode(amount, tournament.Name || 'Tournament');
-            document.getElementById('revUtrRow').style.display = 'flex';
-        } else {
-            const paymentStep = document.querySelector('.progress-step[data-step="3"]');
-            if (paymentStep) paymentStep.style.display = 'none';
-            const reviewStep = document.querySelector('.progress-step[data-step="4"]');
-            if (reviewStep) {
-                reviewStep.querySelector('.progress-num').textContent = '3';
-                reviewStep.querySelector('.progress-label').textContent = 'Review';
-            }
-            const line = document.querySelector('.progress-line');
-            if (line) {
-                line.style.left = '16.66%';
-                line.style.right = '16.66%';
-            }
-            document.getElementById('freeBanner').classList.add('active');
-            document.getElementById('paymentFields').style.display = 'none';
-            document.getElementById('revUtrRow').style.display = 'none';
-        }
-        
-        renderRoster();
-        
-        hideLoading();
-        document.getElementById('mainContent').style.display = 'block';
+        if (!tid) return null;
+        const raw = localStorage.getItem(CACHE_KEY_PREFIX + tid);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || !parsed.data || typeof parsed.ts !== 'number') return null;
+        return parsed;
     } catch (e) {
-        showError('Cannot Load Tournament', e.message);
+        return null;
     }
 }
 
-/* ============ QR CODE ============ */
+function setCachedTournament(tid, data) {
+    try {
+        if (!tid || !data) return;
+        // Only cache safe public fields
+        const safeData = {
+            TournamentID: data.TournamentID,
+            Name: data.Name,
+            GameID: data.GameID,
+            Status: data.Status,
+            Scope: data.Scope,
+            CollegeName: data.CollegeName,
+            Category: data.Category,
+            TeamFormat: data.TeamFormat,
+            RosterSize: data.RosterSize,
+            MaxTeams: data.MaxTeams,
+            TournamentStartAt: data.TournamentStartAt,
+            TournamentEndAt: data.TournamentEndAt,
+            EntryFee: data.EntryFee,
+            PrizePool: data.PrizePool,
+            TeamFormat: data.TeamFormat
+        };
+        localStorage.setItem(CACHE_KEY_PREFIX + tid, JSON.stringify({
+            data: safeData,
+            ts: Date.now()
+        }));
+    } catch (e) { /* quota, private mode, etc. */ }
+}
+
+/* ============================================================
+   LOAD TOURNAMENT (SWR)
+   ============================================================ */
+async function loadTournament() {
+    if (!tournamentId) {
+        showError('Missing Tournament ID', 'Please open this page from a tournament page.\n\nURL should contain ?tid=TRN-XXXX');
+        return;
+    }
+
+    // 1. Try cache immediately
+    const cached = getCachedTournament(tournamentId);
+    if (cached && cached.data) {
+        console.log('[Tournament] Using cached data');
+        applyTournamentData(cached.data, true);
+
+        // Show toast if cache is stale — but don't block
+        const age = Date.now() - cached.ts;
+        if (age > CACHE_TTL_MS) {
+            // Refresh silently in background
+            fetchFreshTournament(true);
+        }
+        return;
+    }
+
+    // 2. No cache — show loading and fetch
+    showLoading('Loading tournament...');
+    await fetchFreshTournament(false);
+}
+
+async function fetchFreshTournament(isBackground) {
+    if (isFetching) return;
+    isFetching = true;
+
+    try {
+        const json = await fetchJSON(API_URL + '?action=getTournament&id=' + encodeURIComponent(tournamentId));
+        if (!json.success) throw new Error(json.message || 'Failed to load tournament');
+        if (!json.data) throw new Error('Tournament not found');
+
+        // Cache it
+        setCachedTournament(tournamentId, json.data);
+
+        // Apply to UI
+        applyTournamentData(json.data, isBackground);
+
+        if (!isBackground) hideLoading();
+    } catch (e) {
+        console.error('[Tournament] Fetch failed:', e);
+        if (isBackground) {
+            // Silent fail — cached data already shown
+            console.log('[Tournament] Background refresh failed, keeping cached data');
+        } else {
+            // No cache, show error
+            const cached = getCachedTournament(tournamentId);
+            if (cached && cached.data) {
+                // Fallback to stale cache
+                applyTournamentData(cached.data, true);
+                hideLoading();
+            } else {
+                showError('Cannot Load Tournament', e.message || 'Network error');
+            }
+        }
+    } finally {
+        isFetching = false;
+    }
+}
+
+function applyTournamentData(data, fromCache) {
+    tournament = data;
+
+    const scopeRaw = String(tournament.Scope || '').trim();
+    const collegeRaw = String(tournament.CollegeName || '').trim();
+    isIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
+    paymentRequired = (Number(tournament.EntryFee) || 0) > 0;
+
+    // Strip
+    document.getElementById('strip-title').textContent = tournament.Name || 'Tournament';
+    document.getElementById('strip-format').textContent = '👥 ' + (tournament.TeamFormat || 'Squad');
+
+    if (tournament.TournamentStartAt) {
+        try {
+            const d = new Date(tournament.TournamentStartAt);
+            document.getElementById('strip-dates').textContent = '📅 ' + d.toLocaleDateString('en-IN', {day:'numeric', month:'short'});
+        } catch (e) {}
+    }
+
+    document.getElementById('back-link').href = 'tournament.html?tid=' + encodeURIComponent(tournament.TournamentID);
+
+    const scopeBadge = document.getElementById('strip-scope');
+    if (isIntra) {
+        scopeBadge.innerHTML = '<span class="scope-badge intra">🎓 Intra</span>';
+        document.getElementById('intraBanner').classList.add('show');
+    } else {
+        scopeBadge.innerHTML = '<span class="scope-badge public">🌐 Public</span>';
+    }
+
+    const feeBadge = document.getElementById('strip-fee');
+    if (paymentRequired) {
+        feeBadge.innerHTML = '<span class="fee-badge paid">₹' + (Number(tournament.EntryFee) || 0) + ' Entry</span>';
+    } else {
+        feeBadge.innerHTML = '<span class="fee-badge free">FREE</span>';
+    }
+
+    // Payment UI
+    if (paymentRequired) {
+        const amount = Number(tournament.EntryFee) || 0;
+        document.getElementById('pay-amount').textContent = '₹' + amount;
+        document.getElementById('qrAmountNote').textContent = '₹' + amount;
+        generateQrCode(amount, tournament.Name || 'Tournament');
+        document.getElementById('revUtrRow').style.display = 'flex';
+    } else {
+        const paymentStep = document.querySelector('.progress-step[data-step="3"]');
+        if (paymentStep) paymentStep.style.display = 'none';
+        const reviewStep = document.querySelector('.progress-step[data-step="4"]');
+        if (reviewStep) {
+            reviewStep.querySelector('.progress-num').textContent = '3';
+            reviewStep.querySelector('.progress-label').textContent = 'Review';
+        }
+        const line = document.querySelector('.progress-line');
+        if (line) {
+            line.style.left = '16.66%';
+            line.style.right = '16.66%';
+        }
+        document.getElementById('freeBanner').classList.add('active');
+        document.getElementById('paymentFields').style.display = 'none';
+        document.getElementById('revUtrRow').style.display = 'none';
+    }
+
+    // Render roster only once
+    if (!document.getElementById('rosterContainer').innerHTML.trim()) {
+        renderRoster();
+    }
+
+    document.getElementById('mainContent').style.display = 'block';
+}
+
+/* ============================================================
+   QR CODE
+   ============================================================ */
 function generateQrCode(amount, tourName) {
     const note = encodeURIComponent((tourName || 'Tournament') + ' Registration');
     const upiString = 'upi://pay?pa=' + UPI_ID +
@@ -632,13 +1975,15 @@ window.copyUpiId = function(btn) {
     if (!navigator.clipboard) { alert('UPI ID: ' + UPI_ID); return; }
     navigator.clipboard.writeText(UPI_ID).then(function() {
         const original = btn.textContent;
-        btn.textContent = '✓ Copied!';
+        btn.textContent = '✓ Copied';
         btn.disabled = true;
         setTimeout(function() { btn.textContent = original; btn.disabled = false; }, 1800);
     }).catch(function() { alert('Copy failed. UPI ID: ' + UPI_ID); });
 };
 
-/* ============ ROSTER ============ */
+/* ============================================================
+   ROSTER
+   ============================================================ */
 function renderRoster() {
     const players = ['P1', 'P2', 'P3', 'P4'];
     document.getElementById('rosterContainer').innerHTML = players.map((slot, i) => {
@@ -651,14 +1996,14 @@ function renderRoster() {
                     <div class="player-badge">${slot}</div>
                     <div>
                         <div class="player-title">${titles[i]}</div>
-                        <div class="player-subtitle">${isIntra ? 'Player details + student verification' : 'Player name, IGN & Game UID required'}</div>
+                        <div class="player-subtitle">${isIntra ? 'Details + student verification' : 'Name, IGN & Game UID'}</div>
                     </div>
                 </div>
 
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label class="form-label">Player Name <span class="req">*</span></label>
-                        <input type="text" id="realName${n}" class="form-input" placeholder="Enter real name">
+                        <input type="text" id="realName${n}" class="form-input" placeholder="Real name">
                         <div class="form-error" id="err-realName${n}">Required.</div>
                     </div>
                     <div class="form-group">
@@ -668,7 +2013,7 @@ function renderRoster() {
                     </div>
                     <div class="form-group">
                         <label class="form-label">Game UID <span class="req">*</span></label>
-                        <input type="text" id="uid${n}" class="form-input" placeholder="Enter game UID">
+                        <input type="text" id="uid${n}" class="form-input" placeholder="Game UID">
                         <div class="form-error" id="err-uid${n}">Required.</div>
                     </div>
                     <div class="form-group">
@@ -691,11 +2036,11 @@ function renderRoster() {
                         </div>
                         <div class="form-group">
                             <label class="form-label">College Name <span class="req">*</span></label>
-                            <input type="text" id="collegeName${n}" class="form-input" placeholder="Enter your college name">
+                            <input type="text" id="collegeName${n}" class="form-input" placeholder="College name">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Branch <span class="req">*</span></label>
-                            <input type="text" id="branch${n}" class="form-input" placeholder="e.g. CSE, ECE, ME">
+                            <input type="text" id="branch${n}" class="form-input" placeholder="e.g. CSE">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Year <span class="req">*</span></label>
@@ -712,7 +2057,7 @@ function renderRoster() {
                             <div class="id-upload" id="uploadBox${n}" onclick="document.getElementById('idCard${n}').click()">
                                 <input type="file" id="idCard${n}" accept="image/*" onchange="handleIdUpload(event, ${n})">
                                 <div class="id-upload-icon">🪪</div>
-                                <div class="id-upload-text" id="uploadText${n}">Click to upload (max 2 MB)</div>
+                                <div class="id-upload-text" id="uploadText${n}">Tap to upload (max 2 MB)</div>
                             </div>
                         </div>
                     </div>
@@ -725,19 +2070,19 @@ function renderRoster() {
 
 function renderSubForm() {
     document.getElementById('subForm').innerHTML = `
-        <div class="player-block" style="border-color:var(--red);">
+        <div class="player-block" style="border-color:rgba(225,6,0,.35);">
             <div class="player-block-header">
-                <div class="player-badge">SUB</div>
+                <div class="player-badge" style="color:var(--red);border-color:rgba(225,6,0,.4);">SUB</div>
                 <div>
-                    <div class="player-title">Substitute Player</div>
-                    <div class="player-subtitle">${isIntra ? 'Player details + student verification' : 'Player name, IGN & Game UID required'}</div>
+                    <div class="player-title" style="color:var(--red);">Substitute Player</div>
+                    <div class="player-subtitle">${isIntra ? 'Details + student verification' : 'Name, IGN & Game UID'}</div>
                 </div>
             </div>
 
             <div class="form-grid-2">
                 <div class="form-group">
                     <label class="form-label">Player Name <span class="req">*</span></label>
-                    <input type="text" id="realNamesub" class="form-input" placeholder="Enter real name">
+                    <input type="text" id="realNamesub" class="form-input" placeholder="Real name">
                     <div class="form-error" id="err-realNamesub">Required.</div>
                 </div>
                 <div class="form-group">
@@ -747,7 +2092,7 @@ function renderSubForm() {
                 </div>
                 <div class="form-group">
                     <label class="form-label">Game UID <span class="req">*</span></label>
-                    <input type="text" id="uidsub" class="form-input" placeholder="Enter game UID">
+                    <input type="text" id="uidsub" class="form-input" placeholder="Game UID">
                     <div class="form-error" id="err-uidsub">Required.</div>
                 </div>
                 <div class="form-group">
@@ -771,7 +2116,7 @@ function renderSubForm() {
                     </div>
                     <div class="form-group">
                         <label class="form-label">College Name <span class="req">*</span></label>
-                        <input type="text" id="collegeNamesub" class="form-input" placeholder="Enter your college name">
+                        <input type="text" id="collegeNamesub" class="form-input" placeholder="College name">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Branch <span class="req">*</span></label>
@@ -792,7 +2137,7 @@ function renderSubForm() {
                         <div class="id-upload" id="uploadBoxsub" onclick="document.getElementById('idCardsub').click()">
                             <input type="file" id="idCardsub" accept="image/*" onchange="handleIdUpload(event, 'sub')">
                             <div class="id-upload-icon">🪪</div>
-                            <div class="id-upload-text" id="uploadTextsub">Click to upload (max 2 MB)</div>
+                            <div class="id-upload-text" id="uploadTextsub">Tap to upload (max 2 MB)</div>
                         </div>
                     </div>
                 </div>
@@ -824,19 +2169,24 @@ window.handleIdUpload = function(evt, key) {
     reader.readAsDataURL(file);
 };
 
-/* ============ NAVIGATION ============ */
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
 window.goToStep = function(target) {
+    // Skip payment step if free
     if (!paymentRequired) {
         if (currentStep === 2 && target === 3) target = 4;
         if (currentStep === 4 && target === 3) target = 2;
     }
-    
+
     if (target > currentStep) {
         if (currentStep === 1 && !validateStep1()) return;
         if (currentStep === 2 && !validateStep2()) return;
         if (currentStep === 3 && !validateStep3()) return;
     }
+
     captureStep();
+
     for (let i = 1; i <= 4; i++) {
         const card = document.getElementById('step' + i);
         if (card) card.style.display = (i === target) ? 'block' : 'none';
@@ -864,25 +2214,28 @@ window.goToStep = function(target) {
 function captureStep() {
     if (currentStep === 1) {
         state.captain = {
-            name: document.getElementById('captainName').value.trim(),
-            email: document.getElementById('captainEmail').value.trim(),
-            phone: document.getElementById('captainPhone').value.trim(),
-            discord: document.getElementById('captainDiscord').value.trim()
+            name: (document.getElementById('captainName').value || '').trim(),
+            email: (document.getElementById('captainEmail').value || '').trim(),
+            phone: (document.getElementById('captainPhone').value || '').trim(),
+            discord: (document.getElementById('captainDiscord').value || '').trim()
         };
     }
     if (currentStep === 2) {
-        state.team = { name: document.getElementById('teamName').value.trim(), tag: document.getElementById('teamTag').value.trim().toUpperCase() };
+        state.team = {
+            name: (document.getElementById('teamName').value || '').trim(),
+            tag: (document.getElementById('teamTag').value || '').trim().toUpperCase()
+        };
         state.roster = [1,2,3,4].map(i => {
             const r = {
-                realName: document.getElementById('realName' + i).value.trim(),
-                ign: document.getElementById('ign' + i).value.trim(),
-                gameUID: document.getElementById('uid' + i).value.trim(),
+                realName: (document.getElementById('realName' + i).value || '').trim(),
+                ign: (document.getElementById('ign' + i).value || '').trim(),
+                gameUID: (document.getElementById('uid' + i).value || '').trim(),
                 role: document.getElementById('role' + i).value
             };
             if (isIntra) {
-                r.rollNumber = document.getElementById('rollNumber' + i).value.trim();
-                r.collegeName = document.getElementById('collegeName' + i).value.trim();
-                r.branch = document.getElementById('branch' + i).value.trim();
+                r.rollNumber = (document.getElementById('rollNumber' + i).value || '').trim();
+                r.collegeName = (document.getElementById('collegeName' + i).value || '').trim();
+                r.branch = (document.getElementById('branch' + i).value || '').trim();
                 r.year = document.getElementById('year' + i).value;
                 const card = state.idCards[i] || {};
                 r.idCardBase64 = card.base64 || '';
@@ -894,15 +2247,15 @@ function captureStep() {
         state.substitute = null;
         if (document.getElementById('subCheckbox').checked) {
             const s = {
-                realName: document.getElementById('realNamesub').value.trim(),
-                ign: document.getElementById('ignsub').value.trim(),
-                gameUID: document.getElementById('uidsub').value.trim(),
+                realName: (document.getElementById('realNamesub').value || '').trim(),
+                ign: (document.getElementById('ignsub').value || '').trim(),
+                gameUID: (document.getElementById('uidsub').value || '').trim(),
                 role: document.getElementById('rolesub').value
             };
             if (isIntra) {
-                s.rollNumber = document.getElementById('rollNumbersub').value.trim();
-                s.collegeName = document.getElementById('collegeNamesub').value.trim();
-                s.branch = document.getElementById('branchsub').value.trim();
+                s.rollNumber = (document.getElementById('rollNumbersub').value || '').trim();
+                s.collegeName = (document.getElementById('collegeNamesub').value || '').trim();
+                s.branch = (document.getElementById('branchsub').value || '').trim();
                 s.year = document.getElementById('yearsub').value;
                 const card = state.idCards['sub'] || {};
                 s.idCardBase64 = card.base64 || '';
@@ -930,20 +2283,20 @@ function validateStep2() {
     let ok = true;
     if (document.getElementById('teamName').value.length < 3) { document.getElementById('err-teamName').classList.add('show'); ok = false; } else document.getElementById('err-teamName').classList.remove('show');
     if (document.getElementById('teamTag').value.length < 2) { document.getElementById('err-teamTag').classList.add('show'); ok = false; } else document.getElementById('err-teamTag').classList.remove('show');
-    
+
     for (let i = 1; i <= 4; i++) {
-        const realName = document.getElementById('realName' + i).value.trim();
-        const ign = document.getElementById('ign' + i).value.trim();
-        const uid = document.getElementById('uid' + i).value.trim();
+        const realName = (document.getElementById('realName' + i).value || '').trim();
+        const ign = (document.getElementById('ign' + i).value || '').trim();
+        const uid = (document.getElementById('uid' + i).value || '').trim();
 
         if (!realName) { document.getElementById('err-realName' + i).classList.add('show'); ok = false; } else document.getElementById('err-realName' + i).classList.remove('show');
         if (!ign) { document.getElementById('err-ign' + i).classList.add('show'); ok = false; } else document.getElementById('err-ign' + i).classList.remove('show');
         if (!uid) { document.getElementById('err-uid' + i).classList.add('show'); ok = false; } else document.getElementById('err-uid' + i).classList.remove('show');
 
         if (isIntra) {
-            const roll = document.getElementById('rollNumber' + i).value.trim();
-            const college = document.getElementById('collegeName' + i).value.trim();
-            const branch = document.getElementById('branch' + i).value.trim();
+            const roll = (document.getElementById('rollNumber' + i).value || '').trim();
+            const college = (document.getElementById('collegeName' + i).value || '').trim();
+            const branch = (document.getElementById('branch' + i).value || '').trim();
             const year = document.getElementById('year' + i).value;
             const card = state.idCards[i];
             if (!roll || !college || !branch || !year || !card) {
@@ -953,21 +2306,21 @@ function validateStep2() {
             }
         }
     }
-    
+
     const subChecked = document.getElementById('subCheckbox').checked;
     if (subChecked) {
-        const realName = document.getElementById('realNamesub').value.trim();
-        const ign = document.getElementById('ignsub').value.trim();
-        const uid = document.getElementById('uidsub').value.trim();
+        const realName = (document.getElementById('realNamesub').value || '').trim();
+        const ign = (document.getElementById('ignsub').value || '').trim();
+        const uid = (document.getElementById('uidsub').value || '').trim();
 
         if (!realName) { document.getElementById('err-realNamesub').classList.add('show'); ok = false; } else document.getElementById('err-realNamesub').classList.remove('show');
         if (!ign) { document.getElementById('err-ignsub').classList.add('show'); ok = false; } else document.getElementById('err-ignsub').classList.remove('show');
         if (!uid) { document.getElementById('err-uidsub').classList.add('show'); ok = false; } else document.getElementById('err-uidsub').classList.remove('show');
 
         if (isIntra) {
-            const roll = document.getElementById('rollNumbersub').value.trim();
-            const college = document.getElementById('collegeNamesub').value.trim();
-            const branch = document.getElementById('branchsub').value.trim();
+            const roll = (document.getElementById('rollNumbersub').value || '').trim();
+            const college = (document.getElementById('collegeNamesub').value || '').trim();
+            const branch = (document.getElementById('branchsub').value || '').trim();
             const year = document.getElementById('yearsub').value;
             const card = state.idCards['sub'];
             if (!roll || !college || !branch || !year || !card) {
@@ -1004,61 +2357,79 @@ document.getElementById('screenshotInput').addEventListener('change', function(e
     reader.readAsDataURL(file);
 });
 
-/* ============ REVIEW ============ */
+/* ============================================================
+   REVIEW
+   ============================================================ */
 function renderReview() {
-    document.getElementById('revCaptainName').textContent = state.captain.name;
-    document.getElementById('revCaptainEmail').textContent = state.captain.email;
-    document.getElementById('revTeamName').textContent = state.team.name + ' (' + state.team.tag + ')';
-    let str = state.roster.map(p => p.ign).join(', ');
+    document.getElementById('revCaptainName').textContent = state.captain.name || '—';
+    document.getElementById('revCaptainEmail').textContent = state.captain.email || '—';
+    document.getElementById('revCaptainPhone').textContent = state.captain.phone || '—';
+    document.getElementById('revTeamName').textContent = (state.team.name || '—') + (state.team.tag ? ' (' + state.team.tag + ')' : '');
+
+    let str = state.roster.map(p => p.ign).filter(Boolean).join(', ');
     if (state.substitute) str += ' + Sub: ' + state.substitute.ign;
-    document.getElementById('revRoster').textContent = str;
+    document.getElementById('revRoster').textContent = str || '—';
     document.getElementById('revFee').textContent = paymentRequired ? '₹' + (Number(tournament.EntryFee) || 0) : 'FREE';
     document.getElementById('revUtr').textContent = paymentRequired ? (state.payment.utr || '—') : 'FREE';
 
     const rows = state.roster.map((p, i) => {
         const isCaptain = i === 0;
-        let line = '';
-        if (isCaptain) {
-            line += '<span class="tag captain">Captain</span>';
+        const slotClass = isCaptain ? 'captain-slot' : '';
+        const slotText = isCaptain ? 'P1 · Captain' : 'P' + (i + 1);
+
+        let tags = '';
+        if (p.realName) tags += '<span class="review-player-tag name">' + esc(p.realName) + '</span>';
+        if (p.gameUID) tags += '<span class="review-player-tag uid">UID: ' + esc(p.gameUID) + '</span>';
+        if (p.role) tags += '<span class="review-player-tag role">' + esc(p.role) + '</span>';
+        if (isIntra && p.rollNumber) {
+            tags += '<span class="review-player-tag extra">Roll: ' + esc(p.rollNumber) + ' · ' + esc(p.collegeName) + ' · ' + esc(p.branch) + ' · ' + esc(p.year) + ' · 🪪 ID Uploaded</span>';
         }
-        line += '<strong>P' + (i + 1) + '</strong>: ' +
-            '<span class="tag name">Name</span>' + esc(p.realName || '—') + ' · ' +
-            '<span class="tag ign">IGN</span>' + esc(p.ign || '—') + ' · ' +
-            '<span class="tag uid">UID</span>' + esc(p.gameUID || '—') + ' · ' +
-            '<span class="tag role">Role</span>' + esc(p.role || '—');
-        if (isIntra) {
-            line += '<br><span style="color:var(--text-muted);font-size:12px;">Roll: ' + esc(p.rollNumber) + ' · ' + esc(p.collegeName) + ' · ' + esc(p.branch) + ' · ' + esc(p.year) + ' Year · 🪪 ID Uploaded</span>';
-        }
-        return '<div class="review-verify-row">' + line + '</div>';
+
+        return '<div class="review-player-card">' +
+            '<div class="review-player-head">' +
+                '<span class="review-player-slot ' + slotClass + '">' + slotText + '</span>' +
+                '<span class="review-player-ign">' + esc(p.ign || '—') + '</span>' +
+            '</div>' +
+            '<div class="review-player-tags">' + tags + '</div>' +
+        '</div>';
     });
+
     if (state.substitute) {
-        let line = '<span class="tag captain">Sub</span><strong>SUB</strong>: ' +
-            '<span class="tag name">Name</span>' + esc(state.substitute.realName || '—') + ' · ' +
-            '<span class="tag ign">IGN</span>' + esc(state.substitute.ign || '—') + ' · ' +
-            '<span class="tag uid">UID</span>' + esc(state.substitute.gameUID || '—') + ' · ' +
-            '<span class="tag role">Role</span>' + esc(state.substitute.role || '—');
-        if (isIntra) {
-            line += '<br><span style="color:var(--text-muted);font-size:12px;">Roll: ' + esc(state.substitute.rollNumber) + ' · ' + esc(state.substitute.collegeName) + ' · ' + esc(state.substitute.branch) + ' · ' + esc(state.substitute.year) + ' Year · 🪪 ID Uploaded</span>';
+        let tags = '';
+        if (state.substitute.realName) tags += '<span class="review-player-tag name">' + esc(state.substitute.realName) + '</span>';
+        if (state.substitute.gameUID) tags += '<span class="review-player-tag uid">UID: ' + esc(state.substitute.gameUID) + '</span>';
+        if (state.substitute.role) tags += '<span class="review-player-tag role">' + esc(state.substitute.role) + '</span>';
+        if (isIntra && state.substitute.rollNumber) {
+            tags += '<span class="review-player-tag extra">Roll: ' + esc(state.substitute.rollNumber) + ' · ' + esc(state.substitute.collegeName) + ' · ' + esc(state.substitute.branch) + ' · ' + esc(state.substitute.year) + ' · 🪪 ID Uploaded</span>';
         }
-        rows.push('<div class="review-verify-row">' + line + '</div>');
+        rows.push('<div class="review-player-card">' +
+            '<div class="review-player-head">' +
+                '<span class="review-player-slot captain-slot">SUB</span>' +
+                '<span class="review-player-ign">' + esc(state.substitute.ign || '—') + '</span>' +
+            '</div>' +
+            '<div class="review-player-tags">' + tags + '</div>' +
+        '</div>');
     }
+
     document.getElementById('revVerifyList').innerHTML = rows.join('');
     document.getElementById('revVerifyBlock').style.display = 'block';
 }
 
-/* ============ SUBMIT ============ */
+/* ============================================================
+   SUBMIT
+   ============================================================ */
 window.submitRegistration = async function() {
     if (!document.getElementById('agreeCheckbox').checked) {
         document.getElementById('err-agree').classList.add('show');
         return;
     }
     document.getElementById('err-agree').classList.remove('show');
-    
+
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.textContent = 'Submitting...';
     showLoading('Submitting registration...');
-    
+
     const verification = [];
     state.roster.forEach((p, i) => {
         const v = {
@@ -1098,7 +2469,7 @@ window.submitRegistration = async function() {
         }
         verification.push(v);
     }
-    
+
     const payload = {
         action: 'submitRegistration',
         tid: tournamentId,
@@ -1108,13 +2479,20 @@ window.submitRegistration = async function() {
         substitute: state.substitute ? { ign: state.substitute.ign, role: state.substitute.role, realName: state.substitute.realName, gameUID: state.substitute.gameUID } : null,
         verification: verification,
         payment: paymentRequired ? {
-            utr: state.payment.utr, fileBase64: state.payment.fileBase64, fileName: state.payment.fileName, mimeType: state.payment.mimeType,
+            utr: state.payment.utr,
+            fileBase64: state.payment.fileBase64,
+            fileName: state.payment.fileName,
+            mimeType: state.payment.mimeType,
             amount: Number(tournament.EntryFee) || 0
         } : null
     };
-    
+
     try {
-        const json = await fetchJSON(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
+        const json = await fetchJSON(API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
         hideLoading();
         if (json.success) {
             document.getElementById('step4').style.display = 'none';
@@ -1135,11 +2513,20 @@ window.submitRegistration = async function() {
     }
 };
 
-window.retryLoad = function() { document.getElementById('errorPanel').classList.remove('active'); loadTournament(); };
+window.retryLoad = function() {
+    document.getElementById('errorPanel').classList.remove('active');
+    loadTournament();
+};
 
+/* ============================================================
+   BOOT
+   ============================================================ */
 (function boot() {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTournament);
-    else loadTournament();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadTournament);
+    } else {
+        loadTournament();
+    }
 })();
 </script>
 </body>
