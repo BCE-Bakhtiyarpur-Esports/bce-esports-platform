@@ -1,546 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tournament details — BCE Esports. View overview, schedule, standings, teams, and results for this tournament.">
-    <meta name="theme-color" content="#0a0a0a">
-    <title>Tournament Details — BCE Esports</title>
-
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/tournament.css">
-
-    <!-- ===== PREMIUM CINEMATIC HERO CARD STYLES ===== -->
-    <style>
-        .hero-banner {
-            position: relative; width: 100%; height: 300px; border-radius: 16px; overflow: hidden;
-            margin-bottom: 24px; border: 1px solid var(--border); background: #000;
-        }
-        .hero-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .hero-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(10,10,10,1) 100%); }
-
-        /* The Main Card */
-        .tournament-hero-card {
-            position: relative; display: grid; grid-template-columns: 1.2fr 0.8fr;
-            background: radial-gradient(circle at 100% 100%, rgba(225,6,0,0.15) 0%, transparent 60%), #0d0d0d;
-            border: 1px solid #2a2a2a; border-radius: 16px; overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); margin-bottom: 16px;
-        }
-
-        /* Left Side: Info */
-        .hero-info-left { padding: 40px 24px 40px 32px; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
-        .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        
-        .hero-badge {
-            font-family: var(--font-display); font-size: 10px; font-weight: 700;
-            letter-spacing: 1px; text-transform: uppercase; padding: 6px 12px; border-radius: 4px;
-        }
-        .badge-status-upcoming, .badge-upcoming { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.4); }
-        .badge-game { background: #1a1a1a; color: #fff; border: 1px solid #333; }
-
-        /* Dynamic Stacked Title */
-        .hero-title-stacked { font-family: var(--font-display); line-height: 1.05; margin-bottom: 24px; text-transform: uppercase; }
-        .hero-title-stacked span { display: block; }
-        .hero-title-stacked .line1 { font-size: clamp(20px, 4vw, 32px); color: #fff; letter-spacing: 2px; font-weight: 700; margin-bottom: 4px; }
-        .hero-title-stacked .line2 { font-size: clamp(36px, 7vw, 64px); color: var(--red); font-weight: 900; letter-spacing: -1px; text-shadow: 0 0 20px rgba(225,6,0,0.4); margin-bottom: 4px; }
-        .hero-title-stacked .line3 { font-size: clamp(28px, 5vw, 48px); color: #fff; letter-spacing: 4px; font-weight: 900; }
-
-        .hero-meta-compact { display: flex; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--text-secondary); }
-        .meta-item { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 6px; border: 1px solid #222; }
-        .meta-item svg { width: 16px; height: 16px; color: var(--red); }
-
-        /* Right Side: Character & Platform */
-        .hero-visual-right { 
-            position: relative; display: flex; align-items: flex-end; justify-content: center; 
-            padding-bottom: 10px; z-index: 1;
-        }
-        
-        /* 3D Sci-Fi Platform */
-        .platform-wrapper {
-            position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
-            width: clamp(200px, 25vw, 320px); height: clamp(60px, 8vw, 100px);
-            z-index: 0; pointer-events: none;
-            perspective: 600px;
-        }
-        .platform-glow {
-            position: absolute; inset: -20px;
-            background: radial-gradient(circle, rgba(225,6,0,0.6) 0%, transparent 60%);
-            filter: blur(20px); z-index: 0;
-            animation: pulseGlow 3s ease-in-out infinite alternate;
-        }
-        .platform {
-            position: absolute; inset: 0; transform: rotateX(75deg); transform-style: preserve-3d; z-index: 1;
-        }
-        .platform-core {
-            position: absolute; inset: 15px; border-radius: 50%;
-            background: radial-gradient(circle at center, #2a2a2a 0%, #0a0a0a 80%, #000 100%);
-            border: 2px solid rgba(225, 6, 0, 0.4);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 1), 0 0 30px rgba(225, 6, 0, 0.4);
-        }
-        .platform-center {
-            position: absolute; inset: 35%; border-radius: 50%;
-            background: #e10600; box-shadow: 0 0 20px #e10600, inset 0 0 10px #fff; opacity: 0.8;
-        }
-        .ring {
-            position: absolute; inset: 0; border-radius: 50%;
-            border: 2px dashed rgba(225, 6, 0, 0.7);
-            box-shadow: 0 0 15px rgba(225, 6, 0, 0.5), inset 0 0 10px rgba(225, 6, 0, 0.3);
-            animation: spinRing 15s linear infinite;
-        }
-        .ring-inner {
-            inset: 20px; border-width: 2px; border-style: solid; border-color: transparent;
-            border-top-color: rgba(255, 255, 255, 0.6); border-bottom-color: rgba(255, 255, 255, 0.6);
-            animation: spinRing 10s linear infinite reverse; box-shadow: none;
-        }
-        @keyframes spinRing { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
-        @keyframes pulseGlow { 0% { opacity: 0.7; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
-
-        /* Character Floating & Recoil */
-        .character-holder {
-            position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: center;
-            animation: floatChar 5s ease-in-out infinite;
-        }
-        @keyframes floatChar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-
-        .recoil-wrapper {
-            position: relative; animation: shootRecoil 6s infinite; transform-origin: bottom center;
-        }
-        .hero-character-img {
-            position: relative; width: 100%; max-width: 320px; height: auto;
-            object-fit: contain; filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.9)); z-index: 2;
-        }
-        
-        /* Muzzle Flash */
-        .muzzle-flash {
-            position: absolute; top: 35%; right: 10%; width: 40px; height: 40px;
-            background: radial-gradient(circle, #fff, #ffaa00 30%, #e10600 60%, transparent 100%);
-            border-radius: 50%; opacity: 0; mix-blend-mode: screen; pointer-events: none;
-            transform: scale(0.5); animation: flashAnim 6s infinite; z-index: 3;
-        }
-        @keyframes shootRecoil {
-            0%, 91%, 100% { transform: translateY(0) rotate(0deg); }
-            92% { transform: translateY(3px) rotate(-1deg); } 
-            94% { transform: translateY(-2px) rotate(0.5deg); }
-            96% { transform: translateY(0) rotate(0deg); }
-        }
-        @keyframes flashAnim {
-            0%, 90%, 100% { opacity: 0; transform: scale(0.5); }
-            92% { opacity: 1; transform: scale(1.5); }
-            94% { opacity: 0.8; transform: scale(1.2); }
-            96% { opacity: 0; transform: scale(0.5); }
-        }
-
-        /* CTA Button */
-        .hero-cta-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-        .hero-cta-section .btn {
-            width: 100%; padding: 16px; font-size: 16px; border-radius: 10px;
-            transition: all 0.3s ease; position: relative;
-        }
-        .hero-cta-section .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(225,6,0,0.4); }
-        .hero-cta-section .btn:active { transform: translateY(1px); box-shadow: 0 2px 10px rgba(225,6,0,0.3); }
-        .cta-note { text-align: center; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
-
-        /* Mobile Optimization (Horizontal Preserved) */
-        @media (max-width: 768px) {
-            .hero-banner { height: 200px; }
-            .tournament-hero-card { grid-template-columns: 1.2fr 1fr; }
-            .hero-info-left { padding: 20px 12px 20px 16px; }
-            .hero-badges { gap: 4px; margin-bottom: 12px; }
-            .hero-badge { font-size: 8px; padding: 4px 8px; }
-            
-            .hero-title-stacked { margin-bottom: 16px; }
-            .hero-title-stacked .line1 { font-size: 14px; letter-spacing: 1px; }
-            .hero-title-stacked .line2 { font-size: 26px; letter-spacing: -0.5px; }
-            .hero-title-stacked .line3 { font-size: 20px; letter-spacing: 2px; }
-
-            .hero-meta-compact { flex-direction: column; gap: 6px; font-size: 12px; }
-            .meta-item { padding: 4px 8px; }
-            .meta-item svg { width: 12px; height: 12px; }
-
-            .hero-visual-right { padding-right: 0; padding-bottom: 5px; }
-            .platform-wrapper { width: clamp(150px, 40vw, 220px); height: clamp(50px, 12vw, 70px); }
-            .hero-character-img { max-width: 180px; }
-            .muzzle-flash { width: 24px; height: 24px; right: 5%; top: 40%; }
-        }
-
-        /* ===== TEAM CARDS & MODAL (Preserved) ===== */
-        .team-card { cursor: pointer; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; }
-        .team-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
-        .team-card:active { transform: translateY(-1px); }
-
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.25s ease; }
-        .modal-backdrop.show { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .roster-modal { background: var(--bg-card); border: 1px solid var(--border-bright); border-radius: var(--radius-lg); max-width: 660px; width: 100%; max-height: 92vh; overflow-y: auto; position: relative; animation: slideUp 0.35s cubic-bezier(0.4,0,0.2,1); }
-        .modal-close { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.6); border: 1px solid var(--border-bright); display: flex; align-items: center; justify-content: center; color: #fff; transition: all 0.2s; z-index: 3; cursor: pointer; }
-        .modal-close:hover { background: var(--red); border-color: var(--red); transform: rotate(90deg); }
-        
-        .modal-team-hero { padding: 40px 28px 28px; text-align: center; background: radial-gradient(ellipse at top, rgba(225,6,0,0.25), transparent 70%), var(--bg-secondary); border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
-        .modal-team-logo { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 30px; color: #fff; background: linear-gradient(135deg, #e10600, #7a0400); box-shadow: 0 10px 28px rgba(0,0,0,0.5); margin: 0 auto 16px; border: 4px solid var(--bg-card); position: relative; z-index: 2; }
-        .modal-team-name { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: clamp(20px, 4vw, 24px); letter-spacing: 0.5px; margin-bottom: 8px; text-transform: uppercase; position: relative; z-index: 2; }
-        .modal-team-tag { display: inline-block; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--red); background: rgba(225,6,0,0.15); padding: 5px 14px; border-radius: 4px; position: relative; z-index: 2; }
-        .modal-body { padding: 24px; }
-        .modal-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 22px; }
-        .modal-stat { text-align: center; }
-        .modal-stat-value { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 20px; color: var(--red); line-height: 1; margin-bottom: 6px; }
-        .modal-stat-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
-        .modal-section-title { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
-        .section-count { font-family: 'Orbitron', sans-serif; font-size: 11px; background: rgba(225,6,0,0.15); color: var(--red); padding: 2px 10px; border-radius: 10px; margin-left: auto; }
-        .roster-list { display: flex; flex-direction: column; gap: 10px; }
-        .player-card { position: relative; background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; gap: 14px; align-items: center; transition: all 0.25s; overflow: hidden; }
-        .player-card.captain { border-color: rgba(245,158,11,0.35); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(255,255,255,0.01)); }
-        .player-avatar { flex-shrink: 0; width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 17px; color: #fff; background: linear-gradient(135deg, #8a0400, #3a0200); border: 2px solid rgba(255,255,255,0.08); }
-        .player-card.captain .player-avatar { background: linear-gradient(135deg, #f59e0b, #7c2d12); border-color: rgba(245,158,11,0.5); }
-        .player-captain-crown { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706); display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid var(--bg-card); }
-        .player-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-        .player-header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .player-ign { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 15px; color: #fff; }
-        .player-role-badge { font-family: 'Orbitron', sans-serif; font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; background: rgba(255,255,255,0.08); color: var(--text-secondary); }
-        .player-role-badge.captain { background: rgba(245,158,11,0.2); color: #fbbf24; }
-        .player-realname { font-size: 12.5px; color: var(--text-secondary); }
-        .player-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--text-muted); padding: 3px 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; margin-top: 4px; }
-        .player-tag.uid { background: rgba(34,211,238,0.08); border-color: rgba(34,211,238,0.2); color: #67e8f9; font-family: 'Orbitron', sans-serif; }
-        .no-roster { background: var(--bg-secondary); border: 1px dashed var(--border-bright); border-radius: var(--radius-md); padding: 28px 20px; text-align: center; font-size: 13px; color: var(--text-secondary); }
-        .modal-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; color: var(--text-secondary); font-size: 13px; }
-        .modal-loading-spinner { width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="BCE Esports tournament hub — live status, schedule, standings, teams, and registration.">
+  <meta name="theme-color" content="#08080a">
+  <title>Tournament — BCE Esports</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/tournament.css">
 </head>
 <body>
 
-    <audio id="registerAudio" src="assets/audio/register-song.mp3" preload="none"></audio>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
-    <div class="preview-notice" id="loadingNotice">
-        ⏳ Loading tournament data from server...
+  <div class="live-bar" id="liveBar" role="status" aria-live="polite">
+    <div class="container live-bar-inner">
+      <span class="live-pulse" aria-hidden="true"></span>
+      <span class="live-bar-text" id="liveBarText">LIVE NOW</span>
+      <button type="button" class="live-bar-jump" id="liveBarJump">View →</button>
     </div>
+  </div>
 
-    <nav class="nav">
-        <div class="container nav-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-mark">B</div>
-                <div class="logo-text">
-                    <span class="logo-main">BCE</span>
-                    <span class="logo-sub">ESPORTS</span>
-                </div>
-            </a>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About</a>
-                <a href="tournaments.html" class="nav-link active">Tournaments</a>
-                <a href="teams.html" class="nav-link">Teams</a>
-                <a href="results.html" class="nav-link">Results</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-            </div>
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
-                <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
-                    <path d="M3 6h18M3 12h18M3 18h18"/>
-                </svg>
-            </button>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-mark">B</div>
+        <div class="logo-text">
+          <span class="logo-main">BCE</span>
+          <span class="logo-sub">ESPORTS</span>
         </div>
-    </nav>
-
-    <section class="tournament-hero">
-        <div class="container">
-            
-            <div class="breadcrumb" style="margin-bottom: 20px;">
-                <a href="index.html">Home</a> <span class="sep">/</span>
-                <a href="tournaments.html">Tournaments</a> <span class="sep">/</span>
-                <span class="current" id="t-breadcrumb-name">Loading...</span>
-            </div>
-
-            <!-- 1. EXISTING BANNER -->
-            <div class="hero-banner" id="t-banner-wrap" style="display:none;">
-                <img id="t-banner-img" alt="Tournament Banner">
-            </div>
-
-            <!-- 2. HORIZONTAL TOURNAMENT CARD -->
-            <div class="tournament-hero-card">
-                
-                <!-- LEFT: Info -->
-                <div class="hero-info-left">
-                    <div class="hero-badges">
-                        <span class="hero-badge badge-upcoming badge-status-upcoming" id="t-status">UPCOMING</span>
-                        <span class="hero-badge badge-game" id="t-game">GAME</span>
-                        <span class="hero-badge badge-category" id="t-category" style="display:none;">CATEGORY</span>
-                        <span class="hero-badge badge-scope-public" id="t-scope-badge" style="display:none;">PUBLIC</span>
-                    </div>
-                    
-                    <h1 class="tournament-hero-title hero-title-stacked" id="t-name">Loading...</h1>
-
-                    <div class="hero-meta-compact">
-                        <span class="meta-item" id="t-dates">Loading...</span>
-                        <span class="meta-item" id="t-format">Loading...</span>
-                    </div>
-                </div>
-
-                <!-- RIGHT: Character & Platform -->
-                <div class="hero-visual-right">
-                    <div class="char-glow-bg"></div>
-                    
-                    <!-- Sci-Fi Platform Layer -->
-                    <div class="platform-wrapper">
-                        <div class="platform-glow"></div>
-                        <div class="platform">
-                            <div class="ring ring-outer"></div>
-                            <div class="ring ring-inner"></div>
-                            <div class="platform-core"></div>
-                            <div class="platform-center"></div>
-                        </div>
-                    </div>
-
-                    <!-- Character & Shooting Layer -->
-                    <div class="character-holder">
-                        <div class="recoil-wrapper">
-                            <img src="assets/images/ff-character.png" class="hero-character-img" alt="Character" onerror="this.style.display='none'">
-                            <div class="muzzle-flash"></div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 3. CTA BUTTON & NOTE -->
-            <div class="hero-cta-section">
-                <a href="#" id="t-register-btn" class="btn btn-primary">REGISTER TEAM</a>
-                <div class="cta-note" id="t-register-note">
-                    Checking registration status...
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <div class="quick-stats">
-        <div class="container">
-            <div class="quick-stats-grid">
-                <div class="quick-stat">
-                    <div class="quick-stat-label">Prize Pool</div>
-                    <div class="quick-stat-value"><span class="accent" id="t-prize">₹0</span></div>
-                </div>
-                <div class="quick-stat">
-                    <div class="quick-stat-label">Teams</div>
-                    <div class="quick-stat-value" id="t-teams">0 / 0</div>
-                </div>
-                <div class="quick-stat">
-                    <div class="quick-stat-label">Entry Fee</div>
-                    <div class="quick-stat-value" id="t-fee">₹0</div>
-                </div>
-                <div class="quick-stat">
-                    <div class="quick-stat-label">Format</div>
-                    <div class="quick-stat-value" id="t-quick-format">TBA</div>
-                </div>
-            </div>
-        </div>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="tournaments.html" class="nav-link active">Tournaments</a>
+        <a href="teams.html" class="nav-link">Teams</a>
+        <a href="results.html" class="nav-link">Results</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <div class="nav-actions">
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="theme-icon theme-icon--sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="theme-icon theme-icon--moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </div>
     </div>
+  </nav>
 
-    <div class="tabs-wrap">
-        <div class="container">
-            <div class="tabs">
-                <button class="tab active" data-tab="overview">Overview</button>
-                <button class="tab" data-tab="schedule">Schedule</button>
-                <button class="tab" data-tab="standings">Standings</button>
-                <button class="tab" data-tab="teams">Teams</button>
-            </div>
-        </div>
+  <div class="error-banner" id="errorBanner" role="alert">
+    <div class="container error-banner-inner">
+      <span class="error-icon" aria-hidden="true">⚠️</span>
+      <span class="error-text" id="errorText">Something went wrong.</span>
+      <button type="button" class="error-retry" id="retryBtn">Retry</button>
     </div>
+  </div>
 
-    <section class="section">
-        <div class="container">
+  <section class="hero" aria-label="Tournament hero">
+    <div class="hero-bg" id="hero-bg" aria-hidden="true"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-grid-overlay" aria-hidden="true"></div>
+    <div class="hero-noise" aria-hidden="true"></div>
+    <div class="hero-vignette" aria-hidden="true"></div>
 
-            <div class="tab-panel active" data-panel="overview">
-                <div class="overview-grid">
-                    <div>
-                        <div class="content-card">
-                            <h3 class="content-card-title">About This Tournament</h3>
-                            <div class="content-text" id="t-desc">
-                                Loading description from server...
-                            </div>
-                        </div>
-                        <div class="content-card" id="college-info-card" style="display:none;">
-                            <h3 class="content-card-title">🎓 Intra-College Event</h3>
-                            <div class="content-text">
-                                This tournament is exclusively for students of <strong id="college-display-name" style="color:#22d3ee;"></strong>.
-                                Every participating player must provide their <strong>Real Name, Roll Number, Email, Phone, Branch, Year</strong> and upload their <strong>College ID Card</strong> during registration. Incomplete verifications will be rejected.
-                            </div>
-                        </div>
-                    </div>
+    <div class="container hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="tournaments.html">Tournaments</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span class="current" id="breadcrumb-name">Loading…</span>
+      </nav>
 
-                    <aside>
-                        <div class="content-card">
-                            <h3 class="content-card-title">Key Info</h3>
-                            <div class="info-list">
-                                <div class="info-row"><span class="info-label">Game</span><span class="info-value" id="i-game">-</span></div>
-                                <div class="info-row"><span class="info-label">Format</span><span class="info-value" id="i-format">-</span></div>
-                                <div class="info-row"><span class="info-label">Scope</span><span class="info-value cyan" id="i-scope">-</span></div>
-                                <div class="info-row" id="i-college-row" style="display:none;"><span class="info-label">College</span><span class="info-value" id="i-college">-</span></div>
-                                <div class="info-row"><span class="info-label">Max Teams</span><span class="info-value" id="i-max">-</span></div>
-                                <div class="info-row"><span class="info-label">Entry Fee</span><span class="info-value accent" id="i-fee">-</span></div>
-                                <div class="info-row"><span class="info-label">Prize Pool</span><span class="info-value accent" id="i-prize">-</span></div>
-                            </div>
-                        </div>
-                    </aside>
-                </div>
-            </div>
-
-            <div class="tab-panel" data-panel="schedule">
-                <div id="scheduleContent">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📅</div>
-                        <div class="empty-state-title">Loading schedule...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-panel" data-panel="standings">
-                <div id="standingsContent">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🏆</div>
-                        <div class="empty-state-title">Loading standings...</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-panel" data-panel="teams">
-                <div id="teamsContent">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">👥</div>
-                        <div class="empty-state-title">Loading teams...</div>
-                    </div>
-                </div>
-            </div>
-
+      <div class="hero-content">
+        <div class="hero-badges">
+          <span class="chip" id="hero-status" data-tone="blue">UPCOMING</span>
+          <span class="chip" id="hero-game" data-tone="default">GAME</span>
+          <span class="chip" id="hero-scope" data-tone="cyan">PUBLIC</span>
         </div>
-    </section>
 
-    <!-- ============ ROSTER MODAL ============ -->
-    <div class="modal-backdrop" id="rosterModalBackdrop">
-        <div class="roster-modal">
-            <button class="modal-close" id="rosterModalClose" aria-label="Close">
-                <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24">
-                    <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-            </button>
-            <div class="modal-team-hero">
-                <div class="modal-team-logo" id="rm-logo">—</div>
-                <h2 class="modal-team-name" id="rm-name">—</h2>
-                <div class="modal-team-tag" id="rm-tag">—</div>
-            </div>
-            <div class="modal-body">
-                <div class="modal-stats">
-                    <div class="modal-stat"><div class="modal-stat-value" id="rm-rank">—</div><div class="modal-stat-label">Rank</div></div>
-                    <div class="modal-stat"><div class="modal-stat-value" id="rm-matches">—</div><div class="modal-stat-label">Matches</div></div>
-                    <div class="modal-stat"><div class="modal-stat-value" id="rm-wins">—</div><div class="modal-stat-label">Wins</div></div>
-                    <div class="modal-stat"><div class="modal-stat-value" id="rm-points">—</div><div class="modal-stat-label">Points</div></div>
-                </div>
-
-                <h3 class="modal-section-title"><span>Roster</span><span class="section-count" id="rm-count">0</span></h3>
-                <div id="rm-roster">
-                    <div class="modal-loading">
-                        <div class="modal-loading-spinner"></div>
-                        Loading players...
-                    </div>
-                </div>
-            </div>
+        <!-- NAYA LAYOUT: Title aur Character ek sath -->
+        <div class="hero-title-wrap">
+          <h1 class="hero-title" id="hero-title">
+            <span class="skeleton skeleton--title" aria-hidden="true"></span>
+          </h1>
+          <!-- Character Image (Screenshot ke jaisa) -->
+          <img src="assets/images/ff-character.png" class="title-character" alt="Tournament Character" onerror="this.style.display='none'">
         </div>
+
+        <div class="hero-meta">
+          <span class="hero-meta-item">
+            <span class="meta-icon" aria-hidden="true">📅</span>
+            <span id="meta-dates"><span class="skeleton skeleton--short" aria-hidden="true"></span></span>
+          </span>
+          <span class="hero-meta-item">
+            <span class="meta-icon" aria-hidden="true">👥</span>
+            <span id="meta-format"><span class="skeleton skeleton--short" aria-hidden="true"></span></span>
+          </span>
+          <span class="hero-meta-item">
+            <span class="meta-icon" aria-hidden="true">🏆</span>
+            <span id="meta-teams"><span class="skeleton skeleton--short" aria-hidden="true"></span></span>
+          </span>
+        </div>
+
+        <div class="hero-countdown hero-countdown--deadline" id="hero-deadline" style="display:none;">
+          <div class="cd-label" id="cd-label-deadline">⏰ REGISTRATION CLOSES IN</div>
+          <div class="cd-units" id="cd-units-deadline"></div>
+        </div>
+
+        <div class="hero-countdown" id="hero-countdown" style="display:none;">
+          <div class="cd-label">🚀 STARTS IN</div>
+          <div class="cd-units" id="cd-units-start"></div>
+        </div>
+
+        <div class="reg-status" id="regStatus" style="display:none;">
+          <div class="reg-status-inner">
+            <span class="reg-status-icon" id="regStatusIcon">✓</span>
+            <div class="reg-status-body">
+              <div class="reg-status-title" id="regStatusTitle">Registered</div>
+              <div class="reg-status-sub" id="regStatusSub">Team pending review</div>
+            </div>
+            <a href="registration-status.html" class="reg-status-link">View →</a>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="#" class="btn btn-primary hero-cta" id="hero-register">
+            <span>REGISTER TEAM</span>
+            <span class="hero-cta-arrow" aria-hidden="true">→</span>
+          </a>
+          <button type="button" class="btn btn-ghost" id="hero-share">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <span>SHARE</span>
+          </button>
+        </div>
+
+        <div class="hero-register-note" id="hero-register-note"></div>
+      </div>
     </div>
+  </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="index.html" class="logo">
-                        <div class="logo-mark">B</div>
-                        <div class="logo-text">
-                            <span class="logo-main">BCE</span>
-                            <span class="logo-sub">ESPORTS</span>
-                        </div>
-                    </a>
-                    <p class="footer-tagline">
-                        The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.
-                    </p>
+  <section class="social-proof" data-reveal aria-label="Tournament statistics">
+    <div class="container">
+      <div class="social-proof-grid">
+        <div class="sp-item"><div class="sp-icon" aria-hidden="true">🎮</div><div class="sp-val" id="sp-teams">—</div><div class="sp-label">Teams</div></div>
+        <div class="sp-item"><div class="sp-icon" aria-hidden="true">👥</div><div class="sp-val" id="sp-players">—</div><div class="sp-label">Players</div></div>
+        <div class="sp-item"><div class="sp-icon" aria-hidden="true">🎯</div><div class="sp-val" id="sp-matches">—</div><div class="sp-label">Matches</div></div>
+        <div class="sp-item"><div class="sp-icon" aria-hidden="true">💰</div><div class="sp-val" id="sp-prize">—</div><div class="sp-label">Prize</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" data-reveal aria-label="Tournament quick stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-label">Prize Pool</div><div class="stat-value stat-value--accent" id="stat-prize">—</div></div>
+        <div class="stat"><div class="stat-label">Teams</div><div class="stat-value" id="stat-teams">0</div></div>
+        <div class="stat"><div class="stat-label">Entry Fee</div><div class="stat-value" id="stat-fee">—</div></div>
+        <div class="stat"><div class="stat-label">Format</div><div class="stat-value" id="stat-format">—</div></div>
+      </div>
+      <div class="capacity" id="capacity-bar" style="display:none;" aria-live="polite">
+        <div class="capacity-track"><div class="capacity-fill" id="capacity-fill"></div></div>
+        <div class="capacity-label" id="capacity-label"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tabs-wrap" id="tabsWrap">
+    <div class="container">
+      <div class="tabs" role="tablist" aria-label="Tournament sections">
+        <button class="tabs-tab is-active" data-tab="overview" role="tab" aria-selected="true" aria-controls="panel-overview" id="tab-overview">Overview</button>
+        <button class="tabs-tab" data-tab="schedule" role="tab" aria-selected="false" aria-controls="panel-schedule" id="tab-schedule">Schedule</button>
+        <button class="tabs-tab" data-tab="standings" role="tab" aria-selected="false" aria-controls="panel-standings" id="tab-standings">Standings</button>
+        <button class="tabs-tab" data-tab="teams" role="tab" aria-selected="false" aria-controls="panel-teams" id="tab-teams">Teams</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+
+      <div class="panel is-active" data-panel="overview" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+        <div class="panel-grid">
+          <div class="panel-main">
+            <article class="card" data-reveal>
+              <h2 class="card-title"><span class="card-title-bar"></span>About This Tournament</h2>
+              <div class="card-body prose" id="panel-desc">
+                <div class="skeleton skeleton--lines"><span></span><span></span><span></span></div>
+              </div>
+            </article>
+
+            <article class="card" data-reveal id="college-card" style="display:none;">
+              <h2 class="card-title"><span class="card-title-bar"></span>Intra-College Event</h2>
+              <div class="card-body">
+                <p class="prose">Exclusively for students of <strong class="text-cyan" id="college-name">this college</strong>. Each player must submit their real name, roll number, email, phone, branch, year and upload their college ID card during registration.</p>
+              </div>
+            </article>
+
+            <article class="card" data-reveal id="prize-card" style="display:none;">
+              <h2 class="card-title"><span class="card-title-bar"></span>Prize Distribution</h2>
+              <div class="card-body"><div class="podium" id="podium"></div></div>
+            </article>
+
+            <article class="card" data-reveal>
+              <h2 class="card-title"><span class="card-title-bar"></span>Timeline</h2>
+              <div class="card-body">
+                <div class="timeline" id="timeline">
+                  <div class="skeleton skeleton--lines"><span></span><span></span></div>
                 </div>
-                <div>
-                    <h4 class="footer-heading">Platform</h4>
-                    <div class="footer-links">
-                        <a href="about.html" class="footer-link">About</a>
-                        <a href="tournaments.html" class="footer-link">Tournaments</a>
-                        <a href="teams.html" class="footer-link">Teams</a>
-                        <a href="results.html" class="footer-link">Results</a>
-                    </div>
+              </div>
+            </article>
+
+            <article class="card" data-reveal id="faq-card">
+              <h2 class="card-title"><span class="card-title-bar"></span>Frequently Asked</h2>
+              <div class="card-body">
+                <div class="faq" id="faq">
+                  <div class="faq-item">
+                    <button class="faq-q" type="button" aria-expanded="false"><span>How do I register my team?</span><span class="faq-icon" aria-hidden="true">+</span></button>
+                    <div class="faq-a"><p>Click the "Register Team" button, fill in your team details, add your roster, and complete the payment (if applicable). You'll receive an email confirming submission.</p></div>
+                  </div>
+                  <div class="faq-item">
+                    <button class="faq-q" type="button" aria-expanded="false"><span>When does registration close?</span><span class="faq-icon" aria-hidden="true">+</span></button>
+                    <div class="faq-a"><p>Registration closes 24 hours before the tournament start time, or earlier if all slots fill up. Check the countdown timer at the top of this page for exact timing.</p></div>
+                  </div>
+                  <div class="faq-item">
+                    <button class="faq-q" type="button" aria-expanded="false"><span>What if my team's players aren't verified?</span><span class="faq-icon" aria-hidden="true">+</span></button>
+                    <div class="faq-a"><p>Each player's verification is reviewed manually. Incomplete or incorrect ID submissions may cause rejection. Make sure all fields match your college ID card.</p></div>
+                  </div>
+                  <div class="faq-item">
+                    <button class="faq-q" type="button" aria-expanded="false"><span>Where can I check my registration status?</span><span class="faq-icon" aria-hidden="true">+</span></button>
+                    <div class="faq-a"><p>Visit the <a href="registration-status.html" class="text-accent">Registration Status</a> page using the email or phone number you registered with.</p></div>
+                  </div>
+                  <div class="faq-item">
+                    <button class="faq-q" type="button" aria-expanded="false"><span>Who do I contact for help?</span><span class="faq-icon" aria-hidden="true">+</span></button>
+                    <div class="faq-a"><p>Email us at <a href="mailto:Bcesports.team@gmail.com" class="text-accent">Bcesports.team@gmail.com</a> or use the <a href="contact.html" class="text-accent">contact form</a>. We usually respond within 24 hours.</p></div>
+                  </div>
                 </div>
-                <div>
-                    <h4 class="footer-heading">Games</h4>
-                    <div class="footer-links">
-                        <a href="tournaments.html" class="footer-link">BGMI</a>
-                        <a href="tournaments.html" class="footer-link">Free Fire</a>
-                        <a href="tournaments.html" class="footer-link">Valorant</a>
-                        <a href="tournaments.html" class="footer-link">COD Mobile</a>
-                    </div>
+              </div>
+            </article>
+
+            <article class="card" data-reveal id="similar-card" style="display:none;">
+              <h2 class="card-title"><span class="card-title-bar"></span>More Tournaments</h2>
+              <div class="card-body"><div class="similar-scroll" id="similar"></div></div>
+            </article>
+          </div>
+
+          <aside class="panel-side">
+            <article class="card" data-reveal>
+              <h2 class="card-title"><span class="card-title-bar"></span>Key Info</h2>
+              <div class="card-body">
+                <dl class="info-list">
+                  <div class="info-row"><dt>Game</dt><dd id="info-game">—</dd></div>
+                  <div class="info-row"><dt>Format</dt><dd id="info-format">—</dd></div>
+                  <div class="info-row"><dt>Scope</dt><dd class="text-cyan" id="info-scope">—</dd></div>
+                  <div class="info-row"><dt>Max Teams</dt><dd id="info-max">—</dd></div>
+                  <div class="info-row"><dt>Entry Fee</dt><dd class="text-accent" id="info-fee">—</dd></div>
+                  <div class="info-row"><dt>Prize Pool</dt><dd class="text-accent" id="info-prize">—</dd></div>
+                  <div class="info-row"><dt>Dates</dt><dd id="info-dates">—</dd></div>
+                  <div class="info-row"><dt>Registration Closes</dt><dd id="info-regclose">—</dd></div>
+                  <div class="info-row"><dt>Tournament ID</dt><dd><button type="button" class="copy-id" id="copyTid" title="Copy ID">—<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></dd></div>
+                </dl>
+              </div>
+            </article>
+
+            <article class="card" data-reveal id="share-card">
+              <h2 class="card-title"><span class="card-title-bar"></span>Share</h2>
+              <div class="card-body">
+                <p class="prose" style="font-size:13px;margin-bottom:14px;">Help us grow the community — share this tournament.</p>
+                <div class="share-btns">
+                  <button type="button" class="share-btn" data-share="copy">🔗 Copy</button>
+                  <button type="button" class="share-btn" data-share="whatsapp">💬 WhatsApp</button>
+                  <button type="button" class="share-btn" data-share="twitter">𝕏 Twitter</button>
                 </div>
-                <div>
-                    <h4 class="footer-heading">Connect</h4>
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">Discord</a>
-                        <a href="#" class="footer-link">Instagram</a>
-                        <a href="#" class="footer-link">YouTube</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
-                <p class="footer-note">Live Database Connected</p>
-            </div>
+              </div>
+            </article>
+          </aside>
         </div>
-    </footer>
+      </div>
 
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/tournament.js"></script>
-    
-    <!-- DYNAMIC TITLE FORMATTING -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const titleEl = document.getElementById('t-name');
-            if (!titleEl) return;
+      <div class="panel" data-panel="schedule" id="panel-schedule" role="tabpanel" aria-labelledby="tab-schedule" hidden>
+        <div class="panel-loading"><div class="loading-spinner" aria-hidden="true"></div><span>Loading schedule…</span></div>
+      </div>
 
-            const formatTitle = () => {
-                let text = titleEl.textContent.trim();
-                
-                if (text && text !== 'Loading...' && !titleEl.querySelector('.line1')) {
-                    let words = text.split(' ');
-                    if (words.length >= 3) {
-                        let line1 = words.slice(0, words.length - 2).join(' ');
-                        let line2 = words[words.length - 2];
-                        let line3 = words[words.length - 1];
-                        titleEl.innerHTML = `
-                            <span class="line1">${line1}</span>
-                            <span class="line2">${line2}</span>
-                            <span class="line3">${line3}</span>
-                        `;
-                    } else if (words.length === 2) {
-                        titleEl.innerHTML = `
-                            <span class="line1">${words[0]}</span>
-                            <span class="line2">${words[1]}</span>
-                        `;
-                    }
-                }
-            };
+      <div class="panel" data-panel="standings" id="panel-standings" role="tabpanel" aria-labelledby="tab-standings" hidden>
+        <div class="panel-loading"><div class="loading-spinner" aria-hidden="true"></div><span>Loading standings…</span></div>
+      </div>
 
-            formatTitle();
+      <div class="panel" data-panel="teams" id="panel-teams" role="tabpanel" aria-labelledby="tab-teams" hidden>
+        <div class="panel-loading"><div class="loading-spinner" aria-hidden="true"></div><span>Loading teams…</span></div>
+      </div>
+    </div>
+  </section>
 
-            const observer = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                        formatTitle();
-                    }
-                });
-            });
-            observer.observe(titleEl, { childList: true, characterData: true, subtree: true });
-        });
-    </script>
+  <a href="#" class="sticky-cta" id="sticky-cta" aria-label="Register your team">
+    <span>REGISTER TEAM</span>
+    <span class="sticky-cta-arrow" aria-hidden="true">→</span>
+  </a>
+
+  <div class="modal-backdrop" id="rosterBackdrop" role="presentation">
+    <div class="roster-modal" role="dialog" aria-modal="true" aria-labelledby="rm-name">
+      <button type="button" class="modal-close" id="rm-close" aria-label="Close roster">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-hero">
+        <div class="modal-logo" id="rm-logo">—</div>
+        <h2 class="modal-name" id="rm-name">—</h2>
+        <div class="modal-tag" id="rm-tag">—</div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-stats">
+          <div class="modal-stat"><div class="modal-stat-value" id="rm-rank">—</div><div class="modal-stat-label">Rank</div></div>
+          <div class="modal-stat"><div class="modal-stat-value" id="rm-matches">—</div><div class="modal-stat-label">Matches</div></div>
+          <div class="modal-stat"><div class="modal-stat-value" id="rm-wins">—</div><div class="modal-stat-label">Wins</div></div>
+          <div class="modal-stat"><div class="modal-stat-value" id="rm-points">—</div><div class="modal-stat-label">Points</div></div>
+        </div>
+        <h3 class="modal-section-title"><span>Roster</span><span class="modal-section-count" id="rm-count">0</span></h3>
+        <div id="rm-roster"><div class="modal-loading"><div class="modal-spinner" aria-hidden="true"></div><span>Loading players…</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="matchBackdrop" role="presentation">
+    <div class="match-modal" role="dialog" aria-modal="true" aria-labelledby="mm-title">
+      <button type="button" class="modal-close" id="mm-close" aria-label="Close match details">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-hero">
+        <div class="mm-round-badge" id="mm-round">MATCH</div>
+        <h2 class="modal-name" id="mm-title">—</h2>
+        <div class="modal-tag" id="mm-time">—</div>
+      </div>
+      <div class="modal-body" id="mm-body">
+        <div class="modal-loading"><div class="modal-spinner" aria-hidden="true"></div><span>Loading results…</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <div class="logo-mark">B</div>
+            <div class="logo-text"><span class="logo-main">BCE</span><span class="logo-sub">ESPORTS</span></div>
+          </a>
+          <p class="footer-tagline">The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.</p>
+        </div>
+        <div><h4 class="footer-heading">Platform</h4><div class="footer-links"><a href="about.html" class="footer-link">About</a><a href="tournaments.html" class="footer-link">Tournaments</a><a href="teams.html" class="footer-link">Teams</a><a href="results.html" class="footer-link">Results</a></div></div>
+        <div><h4 class="footer-heading">Games</h4><div class="footer-links"><a href="tournaments.html" class="footer-link">BGMI</a><a href="tournaments.html" class="footer-link">Free Fire</a><a href="tournaments.html" class="footer-link">Valorant</a><a href="tournaments.html" class="footer-link">COD Mobile</a></div></div>
+        <div><h4 class="footer-heading">Connect</h4><div class="footer-links"><a href="#" class="footer-link">Discord</a><a href="#" class="footer-link">Instagram</a><a href="#" class="footer-link">YouTube</a></div></div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
+        <p class="footer-note">Live Database Connected</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/tournament.js"></script>
 </body>
 </html>
