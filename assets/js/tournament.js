@@ -187,16 +187,7 @@
   function renderHero(t) {
     document.title = (t.Name || 'Tournament') + ' — BCE Esports';
 
-    const bannerUrl = String(t.BannerURL || '').trim();
-    const bg = document.getElementById('hero-bg');
-    if (bannerUrl && bg) {
-      const img = new Image();
-      img.onload = () => {
-        bg.style.backgroundImage = `url("${bannerUrl}")`;
-        bg.classList.add('has-banner');
-      };
-      img.src = bannerUrl;
-    }
+    // Banner fetch logic removed to make the layout cleaner
 
     setText('breadcrumb-name', t.Name || 'Tournament');
     const title = document.getElementById('hero-title');
