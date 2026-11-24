@@ -3,7 +3,7 @@
  * Every admin page includes this. Handles token, guard, GET, POST.
  */
 const ADMIN_API = (() => {
-  const API_URL = "https://script.google.com/macros/s/AKfycbzxwfxg6cmOlj-WaRngV-SeAOVNLSI6btwZ9MbYQ3hM7JoD0Lf9FMGzige2S5bZBpx-/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
   const TOKEN_KEY = 'bce_admin_token';
   const ADMIN_KEY = 'bce_admin_info';
 
