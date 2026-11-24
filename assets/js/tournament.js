@@ -92,13 +92,6 @@
     if (id == null || id === '') return 'Game';
     return state.gamesMap[String(id)] || String(id);
   }
-  function isIntraCollege(t) {
-    const s = String(t.Scope || '').trim();
-    const c = String(t.CollegeName || '').trim();
-    if (s === 'Intra College') return true;
-    if (s === 'Public') return false;
-    return c !== '';
-  }
   function setText(id, text) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
@@ -187,11 +180,32 @@
   function renderHero(t) {
     document.title = (t.Name || 'Tournament') + ' — BCE Esports';
 
-    // Banner fetch logic removed to make the layout cleaner
-
     setText('breadcrumb-name', t.Name || 'Tournament');
-    const title = document.getElementById('hero-title');
-    if (title) title.textContent = t.Name || 'Untitled Tournament';
+    
+    // NEW TITLE FORMATTING LOGIC
+    const titleEl = document.getElementById('hero-title');
+    if (titleEl) {
+      const rawName = (t.Name || 'Untitled Tournament').trim();
+      const words = rawName.split(' ');
+      
+      if (words.length >= 3) {
+        const line1 = words.slice(0, words.length - 2).join(' ');
+        const line2 = words[words.length - 2]; // "RANBHOOMI"
+        const line3 = words[words.length - 1]; // "2026"
+        titleEl.innerHTML = `
+          <span class="line1">${escapeHTML(line1)}</span>
+          <span class="line2">${escapeHTML(line2)}</span>
+          <span class="line3">${escapeHTML(line3)}</span>
+        `;
+      } else if (words.length === 2) {
+        titleEl.innerHTML = `
+          <span class="line1">${escapeHTML(words[0])}</span>
+          <span class="line2">${escapeHTML(words[1])}</span>
+        `;
+      } else {
+        titleEl.innerHTML = `<span class="line2">${escapeHTML(rawName)}</span>`;
+      }
+    }
 
     const statusVal = String(t.Status || 'upcoming').toLowerCase();
     const statusTones = { upcoming: 'blue', live: 'green', completed: 'muted', archived: 'muted' };
@@ -203,13 +217,6 @@
 
     const gameEl = document.getElementById('hero-game');
     if (gameEl) gameEl.textContent = gameName(t.GameID);
-
-    const scopeEl = document.getElementById('hero-scope');
-    if (scopeEl) {
-      const intra = isIntraCollege(t);
-      scopeEl.textContent = intra ? '🎓 INTRA COLLEGE' : '🌐 PUBLIC';
-      scopeEl.dataset.tone = intra ? 'crimson' : 'cyan';
-    }
 
     const startDate = formatShortDate(t.TournamentStartAt) || 'TBA';
     const endDate = formatShortDate(t.TournamentEndAt);
@@ -243,7 +250,6 @@
     const startEl = document.getElementById('hero-countdown');
     if (!regEl || !startEl) return;
 
-    // Hide both if tournament is over / live
     const statusVal = String(t.Status || '').toLowerCase();
     if (statusVal === 'completed' || statusVal === 'archived' || statusVal === 'live') {
       regEl.style.display = 'none';
@@ -263,13 +269,8 @@
       const maxTeams = Number(t.MaxTeams) || 0;
       const slotsFull = maxTeams > 0 && state.teams.length >= maxTeams;
 
-      // Priority 1: registration still open → show REG countdown
       if (closeAt && closeAt.getTime() > now && !slotsFull) return 'reg';
-
-      // Priority 2: registration closed but tournament not started → show START countdown
       if (startAt && startAt.getTime() > now) return 'start';
-
-      // Priority 3: nothing to show
       return 'none';
     };
 
@@ -352,7 +353,7 @@
     }
     if (note) {
       const closeAt = state.registrationCloseAt;
-      let noteText = isIntraCollege(t) ? '🎓 Student ID verification required' : '🌐 Open to everyone';
+      let noteText = '🌐 Open to everyone';
       if (closeAt) {
         const hoursLeft = Math.max(0, Math.floor((closeAt.getTime() - Date.now()) / 3600000));
         if (hoursLeft < 48) noteText += ` · ⏰ ${hoursLeft}h left`;
@@ -440,12 +441,8 @@
         : '<div class="panel-empty panel-empty--small"><div class="panel-empty-title">No description yet</div><div class="panel-empty-text">The organizer hasn\'t added details for this tournament.</div></div>';
     }
 
-    const intra = isIntraCollege(t);
-    const collegeName = String(t.CollegeName || '').trim();
-
     setText('info-game', gameName(t.GameID));
     setText('info-format', t.TeamFormat || 'Squad');
-    setText('info-scope', intra ? 'Intra College' : 'Public');
     setText('info-max', Number(t.MaxTeams) > 0 ? t.MaxTeams + ' teams' : 'Open');
     setText('info-fee', Number(t.EntryFee) > 0 ? '₹' + t.EntryFee : 'Free');
     setText('info-prize', formatPrize(t.PrizePool));
@@ -458,14 +455,6 @@
     const closeEl = document.getElementById('info-regclose');
     if (closeEl) {
       closeEl.textContent = closeAt ? formatDateTime(closeAt.toISOString()) : 'Until full';
-    }
-
-    const collegeCard = document.getElementById('college-card');
-    if (intra && collegeName) {
-      if (collegeCard) collegeCard.style.display = '';
-      setText('college-name', collegeName);
-    } else if (collegeCard) {
-      collegeCard.style.display = 'none';
     }
 
     const copyBtn = document.getElementById('copyTid');
