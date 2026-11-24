@@ -9,13 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-  /* Mobile Card View for Teams */
   @media (max-width: 768px) {
     .responsive-table thead { display: none; }
     .responsive-table tr { display: block; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 12px; padding: 12px; }
     .responsive-table td { display: flex; justify-content: space-between; border: none; padding: 6px 0; font-size: 14px; }
     .responsive-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
   }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
+  .stat-box-value { font-family: var(--font-display); font-weight: 900; font-size: 24px; color: #fff; line-height: 1; margin-bottom: 6px; }
+  .stat-box-value.accent { color: var(--red); }
+  .stat-box-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -24,10 +28,17 @@
   <div class="admin-main">
     <header class="admin-topbar" id="adminTopbar"></header>
     <main class="admin-content">
-      
+
       <div class="page-header">
         <h1>Teams</h1>
         <p>Manage all registered teams across tournaments.</p>
+      </div>
+
+      <div class="stats-row" id="statsRow" style="display:none;">
+        <div class="stat-box"><div class="stat-box-value accent" id="statTotal">0</div><div class="stat-box-label">Total Teams</div></div>
+        <div class="stat-box"><div class="stat-box-value" id="statActive">0</div><div class="stat-box-label">Active</div></div>
+        <div class="stat-box"><div class="stat-box-value" id="statTournaments">0</div><div class="stat-box-label">Tournaments</div></div>
+        <div class="stat-box"><div class="stat-box-value" id="statGames">0</div><div class="stat-box-label">Games</div></div>
       </div>
 
       <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
@@ -35,10 +46,16 @@
           <label class="form-label">Search Team</label>
           <input type="text" id="searchInput" class="form-input" placeholder="Search by team name or tag...">
         </div>
-        <div class="form-group" style="min-width: 150px; margin: 0;">
+        <div class="form-group" style="min-width: 180px; margin: 0;">
           <label class="form-label">Filter by Game</label>
           <select id="gameFilter" class="form-select">
             <option value="all">All Games</option>
+          </select>
+        </div>
+        <div class="form-group" style="min-width: 200px; margin: 0;">
+          <label class="form-label">Filter by Tournament</label>
+          <select id="tournamentFilter" class="form-select">
+            <option value="all">All Tournaments</option>
           </select>
         </div>
       </div>
@@ -50,12 +67,13 @@
               <th>Team Name</th>
               <th>Tag</th>
               <th>Game</th>
-              <th>Captain ID</th>
+              <th>Tournament</th>
+              <th>Captain</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="teamsBody">
-            <tr><td colspan="5" style="text-align: center; padding: 30px;">Loading teams...</td></tr>
+            <tr><td colspan="6" style="text-align: center; padding: 30px;">Loading teams...</td></tr>
           </tbody>
         </table>
       </div>
@@ -72,64 +90,187 @@
   if (!admin) return;
 
   let allTeams = [];
-  let allGames = {};
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
 
   function badge(status) {
     const s = String(status || 'active').toLowerCase();
-    return `<span class="badge badge-${s}">${s}</span>`;
+    return '<span class="badge badge-' + s + '">' + esc(s) + '</span>';
+  }
+
+  function updateStats() {
+    const total = allTeams.length;
+    const active = allTeams.filter(t => String(t.Status || 'active').toLowerCase() === 'active').length;
+    const tournSet = new Set();
+    const gameSet = new Set();
+    allTeams.forEach(t => {
+      if (t._tournamentId) tournSet.add(t._tournamentId);
+      if (t._gameId) gameSet.add(t._gameId);
+    });
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statActive').textContent = active;
+    document.getElementById('statTournaments').textContent = tournSet.size;
+    document.getElementById('statGames').textContent = gameSet.size;
+    document.getElementById('statsRow').style.display = 'grid';
+  }
+
+  function populateFilters() {
+    // Games
+    const gameSel = document.getElementById('gameFilter');
+    const gameMap = {};
+    allTeams.forEach(t => {
+      if (t._gameId && !gameMap[t._gameId]) gameMap[t._gameId] = t._gameName || t._gameId;
+    });
+    Object.keys(gameMap).sort((a, b) => gameMap[a].localeCompare(gameMap[b])).forEach(gid => {
+      const opt = document.createElement('option');
+      opt.value = gid;
+      opt.textContent = gameMap[gid];
+      gameSel.appendChild(opt);
+    });
+
+    // Tournaments
+    const tournSel = document.getElementById('tournamentFilter');
+    const tournMap = {};
+    allTeams.forEach(t => {
+      if (t._tournamentId && !tournMap[t._tournamentId]) tournMap[t._tournamentId] = t._tournamentName || t._tournamentId;
+    });
+    Object.keys(tournMap).sort((a, b) => tournMap[a].localeCompare(tournMap[b])).forEach(tid => {
+      const opt = document.createElement('option');
+      opt.value = tid;
+      opt.textContent = tournMap[tid];
+      tournSel.appendChild(opt);
+    });
   }
 
   function render() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
+    const q = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
     const gameF = document.getElementById('gameFilter').value;
+    const tournF = document.getElementById('tournamentFilter').value;
 
     const filtered = allTeams.filter(t => {
-      const matchQ = String(t.Name || '').toLowerCase().includes(q) || String(t.Tag || '').toLowerCase().includes(q);
-      const matchG = gameF === 'all' || String(t.PrimaryGameID) === gameF;
-      return matchQ && matchG;
+      if (gameF !== 'all' && String(t._gameId) !== gameF) return false;
+      if (tournF !== 'all' && String(t._tournamentId) !== tournF) return false;
+      if (q) {
+        const searchable = [
+          t.Name, t.Tag, t._captainName, t._tournamentName, t._gameName
+        ].map(v => String(v || '').toLowerCase()).join(' ');
+        if (!searchable.includes(q)) return false;
+      }
+      return true;
     });
 
     const tbody = document.getElementById('teamsBody');
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No teams found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">No teams found.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = filtered.map(t => `
-      <tr>
-        <td data-label="Team Name"><strong style="color:#fff;">${t.Name || 'Unknown'}</strong></td>
-        <td data-label="Tag"><span class="badge" style="background:var(--bg-secondary);border:1px solid var(--border);">${t.Tag || '-'}</span></td>
-        <td data-label="Game">${allGames[t.PrimaryGameID] || t.PrimaryGameID || '-'}</td>
-        <td data-label="Captain">${t.CaptainPlayerID || '-'}</td>
-        <td data-label="Status">${badge(t.Status)}</td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = filtered.map(t => {
+      const teamName = t.Name || 'Unknown Team';
+      const tag = t.Tag || '-';
+      const gameName = t._gameName || '-';
+      const tournName = t._tournamentName || '-';
+      const captainName = t._captainName || '-';
+      const status = t.Status || 'active';
+
+      return '<tr>' +
+        '<td data-label="Team Name"><strong style="color:#fff;">' + esc(teamName) + '</strong></td>' +
+        '<td data-label="Tag"><span class="badge" style="background:var(--bg-secondary);border:1px solid var(--border);">' + esc(tag) + '</span></td>' +
+        '<td data-label="Game">' + esc(gameName) + '</td>' +
+        '<td data-label="Tournament">' + esc(tournName) + '</td>' +
+        '<td data-label="Captain">' + esc(captainName) + '</td>' +
+        '<td data-label="Status">' + badge(status) + '</td>' +
+      '</tr>';
+    }).join('');
   }
 
-  try {
-    const [teamsRes, gamesRes] = await Promise.all([
-      ADMIN_API.get('admin.getTeams'),
-      ADMIN_API.get('getGames')
-    ]);
+  /* ===== LOAD DATA: with fallback for missing TournamentID ===== */
+  async function loadAll() {
+    try {
+      console.log('[Teams] Loading...');
 
-    if (gamesRes.success) {
-      const sel = document.getElementById('gameFilter');
-      (gamesRes.data || []).forEach(g => {
-        allGames[g.GameID] = g.Name;
-        sel.innerHTML += `<option value="${g.GameID}">${g.Name}</option>`;
+      const [teamsRes, tournsRes, gamesRes, regsRes] = await Promise.all([
+        ADMIN_API.get('admin.getTeams').catch(e => { console.error('teams:', e); return { success: false, data: [] }; }),
+        ADMIN_API.get('admin.getTournaments').catch(e => { console.error('tournaments:', e); return { success: false, data: [] }; }),
+        ADMIN_API.get('getGames').catch(e => { console.error('games:', e); return { success: false, data: [] }; }),
+        ADMIN_API.get('admin.getRegistrations').catch(e => { console.error('registrations:', e); return { success: false, data: [] }; })
+      ]);
+
+      console.log('[Teams] teams:', teamsRes.success, 'count:', (teamsRes.data || []).length);
+      console.log('[Teams] tourns:', tournsRes.success, 'count:', (tournsRes.data || []).length);
+      console.log('[Teams] games:', gamesRes.success, 'count:', (gamesRes.data || []).length);
+      console.log('[Teams] regs:', regsRes.success, 'count:', (regsRes.data || []).length);
+
+      const rawTeams = teamsRes.data || [];
+      if (!rawTeams.length) {
+        document.getElementById('teamsBody').innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">No teams registered yet.</td></tr>';
+        return;
+      }
+
+      // Build maps
+      const tournMap = {};
+      (tournsRes.data || []).forEach(t => { if (t.TournamentID) tournMap[t.TournamentID] = t; });
+
+      const gameMap = {};
+      (gamesRes.data || []).forEach(g => { if (g.GameID) gameMap[g.GameID] = g.Name || g.GameID; });
+
+      const regByTeamId = {};
+      const regByTeamName = {};
+      (regsRes.data || []).forEach(r => {
+        if (r.TeamID) regByTeamId[r.TeamID] = r;
+        if (r.TeamNameSnapshot) regByTeamName[String(r.TeamNameSnapshot).toLowerCase()] = r;
       });
-    }
 
-    if (teamsRes.success) {
-      allTeams = teamsRes.data || [];
+      // Enrich with fallback logic
+      allTeams = rawTeams.map(t => {
+        // Get TournamentID — from Teams sheet first, fallback to Registrations
+        let tournId = t.TournamentID;
+        let reg = regByTeamId[t.TeamID];
+
+        if (!tournId && reg && reg.TournamentID) tournId = reg.TournamentID;
+        if (!tournId && t.Name) {
+          const match = regByTeamName[String(t.Name).toLowerCase()];
+          if (match && match.TournamentID) {
+            tournId = match.TournamentID;
+            reg = match;
+          }
+        }
+
+        const tourn = tournMap[tournId] || {};
+        const gameId = tourn.GameID || '';
+
+        return {
+          ...t,
+          _tournamentId: tournId || '',
+          _tournamentName: tourn.Name || '',
+          _gameId: gameId,
+          _gameName: gameMap[gameId] || gameId || '',
+          _captainName: (reg && reg.CaptainName) || ''
+        };
+      });
+
+      console.log('[Teams] Enriched:', allTeams.length);
+      console.log('[Teams] Sample:', allTeams[0]);
+
+      updateStats();
+      populateFilters();
       render();
+    } catch (e) {
+      console.error('[Teams] Fatal:', e);
+      document.getElementById('teamsBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: #f87171; padding: 30px;">Error: ' + esc(e.message || 'Unknown') + '</td></tr>';
     }
-  } catch (e) {
-    document.getElementById('teamsBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #f87171;">Error loading data</td></tr>`;
   }
+
+  await loadAll();
 
   document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById('gameFilter').addEventListener('change', render);
+  document.getElementById('tournamentFilter').addEventListener('change', render);
 })();
 </script>
 </body>
