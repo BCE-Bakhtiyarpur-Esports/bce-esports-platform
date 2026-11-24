@@ -9,11 +9,54 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-  /* Player Mobile Card Style */
-  .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-  .player-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; transition: 0.3s; }
-  .player-card:hover { border-color: var(--red); transform: translateY(-3px); }
-  .player-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #e10600, #7a0400); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 20px; margin-bottom: 12px; }
+  .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .player-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; transition: 0.3s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+  .player-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--red), transparent); opacity: 0; transition: opacity 0.2s; }
+  .player-card:hover { border-color: var(--red); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  .player-card:hover::before { opacity: 1; }
+  .player-card.captain { border-color: rgba(168,85,247,0.35); background: linear-gradient(135deg, rgba(168,85,247,0.06), var(--bg-card)); }
+  .player-card.captain::before { background: linear-gradient(180deg, #a855f7, transparent); opacity: 1; }
+  .player-avatar { width: 54px; height: 54px; border-radius: 14px; background: linear-gradient(135deg, #e10600, #7a0400); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; font-size: 18px; color: #fff; letter-spacing: 0.5px; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.08); position: relative; }
+  .player-card.captain .player-avatar { background: linear-gradient(135deg, #a855f7, #5b21b6); border-color: rgba(192,132,252,0.5); box-shadow: 0 0 16px rgba(168,85,247,0.3); }
+  .captain-crown { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706); display: flex; align-items: center; justify-content: center; font-size: 10px; border: 2px solid var(--bg-card); }
+  .player-ign { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: #fff; letter-spacing: 0.3px; word-break: break-word; line-height: 1.2; }
+  .player-realname { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+  .player-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+  .player-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 10.5px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); color: var(--text-muted); line-height: 1.2; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .player-tag.uid { background: rgba(34,211,238,0.08); border-color: rgba(34,211,238,0.2); color: #67e8f9; font-family: var(--font-display); font-weight: 600; letter-spacing: 0.5px; }
+  .player-tag.team { background: rgba(225,6,0,0.08); border-color: rgba(225,6,0,0.2); color: #ff8080; }
+  .player-tag.captain-tag { background: rgba(168,85,247,0.15); border-color: rgba(168,85,247,0.3); color: #c084fc; }
+  .player-footer { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; flex-wrap: wrap; }
+  .player-footer-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .status-pill { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 9px; border-radius: 4px; }
+  .status-pill.verified { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+  .status-pill.pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+  .status-pill.rejected { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+  .player-actions { display: flex; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .action-btn { flex: 1; padding: 8px 10px; font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-radius: 4px; cursor: pointer; border: 1px solid; transition: all 0.2s; }
+  .action-btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .action-btn.verify { background: rgba(34,197,94,0.15); color: #4ade80; border-color: rgba(34,197,94,0.4); }
+  .action-btn.verify:hover:not(:disabled) { background: rgba(34,197,94,0.25); }
+  .action-btn.reject { background: rgba(239,68,68,0.15); color: #f87171; border-color: rgba(239,68,68,0.4); }
+  .action-btn.reject:hover:not(:disabled) { background: rgba(239,68,68,0.25); }
+  .action-btn.reset { background: rgba(107,107,107,0.15); color: #a3a3a3; border-color: rgba(107,107,107,0.4); }
+  .action-btn.reset:hover:not(:disabled) { background: rgba(107,107,107,0.25); }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center; }
+  .stat-box-value { font-family: var(--font-display); font-weight: 900; font-size: 24px; color: #fff; line-height: 1; margin-bottom: 6px; }
+  .stat-box-value.accent { color: var(--red); }
+  .stat-box-value.green { color: #4ade80; }
+  .stat-box-value.amber { color: #fbbf24; }
+  .stat-box-value.red { color: #f87171; }
+  .stat-box-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+
+  .toast { position: fixed; top: 20px; right: 20px; padding: 14px 20px; border-radius: 8px; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 1px; z-index: 9999; animation: slideIn 0.3s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .toast.success { background: rgba(34,197,94,0.95); color: #fff; border: 1px solid #4ade80; }
+  .toast.error { background: rgba(239,68,68,0.95); color: #fff; border: 1px solid #f87171; }
+  @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 </style>
 </head>
 <body>
@@ -22,18 +65,57 @@
   <div class="admin-main">
     <header class="admin-topbar" id="adminTopbar"></header>
     <main class="admin-content">
-      
+
       <div class="page-header">
         <h1>Players Directory</h1>
-        <p>Search and view all registered esports athletes.</p>
+        <p>Search, verify and manage all registered esports athletes.</p>
       </div>
 
-      <div class="dashboard-card" style="margin-bottom: 24px;">
-        <input type="text" id="searchInput" class="form-input" placeholder="Search by IGN or Real Name..." style="max-width: 400px;">
+      <div class="stats-row" id="statsRow" style="display:none;">
+        <div class="stat-box"><div class="stat-box-value accent" id="statTotal">0</div><div class="stat-box-label">Total</div></div>
+        <div class="stat-box"><div class="stat-box-value green" id="statVerified">0</div><div class="stat-box-label">Verified</div></div>
+        <div class="stat-box"><div class="stat-box-value amber" id="statPending">0</div><div class="stat-box-label">Pending</div></div>
+        <div class="stat-box"><div class="stat-box-value red" id="statRejected">0</div><div class="stat-box-label">Rejected</div></div>
+        <div class="stat-box"><div class="stat-box-value" id="statCaptains">0</div><div class="stat-box-label">Captains</div></div>
+      </div>
+
+      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="flex: 1; min-width: 200px; margin: 0;">
+          <label class="form-label">Search</label>
+          <input type="text" id="searchInput" class="form-input" placeholder="IGN, name, UID, team...">
+        </div>
+        <div class="form-group" style="min-width: 180px; margin: 0;">
+          <label class="form-label">Tournament</label>
+          <select id="tournamentFilter" class="form-select">
+            <option value="all">All Tournaments</option>
+          </select>
+        </div>
+        <div class="form-group" style="min-width: 140px; margin: 0;">
+          <label class="form-label">Status</label>
+          <select id="statusFilter" class="form-select">
+            <option value="all">All Status</option>
+            <option value="verified">Verified</option>
+            <option value="pending">Pending</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="form-group" style="min-width: 140px; margin: 0;">
+          <label class="form-label">Role</label>
+          <select id="roleFilter" class="form-select">
+            <option value="all">All Players</option>
+            <option value="captain">Captains Only</option>
+          </select>
+        </div>
       </div>
 
       <div class="player-grid" id="playersGrid">
         <div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 40px;">Loading players...</div>
+      </div>
+
+      <div id="emptyState" style="display:none; text-align:center; padding: 60px 20px; background: var(--bg-card); border: 1px dashed var(--border-bright); border-radius: var(--radius-lg);">
+        <div style="font-size: 48px; opacity: 0.4; margin-bottom: 12px;">👥</div>
+        <div style="font-family: var(--font-display); font-size: 16px; color: #fff; margin-bottom: 6px;">No players found</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Try changing filters or search term</div>
       </div>
 
     </main>
@@ -49,52 +131,275 @@
 
   let allPlayers = [];
 
-  function getInitials(name) {
-    if (!name) return '??';
-    return name.substring(0, 2).toUpperCase();
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  function getInitials(name) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  function statusClass(s) {
+    const v = String(s || 'pending').toLowerCase();
+    return ['verified','pending','rejected'].includes(v) ? v : 'pending';
+  }
+
+  function showToast(msg, type) {
+    const t = document.createElement('div');
+    t.className = 'toast ' + (type || 'success');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  function updateStats() {
+    const total = allPlayers.length;
+    const verified = allPlayers.filter(p => String(p.Status || '').toLowerCase() === 'verified').length;
+    const pending = allPlayers.filter(p => String(p.Status || '').toLowerCase() === 'pending').length;
+    const rejected = allPlayers.filter(p => String(p.Status || '').toLowerCase() === 'rejected').length;
+    const captains = allPlayers.filter(p => p.IsCaptain).length;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statVerified').textContent = verified;
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statRejected').textContent = rejected;
+    document.getElementById('statCaptains').textContent = captains;
+    document.getElementById('statsRow').style.display = 'grid';
+  }
+
+  function populateFilters() {
+    const tournSel = document.getElementById('tournamentFilter');
+    const tournMap = {};
+    allPlayers.forEach(p => {
+      if (p.TournamentID && p.TournamentName && !tournMap[p.TournamentID]) {
+        tournMap[p.TournamentID] = p.TournamentName;
+      }
+    });
+    Object.keys(tournMap).sort((a, b) => tournMap[a].localeCompare(tournMap[b])).forEach(tid => {
+      const opt = document.createElement('option');
+      opt.value = tid;
+      opt.textContent = tournMap[tid];
+      tournSel.appendChild(opt);
+    });
+  }
+
+  window.verifyPlayerAction = async function(playerId, newStatus, playerName) {
+    if (!playerId) { showToast('Missing player ID', 'error'); return; }
+
+    const verb = newStatus === 'verified' ? 'Verify' : (newStatus === 'rejected' ? 'Reject' : 'Reset');
+    if (!confirm(verb + ' player "' + (playerName || playerId) + '"?')) return;
+
+    try {
+      console.log('[Verify] Calling admin.verifyPlayer', { playerVerificationId: playerId, status: newStatus });
+      const res = await ADMIN_API.post('admin.verifyPlayer', {
+        playerVerificationId: playerId,
+        status: newStatus
+      });
+      console.log('[Verify] Response:', res);
+
+      if (res && res.success) {
+        // Update local state
+        const p = allPlayers.find(x => x.PlayerID === playerId);
+        if (p) p.Status = newStatus;
+        updateStats();
+        render();
+        showToast('Player ' + newStatus + ' successfully!', 'success');
+      } else {
+        showToast('Failed: ' + (res && res.message || 'Unknown error'), 'error');
+      }
+    } catch (e) {
+      console.error('[Verify] Error:', e);
+      showToast('Error: ' + (e.message || 'Network error'), 'error');
+    }
+  };
+
   function render() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = allPlayers.filter(p => 
-      String(p.IGN || '').toLowerCase().includes(q) || 
-      String(p.RealName || '').toLowerCase().includes(q)
-    );
+    const q = String(document.getElementById('searchInput').value || '').toLowerCase().trim();
+    const tournF = document.getElementById('tournamentFilter').value;
+    const statusF = document.getElementById('statusFilter').value;
+    const roleF = document.getElementById('roleFilter').value;
+
+    const filtered = allPlayers.filter(p => {
+      if (tournF !== 'all' && String(p.TournamentID) !== tournF) return false;
+      if (statusF !== 'all' && String(p.Status || '').toLowerCase() !== statusF) return false;
+      if (roleF === 'captain' && !p.IsCaptain) return false;
+
+      if (q) {
+        const searchable = [
+          p.IGN, p.RealName, p.UID, p.RollNumber, p.TeamName, p.TeamTag, p.College, p.Branch
+        ].map(v => String(v || '').toLowerCase()).join(' ');
+        if (!searchable.includes(q)) return false;
+      }
+      return true;
+    });
 
     const grid = document.getElementById('playersGrid');
+    const empty = document.getElementById('emptyState');
+
     if (filtered.length === 0) {
-      grid.innerHTML = '<div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 40px;">No players found.</div>';
+      grid.innerHTML = '';
+      grid.style.display = 'none';
+      empty.style.display = 'block';
       return;
     }
 
-    grid.innerHTML = filtered.map(p => `
-      <div class="player-card">
-        <div style="display: flex; gap: 16px; align-items: center;">
-          <div class="player-avatar">${getInitials(p.IGN)}</div>
-          <div>
-            <div style="font-family: var(--font-display); font-weight: 700; font-size: 18px; color: #fff;">${p.IGN || 'Unknown'}</div>
-            <div style="font-size: 13px; color: var(--text-muted);">${p.RealName || 'No Real Name'}</div>
-          </div>
-        </div>
-        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 13px;">
-          <div><span style="color: var(--text-muted);">Team:</span> <strong>${p.TeamName || 'Free Agent'}</strong></div>
-          <div>${String(p.IsCaptain).toUpperCase() === 'TRUE' ? '<span class="badge badge-active">Captain</span>' : ''}</div>
-        </div>
-      </div>
-    `).join('');
+    grid.style.display = 'grid';
+    empty.style.display = 'none';
+
+    grid.innerHTML = filtered.map(p => {
+      const isCaptain = p.IsCaptain;
+      const ign = p.IGN || 'Unknown';
+      const realName = p.RealName || '';
+      const uid = p.UID || p.RollNumber || '';
+      const teamName = p.TeamName || '';
+      const teamTag = p.TeamTag || '';
+      const tournName = p.TournamentName || '';
+      const slot = p.Slot || '';
+      const status = statusClass(p.Status);
+      const statusLabel = status === 'verified' ? '✓ Verified' : (status === 'rejected' ? '✕ Rejected' : '⏳ Pending');
+
+      const chips = [];
+      if (uid) chips.push('<span class="player-tag uid">🎮 ' + esc(uid) + '</span>');
+      if (teamName) chips.push('<span class="player-tag team">🏆 ' + esc(teamName) + (teamTag ? ' (' + esc(teamTag) + ')' : '') + '</span>');
+      if (isCaptain) chips.push('<span class="player-tag captain-tag">👑 Captain</span>');
+      if (!isCaptain && slot) chips.push('<span class="player-tag">Slot ' + esc(slot) + '</span>');
+      if (p.Branch || p.Year) {
+        const by = [p.Branch, p.Year ? p.Year + ' Yr' : ''].filter(Boolean).join(' · ');
+        if (by) chips.push('<span class="player-tag">📚 ' + esc(by) + '</span>');
+      }
+
+      // Action buttons — depending on current status
+      let actionsHtml = '';
+      if (status === 'pending') {
+        actionsHtml = '<div class="player-actions">' +
+          '<button class="action-btn verify" onclick="verifyPlayerAction(\'' + esc(p.PlayerID) + '\', \'verified\', \'' + esc(ign) + '\')">✓ Verify</button>' +
+          '<button class="action-btn reject" onclick="verifyPlayerAction(\'' + esc(p.PlayerID) + '\', \'rejected\', \'' + esc(ign) + '\')">✕ Reject</button>' +
+        '</div>';
+      } else if (status === 'verified') {
+        actionsHtml = '<div class="player-actions">' +
+          '<button class="action-btn reset" onclick="verifyPlayerAction(\'' + esc(p.PlayerID) + '\', \'pending\', \'' + esc(ign) + '\')">↺ Reset to Pending</button>' +
+        '</div>';
+      } else if (status === 'rejected') {
+        actionsHtml = '<div class="player-actions">' +
+          '<button class="action-btn verify" onclick="verifyPlayerAction(\'' + esc(p.PlayerID) + '\', \'verified\', \'' + esc(ign) + '\')">✓ Verify Anyway</button>' +
+          '<button class="action-btn reset" onclick="verifyPlayerAction(\'' + esc(p.PlayerID) + '\', \'pending\', \'' + esc(ign) + '\')">↺ Reset</button>' +
+        '</div>';
+      }
+
+      return '<div class="player-card ' + (isCaptain ? 'captain' : '') + '">' +
+        '<div style="display: flex; gap: 14px; align-items: center;">' +
+          '<div class="player-avatar">' +
+            esc(getInitials(ign)) +
+            (isCaptain ? '<div class="captain-crown">👑</div>' : '') +
+          '</div>' +
+          '<div style="min-width: 0; flex: 1;">' +
+            '<div class="player-ign">' + esc(ign) + '</div>' +
+            (realName ? '<div class="player-realname">' + esc(realName) + '</div>' : '') +
+          '</div>' +
+        '</div>' +
+        (chips.length ? '<div class="player-tags">' + chips.join('') + '</div>' : '') +
+        (tournName ? '<div style="margin-top:10px;font-size:11px;color:var(--text-muted);line-height:1.4;">📅 ' + esc(tournName) + '</div>' : '') +
+        '<div class="player-footer">' +
+          '<div><div class="player-footer-label">Status</div><span class="status-pill ' + status + '">' + statusLabel + '</span></div>' +
+          (p.College ? '<div style="text-align:right;max-width:50%;"><div class="player-footer-label">College</div><div style="font-size:11px;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(p.College) + '</div></div>' : '') +
+        '</div>' +
+        actionsHtml +
+      '</div>';
+    }).join('');
   }
 
-  try {
-    const res = await ADMIN_API.get('admin.getPlayers');
-    if (res.success) {
-      allPlayers = res.data || [];
+  /* ===== LOAD DATA: RAW + MANUAL ENRICHMENT ===== */
+  async function loadAll() {
+    try {
+      console.log('[Players] Loading data...');
+
+      const [playersRes, regsRes, tournsRes, gamesRes] = await Promise.all([
+        ADMIN_API.get('admin.getPlayers').catch(e => { console.error('players:', e); return { success: false, data: [] }; }),
+        ADMIN_API.get('admin.getRegistrations').catch(e => { console.error('registrations:', e); return { success: false, data: [] }; }),
+        ADMIN_API.get('admin.getTournaments').catch(e => { console.error('tournaments:', e); return { success: false, data: [] }; }),
+        ADMIN_API.get('getGames').catch(e => { console.error('games:', e); return { success: false, data: [] }; })
+      ]);
+
+      console.log('[Players] playersRes:', playersRes.success, 'count:', (playersRes.data || []).length);
+      console.log('[Players] regsRes:', regsRes.success, 'count:', (regsRes.data || []).length);
+      console.log('[Players] tournsRes:', tournsRes.success, 'count:', (tournsRes.data || []).length);
+      console.log('[Players] gamesRes:', gamesRes.success, 'count:', (gamesRes.data || []).length);
+
+      const rawPlayers = playersRes.data || [];
+      if (!rawPlayers.length) {
+        document.getElementById('playersGrid').innerHTML = '<div style="color: var(--text-muted); text-align: center; grid-column: 1/-1; padding: 40px;">No players registered yet.</div>';
+        return;
+      }
+
+      // Build lookup maps
+      const regMap = {};
+      (regsRes.data || []).forEach(r => { if (r.RegistrationID) regMap[r.RegistrationID] = r; });
+
+      const tournMap = {};
+      (tournsRes.data || []).forEach(t => { if (t.TournamentID) tournMap[t.TournamentID] = t; });
+
+      const gameMap = {};
+      (gamesRes.data || []).forEach(g => { if (g.GameID) gameMap[g.GameID] = g.Name || g.GameID; });
+
+      // Enrich every player (including rejected ones)
+      allPlayers = rawPlayers.map(v => {
+        const reg = regMap[v.RegistrationID] || {};
+        const tourn = tournMap[v.TournamentID] || {};
+        const slotRaw = String(v.PlayerSlot || '').trim();
+        const slotLower = slotRaw.toLowerCase();
+        const isCaptain =
+          slotLower === 'captain' || slotLower === 'c' || slotRaw === '1' ||
+          (reg.CaptainName && (
+            String(v.PlayerIGN || '').toLowerCase() === String(reg.CaptainName || '').toLowerCase() ||
+            String(v.RealName || '').toLowerCase() === String(reg.CaptainName || '').toLowerCase()
+          ));
+
+        return {
+          PlayerID: v.PlayerVerificationID || '',
+          IGN: v.PlayerIGN || 'Unknown',
+          RealName: v.RealName || '',
+          UID: v.GameUID || '',
+          RollNumber: v.RollNumber || '',
+          TeamID: v.TeamID || reg.TeamID || '',
+          TeamName: reg.TeamNameSnapshot || reg.TeamName || '',
+          TeamTag: reg.TeamTagSnapshot || reg.TeamTag || '',
+          RegistrationID: v.RegistrationID || '',
+          Slot: slotRaw,
+          TournamentID: v.TournamentID || '',
+          TournamentName: tourn.Name || '',
+          GameID: tourn.GameID || '',
+          GameName: gameMap[tourn.GameID] || '',
+          Status: v.Status || 'pending',
+          College: v.CollegeName || '',
+          Branch: v.Branch || '',
+          Year: v.Year || '',
+          IsCaptain: !!isCaptain
+        };
+      });
+
+      console.log('[Players] Enriched players:', allPlayers.length);
+      console.log('[Players] Sample:', allPlayers[0]);
+
+      updateStats();
+      populateFilters();
       render();
+    } catch (e) {
+      console.error('[Players] Fatal:', e);
+      document.getElementById('playersGrid').innerHTML = '<div style="color: #f87171; text-align: center; grid-column: 1/-1; padding: 40px;">Error loading players: ' + esc(e.message || 'Unknown') + '</div>';
     }
-  } catch (e) {
-    document.getElementById('playersGrid').innerHTML = '<div style="color: #f87171; text-align: center; grid-column: 1/-1;">Error loading players.</div>';
   }
+
+  await loadAll();
 
   document.getElementById('searchInput').addEventListener('input', render);
+  document.getElementById('tournamentFilter').addEventListener('change', render);
+  document.getElementById('statusFilter').addEventListener('change', render);
+  document.getElementById('roleFilter').addEventListener('change', render);
 })();
 </script>
 </body>
