@@ -1,1434 +1,608 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<meta name="theme-color" content="#0a0a0a">
-<title>Team Registration — BCE Esports</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23e10600'/%3E%3Ctext x='50%25' y='54%25' font-family='Arial Black,sans-serif' font-size='40' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Team Registration — BCE Esports</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e10600'/%3E%3Ctext x='50%25' y='55%25' font-family='Arial Black,sans-serif' font-size='38' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EB%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css">
+
 <style>
 /* ============================================================
-   ROOT & RESET
+   BCE ESPORTS — PREMIUM REGISTRATION UI (Mobile-First)
    ============================================================ */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
 :root {
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #111111;
-    --bg-card: #171717;
-    --bg-elevated: #1d1d1d;
+    --bg: #0a0a0d;
+    --bg-2: #101014;
+    --surface: rgba(255,255,255,.035);
+    --surface-2: rgba(255,255,255,.06);
+    --card: #121218;
+    --border: rgba(255,255,255,.09);
+    --border-bright: rgba(255,255,255,.16);
     --red: #e10600;
-    --red-bright: #ff2020;
-    --red-glow: rgba(225,6,0,.35);
-    --red-soft: rgba(225,6,0,.08);
-    --text-primary: #ffffff;
-    --text-secondary: #a8a8a8;
-    --text-muted: #6b6b6b;
-    --border: #242424;
-    --border-bright: #333333;
-    --green: #22c55e;
-    --cyan: #22d3ee;
-    --orange: #fbbf24;
-    --purple: #c084fc;
-    --error: #ef4444;
+    --red-2: #ff2b1f;
+    --red-soft: rgba(225,6,0,.14);
+    --text: #f4f4f6;
+    --text-2: #a3a3ad;
+    --text-3: #6d6d78;
+    --green: #2ecc71;
+    --cyan: #35d6e8;
+    --orange: #f5a623;
+    --purple: #b07cf0;
+    --err: #ff5b5b;
     --font-display: 'Orbitron', sans-serif;
     --font-body: 'Rajdhani', sans-serif;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 20px;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --r-sm: 10px; --r-md: 14px; --r-lg: 18px;
+    --ease: cubic-bezier(.22,.61,.36,1);
 }
+
 html { -webkit-text-size-adjust: 100%; }
 body {
     font-family: var(--font-body);
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    background: var(--bg);
+    color: var(--text);
     font-size: 16px;
-    line-height: 1.5;
-    min-height: 100vh;
+    line-height: 1.55;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
 }
+/* Subtle esports grid texture — cheap, no blur */
 body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
     background:
-        radial-gradient(circle at 0% 0%, rgba(225,6,0,.06), transparent 40%),
-        radial-gradient(circle at 100% 100%, rgba(225,6,0,.04), transparent 40%);
-    pointer-events: none;
-    z-index: 0;
+        radial-gradient(ellipse 90% 40% at 50% -5%, rgba(225,6,0,.10), transparent 60%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 44px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 1px, transparent 1px 44px);
 }
-button, input, select, textarea { font-family: inherit; font-size: inherit; }
+#mainContent { position: relative; z-index: 1; }
 a { color: inherit; text-decoration: none; }
-img { max-width: 100%; display: block; }
+button { font-family: inherit; }
+img { max-width: 100%; }
 
-/* ============================================================
-   LOADING OVERLAY & SKELETON
-   ============================================================ */
-.loading-overlay {
-    position: fixed; inset: 0;
-    background: rgba(10,10,10,.98);
-    z-index: 9999;
-    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-    padding: 24px;
+::selection { background: rgba(225,6,0,.4); }
+
+/* ---------- Buttons ---------- */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--font-display); font-size: 12px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    padding: 15px 26px; border-radius: 12px; border: 1px solid transparent;
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+    transition: transform .15s var(--ease), box-shadow .25s var(--ease), background .25s, border-color .25s, opacity .2s;
+    min-height: 48px; text-align: center;
 }
-.loading-overlay.active { display: flex; }
-.spinner {
-    width: 48px; height: 48px;
-    border: 3px solid rgba(225,6,0,.15);
-    border-top-color: var(--red);
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
+.btn:active { transform: scale(.97); }
+.btn-primary {
+    background: linear-gradient(135deg, var(--red-2), var(--red) 55%, #a80400);
+    color: #fff;
+    box-shadow: 0 6px 22px rgba(225,6,0,.32), inset 0 1px 0 rgba(255,255,255,.22);
+}
+.btn-primary:hover { box-shadow: 0 8px 30px rgba(225,6,0,.45), inset 0 1px 0 rgba(255,255,255,.22); transform: translateY(-1px); }
+.btn-primary:active { transform: scale(.97); }
+.btn-outline {
+    background: var(--surface); color: var(--text-2);
+    border-color: var(--border-bright);
+}
+.btn-outline:hover { color: var(--text); border-color: rgba(255,255,255,.3); background: var(--surface-2); }
+.btn:disabled { opacity: .55; cursor: not-allowed; transform: none !important; }
+.btn .btn-spinner {
+    width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Loading overlay ---------- */
+.loading-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--bg);
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+}
+.loading-overlay.active { display: flex; }
+.loading-logo {
+    width: 58px; height: 58px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--red-2), #8f0300);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 900; font-size: 30px; color: #fff;
+    box-shadow: 0 0 40px rgba(225,6,0,.35);
+    animation: pulseLogo 1.6s ease-in-out infinite;
+}
+@keyframes pulseLogo { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.spinner {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 3px solid rgba(225,6,0,.18); border-top-color: var(--red);
+    animation: spin .9s linear infinite;
+}
 #loadingMessage {
-    font-family: var(--font-display);
-    color: var(--text-secondary);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-size: 12px;
-    text-align: center;
+    font-family: var(--font-display); font-size: 11px; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--text-3);
 }
 
-.skeleton-strip {
-    display: none;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
-    padding: 20px 16px;
+/* ---------- Toast (background refresh indicator) ---------- */
+.toast {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(80px);
+    z-index: 9000; background: #1a1a20; border: 1px solid var(--border-bright);
+    color: var(--text-2); font-size: 13px; font-weight: 600;
+    padding: 10px 18px; border-radius: 100px; white-space: nowrap;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+    transition: transform .35s var(--ease), opacity .35s;
+    opacity: 0; pointer-events: none; max-width: 92vw; overflow: hidden; text-overflow: ellipsis;
 }
-.skeleton-strip.active { display: block; }
-.skeleton-line {
-    height: 14px;
-    background: linear-gradient(90deg, #1a1a1a 25%, #232323 50%, #1a1a1a 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-.skeleton-line.w-40 { width: 40%; }
-.skeleton-line.w-70 { width: 70%; height: 22px; margin-top: 8px; margin-bottom: 14px; }
-.skeleton-line.w-50 { width: 50%; }
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-/* ============================================================
-   ERROR PANEL
-   ============================================================ */
+/* ---------- Error panel ---------- */
 .error-panel {
-    display: none;
-    max-width: 560px;
-    margin: 60px auto;
-    background: var(--bg-card);
-    border: 1px solid rgba(239,68,68,.35);
-    border-radius: var(--radius-lg);
-    padding: 40px 24px;
-    text-align: center;
-    margin-left: 16px; margin-right: 16px;
+    display: none; max-width: 460px; margin: 12vh auto 40px; padding: 0 20px;
 }
 .error-panel.active { display: block; }
-.error-icon { font-size: 44px; margin-bottom: 12px; }
-.error-title {
-    font-family: var(--font-display);
-    font-size: 17px;
-    color: #f87171;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.error-card {
+    background: var(--card); border: 1px solid rgba(255,91,91,.35);
+    border-radius: var(--r-lg); padding: 38px 26px; text-align: center;
 }
-.error-message {
-    color: var(--text-secondary);
-    margin-bottom: 22px;
-    white-space: pre-wrap;
-    font-size: 13.5px;
-    line-height: 1.6;
-    text-align: left;
+.error-icon {
+    width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 50%;
+    background: rgba(255,91,91,.1); border: 1px solid rgba(255,91,91,.35);
+    display: flex; align-items: center; justify-content: center; font-size: 28px;
 }
-.error-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.error-title { font-family: var(--font-display); font-size: 16px; color: #ff8a8a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.error-message { color: var(--text-2); font-size: 14px; margin-bottom: 24px; white-space: pre-wrap; }
+.error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
-/* ============================================================
-   TOURNAMENT STRIP (compact hero)
-   ============================================================ */
-.strip {
-    position: relative;
-    background:
-        linear-gradient(135deg, rgba(225,6,0,.06) 0%, transparent 50%),
-        var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
-    padding: 20px 0 22px;
-    z-index: 1;
+/* ---------- Hero ---------- */
+.reg-hero {
+    padding: 34px 20px 26px; text-align: center; position: relative;
 }
-.strip::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-    background-size: 30px 30px;
-    pointer-events: none;
+.hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-size: 9.5px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--red-2);
+    margin-bottom: 14px; padding: 6px 14px; border-radius: 100px;
+    background: var(--red-soft); border: 1px solid rgba(225,6,0,.3);
 }
-.strip-inner {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+.hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); animation: pulseDot 1.8s infinite; }
+@keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+.hero-title {
+    font-family: var(--font-display); font-weight: 900;
+    font-size: clamp(24px, 7vw, 42px); line-height: 1.15;
+    text-transform: uppercase; letter-spacing: .5px;
+    margin-bottom: 6px; word-break: break-word;
+}
+.hero-title .accent { color: transparent; background: linear-gradient(180deg, #fff 30%, #ffb3ae); -webkit-background-clip: text; background-clip: text; }
+.hero-sub { color: var(--text-2); font-size: 14.5px; font-weight: 500; margin-bottom: 18px; }
+.hero-meta {
+    display: flex; justify-content: center; align-items: center; gap: 8px;
     flex-wrap: wrap;
-    gap: 12px;
 }
-.strip-main { flex: 1; min-width: 0; }
-.strip-label {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 8px;
+.meta-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 600; color: var(--text-2);
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 7px 13px; border-radius: 100px;
 }
-.strip-title {
-    font-family: var(--font-display);
-    font-size: clamp(18px, 4.5vw, 24px);
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    line-height: 1.25;
-    color: #fff;
-    margin-bottom: 10px;
-    word-break: break-word;
+.hero-back {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 18px;
+    font-family: var(--font-display); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-3);
+    transition: color .2s;
 }
-.strip-meta {
-    display: flex;
-    gap: 6px;
-    font-size: 11.5px;
-    color: var(--text-secondary);
-    flex-wrap: wrap;
-    align-items: center;
-}
-.strip-meta > span {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 10px;
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(255,255,255,.05);
-    border-radius: 4px;
-    font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    line-height: 1;
-}
-.strip-back {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,.04);
-    border: 1px solid var(--border-bright);
-    border-radius: 8px;
-    color: var(--text-secondary);
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: all 0.2s var(--ease);
-}
-.strip-back:hover, .strip-back:active {
-    background: rgba(225,6,0,.1);
-    border-color: rgba(225,6,0,.4);
-    color: var(--red);
-}
+.hero-back:hover { color: var(--text); }
 
-.scope-badge {
-    display: inline-flex;
-    align-items: center;
-    font-family: var(--font-display);
-    font-size: 9px;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-    line-height: 1;
-    text-transform: uppercase;
+.scope-badge, .fee-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--font-display); font-size: 9.5px; font-weight: 700;
+    padding: 6px 12px; border-radius: 100px; letter-spacing: 1px;
 }
-.scope-badge.public { background: rgba(34,211,238,.1); color: var(--cyan); border: 1px solid rgba(34,211,238,.3); }
-.scope-badge.intra { background: rgba(225,6,0,.1); color: var(--red); border: 1px solid rgba(225,6,0,.3); }
+.scope-badge.public { background: rgba(53,214,232,.1); color: var(--cyan); border: 1px solid rgba(53,214,232,.35); }
+.scope-badge.intra { background: var(--red-soft); color: var(--red-2); border: 1px solid rgba(225,6,0,.35); }
+.fee-badge.free { background: rgba(46,204,113,.1); color: var(--green); border: 1px solid rgba(46,204,113,.35); }
+.fee-badge.paid { background: rgba(245,166,35,.1); color: var(--orange); border: 1px solid rgba(245,166,35,.35); }
 
-.fee-badge {
-    display: inline-flex;
-    align-items: center;
-    font-family: var(--font-display);
-    font-size: 9px;
-    font-weight: 700;
-    padding: 4px 9px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-    line-height: 1;
-    text-transform: uppercase;
-}
-.fee-badge.free { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
-.fee-badge.paid { background: rgba(245,158,11,.1); color: var(--orange); border: 1px solid rgba(245,158,11,.3); }
-
-/* ============================================================
-   PROGRESS INDICATOR
-   ============================================================ */
+/* ---------- Progress ---------- */
 .progress-wrap {
-    position: sticky;
-    top: 0;
-    background: rgba(10,10,10,.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    position: sticky; top: 64px; z-index: 40;
+    padding: 12px 16px;
+    background: rgba(10,10,13,.88);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
-    padding: 16px 0;
-    z-index: 40;
 }
-.progress {
-    display: flex;
-    justify-content: space-between;
-    max-width: 640px;
-    margin: 0 auto;
-    position: relative;
-    padding: 0 8px;
-}
-.progress-line {
-    position: absolute;
-    top: 16px;
-    left: calc(16px + 8px);
-    right: calc(16px + 8px);
-    height: 2px;
-    background: var(--border);
-    z-index: 0;
-    border-radius: 2px;
-    overflow: hidden;
-}
-.progress-line-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--red), var(--red-bright));
-    width: 0;
-    transition: width 0.5s var(--ease);
-    border-radius: 2px;
-}
-.progress-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1;
-    flex: 1;
-    max-width: 90px;
-}
+.progress { display: flex; justify-content: space-between; max-width: 560px; margin: 0 auto; position: relative; }
+.progress-line { position: absolute; top: 15px; left: 13%; right: 13%; height: 2px; background: rgba(255,255,255,.09); border-radius: 2px; z-index: 1; overflow: hidden; }
+.progress-line-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--red-2)); width: 0; transition: width .45s var(--ease); border-radius: 2px; }
+.progress-step { display: flex; flex-direction: column; align-items: center; flex: 1; z-index: 2; min-width: 0; }
 .progress-num {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: var(--bg-card);
-    border: 2px solid var(--border-bright);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 13px;
-    color: var(--text-muted);
-    transition: all 0.3s var(--ease);
-    position: relative;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--bg-2); border: 2px solid rgba(255,255,255,.14);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 12px; color: var(--text-3);
+    transition: all .3s var(--ease);
 }
-.progress-num svg { width: 14px; height: 14px; }
-.progress-step.completed .progress-num {
-    background: var(--red);
-    border-color: var(--red);
-    color: #fff;
-    box-shadow: 0 0 16px rgba(225,6,0,.4);
-}
-.progress-step.current .progress-num {
-    border-color: var(--red);
-    color: var(--red);
-    box-shadow: 0 0 0 3px rgba(225,6,0,.15), 0 0 16px rgba(225,6,0,.25);
-}
-.progress-label {
-    font-family: var(--font-display);
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-top: 8px;
-    text-align: center;
-    transition: color 0.3s;
-    line-height: 1.2;
-}
-.progress-step.completed .progress-label,
+.progress-label { font-family: var(--font-display); font-size: 8.5px; color: var(--text-3); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; transition: color .3s; white-space: nowrap; }
+.progress-step.completed .progress-num { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 0 14px rgba(225,6,0,.4); }
+.progress-step.completed .progress-num svg { display: block; }
+.progress-step.completed .progress-label { color: var(--text-2); }
+.progress-step.current .progress-num { border-color: var(--red-2); color: #fff; background: var(--red-soft); box-shadow: 0 0 0 4px rgba(225,6,0,.12); }
 .progress-step.current .progress-label { color: #fff; }
 
-/* ============================================================
-   SECTION / STEP CARDS
-   ============================================================ */
-.section {
-    position: relative;
-    z-index: 1;
-    padding: 24px 0 48px;
-}
-.container {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 16px;
-}
+/* ---------- Sections & cards ---------- */
+.section { padding: 26px 0 60px; }
+.container { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+
 .step-card {
-    background: var(--bg-card);
+    background: linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.015));
     border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    padding: 24px 20px;
+    border-radius: var(--r-lg);
+    padding: 26px 20px;
     margin-bottom: 20px;
-    box-shadow: var(--shadow-md);
-    animation: cardIn 0.35s var(--ease);
+    box-shadow: 0 14px 40px rgba(0,0,0,.28);
+    animation: cardIn .4s var(--ease);
 }
-@keyframes cardIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.step-title {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: clamp(20px, 4vw, 24px);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    line-height: 1.2;
-}
-.step-title::before {
-    content: '';
-    width: 3px;
-    height: 22px;
-    background: var(--red);
-    border-radius: 2px;
-    box-shadow: 0 0 10px rgba(225,6,0,.5);
-    flex-shrink: 0;
-}
-
-/* ============================================================
-   FORM INPUTS
-   ============================================================ */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.form-group.full { grid-column: 1 / -1; }
-.form-label {
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    padding-left: 2px;
-}
-.form-label .req { color: var(--red); margin-left: 2px; }
-.form-input {
-    width: 100%;
-    font-size: 15px;
-    font-weight: 500;
-    background: var(--bg-primary);
-    border: 1.5px solid var(--border-bright);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    color: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    min-height: 48px;
-    -webkit-appearance: none;
-    appearance: none;
-}
-.form-input::placeholder { color: var(--text-muted); font-weight: 400; }
-.form-input:focus {
-    outline: none;
-    border-color: var(--red);
-    background: rgba(225,6,0,.03);
-    box-shadow: 0 0 0 3px rgba(225,6,0,.1);
-}
-.form-input:invalid:not(:placeholder-shown) { border-color: rgba(239,68,68,.5); }
-select.form-input {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 40px;
-    cursor: pointer;
-}
-.form-error {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--error);
-    display: none;
-    padding-left: 2px;
-    line-height: 1.3;
-}
-.form-error.show { display: block; animation: errShake 0.3s; }
-@keyframes errShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-3px); }
-    75% { transform: translateX(3px); }
-}
-
-/* ============================================================
-   INTRA-COLLEGE BANNER
-   ============================================================ */
-.intra-banner {
-    display: none;
-    background: linear-gradient(135deg, rgba(225,6,0,.1), rgba(225,6,0,.03));
-    border: 1px solid rgba(225,6,0,.3);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    align-items: flex-start;
-    gap: 12px;
-}
-.intra-banner.show { display: flex; }
-.intra-banner-icon {
-    width: 32px;
-    height: 32px;
-    background: rgba(225,6,0,.15);
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.step-head { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+.step-num {
+    width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--red-soft), rgba(225,6,0,.04));
     border: 1px solid rgba(225,6,0,.35);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 900; font-size: 16px; color: var(--red-2);
 }
-.intra-banner-body { flex: 1; min-width: 0; }
-.intra-banner-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 12px;
-    color: #fff;
-    letter-spacing: 0.3px;
-    margin-bottom: 3px;
-}
-.intra-banner-desc {
-    font-size: 12.5px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
+.step-title { font-family: var(--font-display); font-weight: 800; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; }
+.step-sub { font-size: 13px; color: var(--text-3); margin-top: 2px; }
 
-/* ============================================================
-   PLAYER CARDS
-   ============================================================ */
-.roster-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 24px 0 14px;
-    font-family: var(--font-display);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--text-secondary);
+/* ---------- Forms ---------- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.form-group { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-family: var(--font-display); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-2); }
+.form-label .req { color: var(--red-2); }
+.form-input, .form-select {
+    width: 100%; font-size: 16px; /* 16px prevents iOS zoom */
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--border-bright);
+    border-radius: 12px;
+    padding: 13px 15px; color: var(--text);
+    font-family: inherit; font-weight: 500;
+    transition: border-color .25s, box-shadow .25s, background .25s;
+    appearance: none; -webkit-appearance: none;
 }
-.roster-header::before {
-    content: '';
-    width: 3px;
-    height: 14px;
-    background: var(--red);
-    border-radius: 2px;
-    flex-shrink: 0;
+.form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a3a3ad' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 15px center;
+    padding-right: 38px; cursor: pointer;
 }
-.roster-header::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--border), transparent);
+.form-input::placeholder { color: var(--text-3); font-weight: 400; }
+.form-input:focus, .form-select:focus {
+    outline: none; border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(225,6,0,.15);
+    background: rgba(0,0,0,.5);
 }
+.form-input.invalid, .form-select.invalid { border-color: rgba(255,91,91,.6); }
+.form-error { font-size: 12.5px; color: var(--err); font-weight: 600; display: none; }
+.form-error.show { display: block; animation: shake .3s; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 33% { transform: translateX(-3px); } 66% { transform: translateX(3px); } }
+
+/* ---------- Info banners ---------- */
+.intra-banner {
+    display: none; background: linear-gradient(135deg, rgba(53,214,232,.07), rgba(53,214,232,.02));
+    border: 1px solid rgba(53,214,232,.28); border-radius: var(--r-md);
+    padding: 15px 17px; margin-bottom: 22px;
+}
+.intra-banner.show { display: block; animation: cardIn .4s var(--ease); }
+.intra-banner-title { font-family: var(--font-display); font-weight: 700; color: var(--cyan); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.intra-banner-desc { font-size: 13.5px; color: var(--text-2); }
+.intra-banner-desc strong { color: var(--text); }
+
+/* ---------- Player cards ---------- */
+.roster-heading {
+    display: flex; align-items: center; gap: 10px; margin: 26px 0 14px;
+    font-family: var(--font-display); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-2);
+}
+.roster-heading::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 .player-block {
-    background: var(--bg-secondary);
+    background: rgba(0,0,0,.28);
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 18px 16px;
-    margin-bottom: 14px;
-    position: relative;
-    transition: border-color 0.2s;
-    overflow: hidden;
+    border-radius: var(--r-md);
+    padding: 18px 16px; margin-bottom: 16px;
+    transition: border-color .3s;
 }
+.player-block:hover { border-color: rgba(255,255,255,.16); }
 .player-block.captain-block {
-    border-color: rgba(192,132,252,.3);
-    background: linear-gradient(135deg, rgba(168,85,247,.06), var(--bg-secondary));
+    border-color: rgba(176,124,240,.35);
+    background: linear-gradient(135deg, rgba(176,124,240,.06), rgba(0,0,0,.28) 45%);
 }
-.player-block.captain-block::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, var(--purple), transparent);
-}
-.player-block-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255,255,255,.04);
-}
+.player-block-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .player-badge {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    background: var(--bg-card);
-    border: 1.5px solid var(--border-bright);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-weight: 900;
-    color: var(--red);
-    flex-shrink: 0;
-    font-size: 13px;
-    letter-spacing: 0.5px;
+    width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+    background: var(--red-soft); border: 1px solid rgba(225,6,0,.35);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 900; color: var(--red-2); font-size: 14px;
 }
-.player-block.captain-block .player-badge {
-    color: var(--purple);
-    border-color: rgba(192,132,252,.4);
-    background: rgba(168,85,247,.08);
-}
-.player-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    color: #fff;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
-}
+.player-block.captain-block .player-badge { background: rgba(176,124,240,.12); border-color: rgba(176,124,240,.45); color: var(--purple); }
+.player-title { font-family: var(--font-display); font-weight: 700; color: #fff; font-size: 13px; letter-spacing: .5px; text-transform: uppercase; }
 .player-block.captain-block .player-title { color: var(--purple); }
-.player-subtitle {
-    font-size: 11.5px;
-    color: var(--text-muted);
-    margin-top: 2px;
-    line-height: 1.3;
-}
+.player-subtitle { font-size: 12px; color: var(--text-3); }
 
-/* Student fields */
-.student-fields {
-    display: none;
-    margin-top: 14px;
-    padding-top: 14px;
-    border-top: 1px dashed var(--border-bright);
-}
-.student-fields.show { display: block; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+.student-fields { display: none; margin-top: 14px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,.14); }
+.student-fields.show { display: block; animation: cardIn .35s var(--ease); }
 .student-fields-header {
-    font-family: var(--font-display);
-    font-size: 10px;
-    color: var(--cyan);
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-display); font-size: 10px; color: var(--cyan); font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px;
+    padding: 5px 11px; border-radius: 100px;
+    background: rgba(53,214,232,.08); border: 1px solid rgba(53,214,232,.25);
 }
 
-/* ID Upload */
-.id-upload {
-    border: 1.5px dashed var(--border-bright);
-    border-radius: var(--radius-md);
-    padding: 20px 16px;
-    text-align: center;
-    cursor: pointer;
-    background: var(--bg-primary);
-    transition: all 0.25s;
-    min-height: 92px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* ---------- Upload zones ---------- */
+.id-upload, .upload-zone {
+    border: 1.5px dashed rgba(255,255,255,.18);
+    border-radius: var(--r-md);
+    padding: 22px 16px; text-align: center; cursor: pointer;
+    background: rgba(0,0,0,.25);
+    transition: border-color .25s, background .25s, transform .15s;
+    -webkit-tap-highlight-color: transparent;
 }
-.id-upload:hover, .id-upload:active { border-color: var(--cyan); background: rgba(34,211,238,.02); }
-.id-upload.has-file { border-color: var(--green); background: rgba(34,197,94,.04); }
-.id-upload input { display: none; }
-.id-upload-icon { font-size: 22px; margin-bottom: 6px; }
-.id-upload-text {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    font-weight: 500;
-    line-height: 1.4;
-    word-break: break-word;
+.id-upload:active, .upload-zone:active { transform: scale(.99); }
+.id-upload:hover, .upload-zone:hover { border-color: var(--cyan); background: rgba(53,214,232,.04); }
+.id-upload.has-file, .upload-zone.has-file {
+    border-style: solid; border-color: rgba(46,204,113,.55);
+    background: rgba(46,204,113,.06);
 }
-.id-upload.has-file .id-upload-text { color: var(--green); }
+.id-upload input, .upload-zone input { display: none; }
+.id-upload-icon { font-size: 26px; margin-bottom: 6px; }
+.id-upload-text { font-size: 13px; color: var(--text-3); font-weight: 500; word-break: break-all; }
+.id-upload.has-file .id-upload-text, .upload-zone.has-file #uploadTitle { color: var(--green); font-weight: 600; }
 
-/* Substitute toggle */
+/* ---------- Substitute toggle ---------- */
 .sub-toggle {
-    display: flex;
-    gap: 12px;
-    padding: 14px 16px;
-    background: var(--bg-secondary);
-    border: 1.5px dashed var(--border-bright);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    margin-top: 8px;
-    align-items: center;
-    transition: all 0.2s;
-    min-height: 52px;
+    display: flex; gap: 13px; padding: 16px;
+    background: var(--surface); border: 1px dashed rgba(255,255,255,.18);
+    border-radius: var(--r-md); cursor: pointer; margin-top: 18px;
+    align-items: center; font-weight: 600; font-size: 14.5px;
+    transition: border-color .25s, background .25s;
+    -webkit-tap-highlight-color: transparent;
 }
-.sub-toggle:active { background: var(--bg-elevated); }
+.sub-toggle:hover { border-color: rgba(255,255,255,.32); }
 .sub-toggle input { display: none; }
 .sub-toggle-check {
-    width: 22px; height: 22px;
-    border: 1.5px solid var(--border-bright);
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s;
+    width: 22px; height: 22px; border: 2px solid rgba(255,255,255,.22); border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: all .2s var(--ease);
 }
-.sub-toggle-check svg { opacity: 0; transition: opacity 0.2s; }
-.sub-toggle input:checked + .sub-toggle-check {
-    background: var(--red);
-    border-color: var(--red);
-    box-shadow: 0 0 12px rgba(225,6,0,.4);
-}
-.sub-toggle input:checked + .sub-toggle-check svg { opacity: 1; }
-.sub-toggle-label {
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    font-weight: 500;
-    line-height: 1.3;
-}
-.sub-form { display: none; margin-top: 14px; }
-.sub-form.show { display: block; animation: cardIn 0.3s var(--ease); }
+.sub-toggle-check svg { opacity: 0; transform: scale(.5); transition: all .2s var(--ease); }
+.sub-toggle input:checked + .sub-toggle-check { background: var(--red); border-color: var(--red); }
+.sub-toggle input:checked + .sub-toggle-check svg { opacity: 1; transform: scale(1); }
+.sub-form { display: none; margin-top: 16px; }
+.sub-form.show { display: block; animation: cardIn .35s var(--ease); }
 
-/* ============================================================
-   PAYMENT SECTION
-   ============================================================ */
+/* ---------- Payment ---------- */
 .free-banner {
-    display: none;
-    background: linear-gradient(135deg, rgba(34,197,94,.1), rgba(34,197,94,.03));
-    border: 1px solid rgba(34,197,94,.3);
-    padding: 20px;
-    border-radius: var(--radius-md);
-    margin-bottom: 20px;
-    text-align: center;
+    display: none; background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.3);
+    padding: 20px; border-radius: var(--r-md); margin-bottom: 20px; text-align: center;
 }
-.free-banner.active { display: block; }
-.free-banner-title {
-    font-family: var(--font-display);
-    color: var(--green);
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-}
+.free-banner.active { display: block; animation: cardIn .4s var(--ease); }
+.free-banner-title { font-family: var(--font-display); color: var(--green); font-weight: 700; font-size: 14px; letter-spacing: .5px; }
 
 .payment-info {
-    background: linear-gradient(135deg, rgba(225,6,0,.06), var(--bg-secondary));
-    border: 1px solid rgba(225,6,0,.25);
-    padding: 20px 18px;
-    border-radius: var(--radius-lg);
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
+    background: linear-gradient(135deg, rgba(225,6,0,.1), rgba(225,6,0,.02));
+    border: 1px solid rgba(225,6,0,.3);
+    padding: 20px; border-radius: var(--r-md); margin-bottom: 18px;
 }
-.payment-info::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, var(--red), transparent);
-}
-.payment-info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-.payment-info-row + .payment-info-row {
-    border-top: 1px solid rgba(255,255,255,.05);
-    margin-top: 4px;
-    padding-top: 14px;
-}
-.payment-info-label {
-    color: var(--text-secondary);
-    font-family: var(--font-display);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    font-weight: 700;
-}
-.pay-amount-big {
-    font-family: var(--font-display);
-    font-size: 26px;
-    font-weight: 900;
-    color: var(--red);
-    letter-spacing: 0.5px;
-    line-height: 1;
-    text-shadow: 0 0 24px rgba(225,6,0,.4);
-}
-.upi-id-wrap {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-}
-#upiIdValue {
-    font-family: var(--font-display);
-    color: var(--cyan);
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    font-size: 13px;
-    word-break: break-all;
-    text-align: right;
-}
+.payment-info-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,.06); gap: 12px; flex-wrap: wrap; }
+.payment-info-row:last-child { border: none; padding-bottom: 0; }
+.payment-info-row > span:first-child { color: var(--text-2); font-family: var(--font-display); font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; }
+.pay-amount-big { font-family: var(--font-display); font-size: 28px; font-weight: 900; color: #fff; text-shadow: 0 0 24px rgba(225,6,0,.5); }
+.upi-id-wrap { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+#upiIdValue { font-family: var(--font-display); color: var(--cyan); font-weight: 700; letter-spacing: .5px; font-size: 13px; word-break: break-all; }
 .copy-btn {
-    background: rgba(34,211,238,.1);
-    border: 1px solid rgba(34,211,238,.3);
-    color: var(--cyan);
-    padding: 7px 12px;
-    border-radius: 6px;
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    min-height: 34px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    background: rgba(53,214,232,.1); border: 1px solid rgba(53,214,232,.35); color: var(--cyan);
+    padding: 7px 13px; border-radius: 8px; font-family: var(--font-display);
+    font-size: 9.5px; font-weight: 700; cursor: pointer; letter-spacing: .8px; text-transform: uppercase;
+    transition: all .2s; -webkit-tap-highlight-color: transparent;
 }
-.copy-btn:hover, .copy-btn:active {
-    background: rgba(34,211,238,.2);
-    border-color: rgba(34,211,238,.5);
-}
-.copy-btn:disabled { opacity: 0.7; cursor: default; }
+.copy-btn:active { transform: scale(.95); }
+.copy-btn:disabled { opacity: .7; }
 
-/* QR Panel */
 .qr-panel {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 22px 18px;
-    text-align: center;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
+    background: linear-gradient(160deg, rgba(53,214,232,.06), rgba(0,0,0,.2));
+    border: 1px solid rgba(53,214,232,.22);
+    border-radius: var(--r-md); padding: 26px 18px; text-align: center; margin-bottom: 18px;
 }
-.qr-label {
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--cyan);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
+.qr-label { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
 .qr-wrap {
-    display: inline-block;
-    padding: 12px;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 3px rgba(34,211,238,.15);
-    position: relative;
+    display: inline-block; padding: 12px; background: #fff; border-radius: 16px;
+    box-shadow: 0 14px 36px rgba(0,0,0,.5), 0 0 0 1px rgba(53,214,232,.2);
+    line-height: 0;
 }
-.qr-wrap img {
-    display: block;
-    width: 200px;
-    height: 200px;
-    border-radius: 6px;
-}
-.qr-hint {
-    font-size: 11.5px;
-    color: var(--text-secondary);
-    margin-top: 14px;
-    line-height: 1.5;
-}
+.qr-wrap img { display: block; width: 220px; height: 220px; border-radius: 8px; }
+.qr-hint { font-size: 12.5px; color: var(--text-3); margin-top: 14px; }
 .qr-amount-note {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 14px;
-    background: rgba(225,6,0,.1);
-    border: 1px solid rgba(225,6,0,.25);
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    line-height: 1.4;
+    display: inline-block; margin-top: 12px; padding: 8px 16px;
+    background: var(--red-soft); border: 1px solid rgba(225,6,0,.3);
+    border-radius: 100px; font-size: 12.5px; color: var(--text-2);
 }
-.qr-amount-note strong {
-    color: var(--red);
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 13px;
-}
+.qr-amount-note strong { color: #fff; font-family: var(--font-display); font-weight: 900; font-size: 13px; }
 .qr-fallback {
-    margin-top: 12px;
-    padding: 12px;
-    background: rgba(239,68,68,.08);
-    border: 1px solid rgba(239,68,68,.3);
-    border-radius: 6px;
-    color: #f87171;
-    font-size: 12px;
-    line-height: 1.5;
+    margin-top: 14px; padding: 13px; background: rgba(255,91,91,.08);
+    border: 1px solid rgba(255,91,91,.3); border-radius: 10px;
+    color: #ff9a9a; font-size: 13px; line-height: 1.5;
 }
-.qr-fallback strong {
-    color: #fff;
-    font-family: var(--font-display);
-    word-break: break-all;
-    font-weight: 700;
-}
+.qr-fallback strong { color: #fff; font-family: var(--font-display); word-break: break-all; font-size: 12px; }
+.pay-steps { margin: 0 0 20px; padding: 16px 18px 16px 34px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); }
+.pay-steps li { font-size: 13.5px; color: var(--text-2); margin-bottom: 6px; }
+.pay-steps li:last-child { margin-bottom: 0; }
+.pay-steps li strong { color: var(--text); }
 
-/* Upload zone (payment screenshot) */
-.upload-zone {
-    border: 1.5px dashed var(--border-bright);
-    border-radius: var(--radius-md);
-    padding: 24px 16px;
-    text-align: center;
-    cursor: pointer;
-    background: var(--bg-primary);
-    transition: all 0.25s;
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-.upload-zone:hover, .upload-zone:active { border-color: var(--cyan); background: rgba(34,211,238,.02); }
-.upload-zone.has-file { border-color: var(--green); background: rgba(34,197,94,.04); }
-.upload-zone input { display: none; }
-.upload-zone-icon { font-size: 26px; margin-bottom: 6px; }
-#uploadTitle {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 500;
-    line-height: 1.4;
-    word-break: break-word;
-}
-.upload-zone.has-file #uploadTitle { color: var(--green); }
+#uploadTitle { font-size: 14px; font-weight: 600; color: var(--text-2); margin-top: 8px; word-break: break-all; }
 
-/* ============================================================
-   REVIEW SECTION
-   ============================================================ */
-.review-block {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    margin-bottom: 14px;
+/* ---------- Review ---------- */
+.review-block { background: rgba(0,0,0,.28); border: 1px solid var(--border); padding: 8px 18px; border-radius: var(--r-md); margin-bottom: 16px; }
+.review-row { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; gap: 14px; }
+.review-row:last-child { border-bottom: none; }
+.review-row > span:first-child { color: var(--text-3); font-weight: 500; flex-shrink: 0; }
+.review-row > span:last-child { color: #fff; font-weight: 600; text-align: right; word-break: break-word; }
+.review-section-title {
+    font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--red-2); margin: 20px 0 10px;
+    display: flex; align-items: center; gap: 10px;
 }
-.review-group {
-    padding: 16px 18px;
-}
-.review-group + .review-group {
-    border-top: 1px solid var(--border);
-}
-.review-group-title {
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.review-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 8px 0;
-    font-size: 13.5px;
-    gap: 12px;
-}
-.review-row > span:first-child {
-    color: var(--text-muted);
-    font-size: 12.5px;
-    flex-shrink: 0;
-}
-.review-row > span:last-child {
-    color: #fff;
-    font-weight: 600;
-    text-align: right;
-    word-break: break-word;
-    min-width: 0;
-}
-.review-row + .review-row { border-top: 1px solid rgba(255,255,255,.03); }
+.review-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.review-verify-block { background: rgba(53,214,232,.05); border: 1px solid rgba(53,214,232,.25); padding: 16px; border-radius: var(--r-md); margin-top: 4px; }
+.review-verify-title { font-family: var(--font-display); font-size: 11px; color: var(--cyan); font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+.review-verify-row { font-size: 13.5px; padding: 11px 0; color: var(--text-2); border-bottom: 1px dashed rgba(255,255,255,.07); line-height: 1.75; }
+.review-verify-row:last-child { border-bottom: none; }
+.review-verify-row strong { color: #fff; }
+.tag { display: inline-block; font-family: var(--font-display); font-size: 9px; padding: 2px 7px; border-radius: 4px; letter-spacing: .5px; margin-right: 4px; vertical-align: middle; }
+.tag.name { background: rgba(46,204,113,.15); color: #5ee59a; }
+.tag.ign { background: rgba(59,130,246,.15); color: #7aa8f8; }
+.tag.uid { background: rgba(53,214,232,.15); color: #6fdcea; }
+.tag.role { background: rgba(245,166,35,.15); color: var(--orange); }
+.tag.captain { background: rgba(176,124,240,.15); color: var(--purple); }
 
-.review-verify-block {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 16px 18px;
-    margin-bottom: 14px;
-}
-.review-verify-title {
-    font-family: var(--font-display);
-    font-size: 10px;
-    color: var(--cyan);
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.review-player-card {
-    background: rgba(255,255,255,.02);
-    border: 1px solid rgba(255,255,255,.04);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-}
-.review-player-card:last-child { margin-bottom: 0; }
-.review-player-head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-}
-.review-player-slot {
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--red);
-    background: rgba(225,6,0,.1);
-    padding: 2px 8px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-}
-.review-player-slot.captain-slot { color: var(--purple); background: rgba(168,85,247,.12); }
-.review-player-ign {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 13px;
-    color: #fff;
-    letter-spacing: 0.3px;
-}
-.review-player-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 6px;
-}
-.review-player-tag {
-    display: inline-flex;
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    background: rgba(255,255,255,.04);
-    border: 1px solid rgba(255,255,255,.06);
-    color: var(--text-secondary);
-    line-height: 1.3;
-}
-.review-player-tag.name { color: #4ade80; }
-.review-player-tag.uid { color: var(--cyan); font-family: var(--font-display); font-weight: 600; }
-.review-player-tag.role { color: var(--orange); }
-.review-player-tag.extra {
-    color: var(--text-muted);
-    background: transparent;
-    border: none;
-    padding: 3px 0;
-    font-size: 10.5px;
-    width: 100%;
-}
-
-/* Agree box */
 .agree-box {
-    display: flex;
-    gap: 12px;
-    padding: 16px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    margin-bottom: 18px;
-    cursor: pointer;
-    align-items: flex-start;
-    transition: all 0.2s;
+    display: flex; gap: 14px; padding: 17px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-md); margin-bottom: 18px; cursor: pointer; align-items: center;
+    font-size: 14.5px; font-weight: 500;
 }
-.agree-box:active { background: var(--bg-elevated); }
-.agree-box input {
-    width: 20px; height: 20px;
-    accent-color: var(--red);
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-top: 1px;
-}
-.agree-box-text {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    font-weight: 500;
-}
+.agree-box input { width: 20px; height: 20px; accent-color: var(--red); cursor: pointer; flex-shrink: 0; }
 
-/* ============================================================
-   BUTTONS & NAV
-   ============================================================ */
-.step-nav {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-.step-nav .btn { flex: 1; min-width: 120px; }
+.step-nav { display: flex; justify-content: space-between; margin-top: 26px; gap: 12px; flex-wrap: wrap; }
+.step-nav .btn { flex: 1; min-width: 130px; }
 
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: var(--font-display);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    padding: 14px 22px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s var(--ease);
-    min-height: 48px;
-    line-height: 1.2;
-    text-align: center;
-    -webkit-appearance: none;
-    appearance: none;
-    white-space: nowrap;
-}
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-.btn-primary {
-    background: var(--red);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(225,6,0,.25);
-}
-.btn-primary:hover:not(:disabled), .btn-primary:active:not(:disabled) {
-    background: var(--red-bright);
-    box-shadow: 0 6px 24px rgba(225,6,0,.4);
-    transform: translateY(-1px);
-}
-.btn-primary:active:not(:disabled) { transform: translateY(0); }
-.btn-outline {
-    background: transparent;
-    color: var(--text-secondary);
-    border: 1.5px solid var(--border-bright);
-}
-.btn-outline:hover:not(:disabled), .btn-outline:active:not(:disabled) {
-    border-color: var(--red);
-    color: var(--red);
-    background: rgba(225,6,0,.03);
-}
-
-/* ============================================================
-   SUCCESS PANEL
-   ============================================================ */
+/* ---------- Success ---------- */
 .success-panel {
-    display: none;
-    text-align: center;
-    padding: 40px 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 0 60px rgba(34,197,94,.06);
-    animation: cardIn 0.4s var(--ease);
+    display: none; text-align: center; padding: 48px 22px;
+    background: linear-gradient(180deg, rgba(46,204,113,.05), rgba(255,255,255,.015));
+    border: 1px solid rgba(46,204,113,.25);
+    border-radius: var(--r-lg);
 }
-.success-panel.show { display: block; }
+.success-panel.show { display: block; animation: cardIn .5s var(--ease); }
 .success-icon {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: rgba(34,197,94,.12);
-    border: 2px solid var(--green);
-    color: var(--green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    animation: successPop 0.5s var(--ease) 0.1s both;
+    width: 82px; height: 82px; border-radius: 50%; margin: 0 auto 22px;
+    background: rgba(46,204,113,.1); border: 2px solid rgba(46,204,113,.5);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 44px rgba(46,204,113,.2);
 }
-@keyframes successPop {
-    0% { transform: scale(0); opacity: 0; }
-    60% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
-.success-title {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: clamp(18px, 4vw, 24px);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-.success-subtitle {
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    margin-bottom: 24px;
-    line-height: 1.5;
-}
+.success-icon svg circle { stroke-dasharray: 160; stroke-dashoffset: 160; animation: drawCircle .7s var(--ease) forwards; }
+.success-icon svg path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: drawCheck .45s .55s var(--ease) forwards; }
+@keyframes drawCircle { to { stroke-dashoffset: 0; } }
+@keyframes drawCheck { to { stroke-dashoffset: 0; } }
+.success-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(19px, 5vw, 26px); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.success-sub { color: var(--text-2); font-size: 14.5px; margin-bottom: 26px; }
 .success-id-box {
-    background: var(--bg-secondary);
-    padding: 18px 24px;
-    border-radius: var(--radius-md);
-    display: inline-block;
-    margin-bottom: 24px;
-    border: 1px dashed rgba(34,197,94,.4);
-    min-width: 200px;
+    background: rgba(0,0,0,.35); padding: 20px 26px; border-radius: var(--r-md);
+    display: inline-block; margin-bottom: 14px; border: 1px solid rgba(46,204,113,.4);
+    min-width: 240px;
 }
-.success-id-label {
-    font-size: 10px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 6px;
-    font-family: var(--font-display);
-    font-weight: 700;
+.success-id-label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1.5px; font-family: var(--font-display); margin-bottom: 6px; }
+.success-id-value { font-family: var(--font-display); font-weight: 900; font-size: clamp(17px, 4.6vw, 23px); color: var(--green); letter-spacing: 1px; word-break: break-all; }
+.success-id-copy {
+    display: inline-flex; margin-bottom: 26px;
+    background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.3); color: var(--green);
+    padding: 8px 16px; border-radius: 100px; font-family: var(--font-display);
+    font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+    transition: all .2s; -webkit-tap-highlight-color: transparent;
 }
-.success-id-value {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 22px;
-    color: var(--green);
-    letter-spacing: 1px;
-    word-break: break-all;
-}
-.success-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-.success-actions .btn { flex: 1; min-width: 140px; max-width: 200px; }
+.success-id-copy:active { transform: scale(.95); }
+.success-team { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+.success-team .meta-chip { font-size: 13.5px; }
+.success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.success-actions .btn { flex: 1; min-width: 150px; max-width: 220px; }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
-.footer {
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border);
-    padding: 32px 0 20px;
-    margin-top: 40px;
-}
-.footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 24px;
-}
-.footer-brand .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-.footer-brand .logo-mark {
-    width: 36px; height: 36px;
-    background: var(--red);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 18px;
-    color: #fff;
-}
-.footer-brand .logo-text { display: flex; flex-direction: column; line-height: 1; }
-.footer-brand .logo-main {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 16px;
-    letter-spacing: 2px;
-    color: #fff;
-}
-.footer-brand .logo-sub {
-    font-family: var(--font-display);
-    font-size: 8px;
-    color: var(--red);
-    letter-spacing: 3px;
-    margin-top: 2px;
-}
-.footer-tagline {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    max-width: 280px;
-}
-.footer-heading {
-    font-family: var(--font-display);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    margin-bottom: 10px;
-}
-.footer-links { display: flex; flex-direction: column; gap: 6px; }
-.footer-link {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    transition: color 0.2s;
-}
-.footer-link:hover { color: var(--red); }
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.footer-copy, .footer-note {
-    font-size: 11.5px;
-    color: var(--text-muted);
-}
-.footer-copy strong { color: var(--text-secondary); }
+/* ---------- Footer ---------- */
+.footer { border-top: 1px solid var(--border); padding: 40px 0 28px; margin-top: 40px; background: rgba(0,0,0,.3); position: relative; z-index: 1; }
+.footer-grid { display: grid; grid-template-columns: 1fr; gap: 26px; margin-bottom: 28px; }
+.footer-tagline { color: var(--text-3); font-size: 13.5px; margin-top: 12px; max-width: 300px; }
+.footer-heading { font-family: var(--font-display); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); margin-bottom: 12px; }
+.footer-links { display: flex; flex-direction: column; gap: 8px; }
+.footer-link { color: var(--text-3); font-size: 14px; transition: color .2s; }
+.footer-link:hover { color: var(--text); }
+.footer-bottom { border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.footer-copy, .footer-note { font-size: 12.5px; color: var(--text-3); }
 
-/* ============================================================
-   RESPONSIVE — MOBILE
-   ============================================================ */
-@media (max-width: 640px) {
-    .form-grid, .form-grid-2 { grid-template-columns: 1fr; }
-    .container { padding: 0 14px; }
-    .step-card { padding: 20px 16px; border-radius: var(--radius-lg); }
-    .step-title { font-size: 20px; padding-bottom: 14px; margin-bottom: 18px; }
-    .strip { padding: 16px 0 18px; }
-    .strip-title { font-size: 18px; }
-    .strip-meta > span { font-size: 10.5px; padding: 4px 8px; }
-    .progress-wrap { padding: 12px 0; }
-    .progress-num { width: 30px; height: 30px; font-size: 12px; }
-    .progress-num svg { width: 12px; height: 12px; }
-    .progress-line { top: 14px; }
-    .progress-label { font-size: 8.5px; margin-top: 6px; letter-spacing: 0.5px; }
-    .form-input { padding: 13px 14px; font-size: 15px; min-height: 48px; }
-    .form-label { font-size: 9.5px; }
-    .player-block { padding: 16px 14px; }
-    .player-badge { width: 34px; height: 34px; font-size: 12px; border-radius: 9px; }
-    .player-title { font-size: 12.5px; }
-    .qr-wrap img { width: 180px; height: 180px; }
-    .pay-amount-big { font-size: 22px; }
-    .footer-grid { grid-template-columns: 1fr; gap: 20px; }
-    .footer-tagline { max-width: 100%; }
-    .success-actions { flex-direction: column; }
-    .success-actions .btn { max-width: 100%; }
+/* ---------- Responsive ---------- */
+@media (min-width: 768px) {
+    .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+    .step-card { padding: 34px 32px; }
+    .qr-wrap img { width: 240px; height: 240px; }
+}
+@media (max-width: 620px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid-2 { grid-template-columns: 1fr; }
+    .review-row { flex-direction: column; gap: 3px; }
+    .review-row > span:last-child { text-align: left; }
+}
+@media (max-width: 400px) {
+    .progress-label { font-size: 7.5px; letter-spacing: .5px; }
+    .progress-num { width: 28px; height: 28px; font-size: 11px; }
+    .progress-line { top: 13px; }
+    .pay-amount-big { font-size: 24px; }
     .step-nav .btn { min-width: 0; padding: 14px 16px; font-size: 11px; }
 }
-
-@media (max-width: 380px) {
-    .container { padding: 0 12px; }
-    .step-card { padding: 18px 14px; }
-    .strip-title { font-size: 16px; }
-    .progress-label { font-size: 8px; }
-    .btn { padding: 13px 16px; font-size: 11px; }
-}
-
-@media (min-width: 641px) {
-    .container { padding: 0 24px; }
-    .step-card { padding: 32px 28px; }
-    .strip { padding: 24px 0 26px; }
-    .progress-num { width: 38px; height: 38px; font-size: 14px; }
-    .progress-line { top: 18px; }
-    .progress-label { font-size: 10px; }
-    .qr-wrap img { width: 220px; height: 220px; }
-}
-
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 </style>
 </head>
 <body>
+<audio id="bgMusic" src="assets/audio/register-song.mp3" preload="auto" autoplay loop></audio>
 
-<audio id="bgMusic" src="assets/audio/register-song.mp3" preload="none" loop></audio>
-
-<!-- Skeleton loader -->
-<div id="skeletonStrip" class="skeleton-strip">
-    <div class="skeleton-line w-40"></div>
-    <div class="skeleton-line w-70"></div>
-    <div class="skeleton-line w-50"></div>
-</div>
-
-<!-- Loading overlay -->
 <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-logo">B</div>
     <div class="spinner"></div>
-    <div id="loadingMessage">Loading tournament...</div>
+    <div id="loadingMessage">Loading tournament</div>
 </div>
 
-<!-- Error panel -->
+<div id="toastMsg" class="toast" role="status"></div>
+
 <div id="errorPanel" class="error-panel">
-    <div class="error-icon">⚠️</div>
-    <h2 id="errorTitle" class="error-title">Error</h2>
-    <p id="errorMessage" class="error-message"></p>
-    <div class="error-actions">
-        <button class="btn btn-primary" onclick="retryLoad()">Retry</button>
-        <a href="tournaments.html" class="btn btn-outline">All Tournaments</a>
+    <div class="error-card">
+        <div class="error-icon">⚠️</div>
+        <h2 id="errorTitle" class="error-title">Something went wrong</h2>
+        <p id="errorMessage" class="error-message"></p>
+        <div class="error-actions">
+            <button class="btn btn-primary" onclick="retryLoad()">Retry</button>
+            <a href="tournaments.html" class="btn btn-outline">All Tournaments</a>
+        </div>
     </div>
 </div>
 
 <div id="mainContent" style="display:none;">
 
-    <!-- Nav injected by main.js -->
     <nav class="nav"><div class="container nav-inner"></div></nav>
 
-    <!-- Tournament Strip -->
-    <div class="strip">
-        <div class="container strip-inner">
-            <div class="strip-main">
-                <span class="strip-label">Registering For</span>
-                <div class="strip-title" id="strip-title">Loading...</div>
-                <div class="strip-meta">
-                    <span id="strip-dates"></span>
-                    <span id="strip-format"></span>
-                    <span id="strip-scope"></span>
-                    <span id="strip-fee"></span>
-                </div>
-            </div>
-            <a href="tournaments.html" class="strip-back" id="back-link" aria-label="Back">←</a>
+    <!-- HERO -->
+    <header class="reg-hero">
+        <div class="hero-eyebrow">BCE Esports · Registration Open</div>
+        <h1 class="hero-title"><span class="accent" id="heroTitleText">Tournament</span></h1>
+        <p class="hero-sub">Secure your squad's slot. Fill the details below.</p>
+        <div class="hero-meta">
+            <span class="meta-chip" id="strip-dates"></span>
+            <span class="meta-chip" id="strip-format"></span>
+            <span id="strip-scope"></span>
+            <span id="strip-fee"></span>
         </div>
-    </div>
+        <div><a href="tournaments.html" class="hero-back" id="back-link">← All Tournaments</a></div>
+    </header>
 
-    <!-- Progress indicator -->
+    <!-- PROGRESS -->
     <div class="progress-wrap">
         <div class="container">
             <div class="progress">
                 <div class="progress-line"><div class="progress-line-fill" id="progressFill"></div></div>
-                <div class="progress-step current" data-step="1">
-                    <div class="progress-num">1</div>
-                    <div class="progress-label">Captain</div>
-                </div>
-                <div class="progress-step" data-step="2">
-                    <div class="progress-num">2</div>
-                    <div class="progress-label">Team</div>
-                </div>
-                <div class="progress-step" data-step="3">
-                    <div class="progress-num">3</div>
-                    <div class="progress-label">Payment</div>
-                </div>
-                <div class="progress-step" data-step="4">
-                    <div class="progress-num">4</div>
-                    <div class="progress-label">Review</div>
-                </div>
+                <div class="progress-step current" data-step="1"><div class="progress-num">1</div><div class="progress-label">Captain</div></div>
+                <div class="progress-step" data-step="2"><div class="progress-num">2</div><div class="progress-label">Team</div></div>
+                <div class="progress-step" data-step="3"><div class="progress-num">3</div><div class="progress-label">Payment</div></div>
+                <div class="progress-step" data-step="4"><div class="progress-num">4</div><div class="progress-label">Review</div></div>
             </div>
         </div>
     </div>
@@ -1436,74 +610,82 @@ select.form-input {
     <section class="section">
         <div class="container">
 
-            <!-- STEP 1 -->
+            <!-- STEP 1 — CAPTAIN -->
             <div class="step-card" id="step1">
-                <h2 class="step-title">Captain Details</h2>
+                <div class="step-head">
+                    <div class="step-num">01</div>
+                    <div>
+                        <h2 class="step-title">Captain Details</h2>
+                        <div class="step-sub">Who's leading the squad?</div>
+                    </div>
+                </div>
                 <div class="form-grid">
                     <div class="form-group full">
-                        <label class="form-label">Full Name <span class="req">*</span></label>
+                        <label class="form-label" for="captainName">Full Name <span class="req">*</span></label>
                         <input type="text" id="captainName" class="form-input" placeholder="e.g. Rohit Kumar" autocomplete="name">
                         <div class="form-error" id="err-captainName">Please enter your full name.</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Email <span class="req">*</span></label>
+                        <label class="form-label" for="captainEmail">Email <span class="req">*</span></label>
                         <input type="email" id="captainEmail" class="form-input" placeholder="you@gmail.com" autocomplete="email" inputmode="email">
                         <div class="form-error" id="err-captainEmail">Enter a valid email.</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Phone <span class="req">*</span></label>
-                        <input type="tel" id="captainPhone" class="form-input" placeholder="10-digit mobile" maxlength="10" autocomplete="tel" inputmode="numeric">
+                        <label class="form-label" for="captainPhone">Phone <span class="req">*</span></label>
+                        <input type="tel" id="captainPhone" class="form-input" placeholder="10-digit mobile" maxlength="10" inputmode="numeric" autocomplete="tel">
                         <div class="form-error" id="err-captainPhone">Enter valid 10-digit number.</div>
                     </div>
                     <div class="form-group full">
-                        <label class="form-label">Discord Username <span style="color:var(--text-muted);text-transform:none;letter-spacing:0;">(optional)</span></label>
+                        <label class="form-label" for="captainDiscord">Discord Username <span style="text-transform:none;letter-spacing:0;color:var(--text-3)">(optional)</span></label>
                         <input type="text" id="captainDiscord" class="form-input" placeholder="e.g. rohit#1234">
                     </div>
                 </div>
                 <div class="step-nav">
                     <a href="tournaments.html" class="btn btn-outline">Cancel</a>
-                    <button class="btn btn-primary" onclick="goToStep(2)">Continue →</button>
+                    <button class="btn btn-primary" id="nextBtn1" onclick="goToStep(2)">Continue →</button>
                 </div>
             </div>
 
-            <!-- STEP 2 -->
+            <!-- STEP 2 — TEAM & ROSTER -->
             <div class="step-card" id="step2" style="display:none;">
-                <h2 class="step-title">Team & Roster</h2>
-
-                <div class="intra-banner" id="intraBanner">
-                    <div class="intra-banner-icon">🎓</div>
-                    <div class="intra-banner-body">
-                        <div class="intra-banner-title">Intra-College Tournament</div>
-                        <div class="intra-banner-desc">Every player must provide Real Name, Roll Number, College Name, Branch, Year and upload their ID Card.</div>
+                <div class="step-head">
+                    <div class="step-num">02</div>
+                    <div>
+                        <h2 class="step-title">Team &amp; Roster</h2>
+                        <div class="step-sub">Name your team and add your players</div>
                     </div>
                 </div>
 
-                <div class="form-grid" style="margin-bottom:20px;">
+                <div class="intra-banner" id="intraBanner">
+                    <div class="intra-banner-title">🎓 Intra-College Verification</div>
+                    <div class="intra-banner-desc">Every player must provide <strong>Real Name, Roll Number, College Name, Branch, Year</strong> and upload their <strong>College ID Card</strong>.</div>
+                </div>
+
+                <div class="form-grid" style="margin-bottom:6px;">
                     <div class="form-group">
-                        <label class="form-label">Team Name <span class="req">*</span></label>
-                        <input type="text" id="teamName" class="form-input" placeholder="e.g. BCE Vipers" autocomplete="off">
+                        <label class="form-label" for="teamName">Team Name <span class="req">*</span></label>
+                        <input type="text" id="teamName" class="form-input" placeholder="e.g. BCE Vipers">
                         <div class="form-error" id="err-teamName">Required (min 3 chars).</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Team Tag <span class="req">*</span></label>
-                        <input type="text" id="teamTag" class="form-input" placeholder="e.g. BCEV" maxlength="6" style="text-transform:uppercase;" autocomplete="off">
+                        <label class="form-label" for="teamTag">Team Tag <span class="req">*</span></label>
+                        <input type="text" id="teamTag" class="form-input" placeholder="e.g. BCEV" maxlength="6" style="text-transform:uppercase;">
                         <div class="form-error" id="err-teamTag">Required (2-6 chars).</div>
                     </div>
                 </div>
 
-                <div class="roster-header">Main Roster · 4 Players</div>
+                <div class="roster-heading">Main Roster · 4 Players</div>
+
                 <div id="rosterContainer"></div>
 
                 <label class="sub-toggle">
                     <input type="checkbox" id="subCheckbox" onchange="toggleSub()">
-                    <div class="sub-toggle-check">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <div class="sub-toggle-label">Add a substitute player (optional)</div>
+                    <div class="sub-toggle-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div>Add a substitute player <span style="color:var(--text-3)">(optional)</span></div>
                 </label>
                 <div class="sub-form" id="subForm"></div>
 
-                <div class="step-nav" style="margin-top:20px;">
+                <div class="step-nav">
                     <button class="btn btn-outline" onclick="goToStep(1)">← Back</button>
                     <button class="btn btn-primary" onclick="goToStep(3)">Continue →</button>
                 </div>
@@ -1511,7 +693,13 @@ select.form-input {
 
             <!-- STEP 3 — PAYMENT -->
             <div class="step-card" id="step3" style="display:none;">
-                <h2 class="step-title">Payment</h2>
+                <div class="step-head">
+                    <div class="step-num">03</div>
+                    <div>
+                        <h2 class="step-title">Payment</h2>
+                        <div class="step-sub">Complete your entry fee payment</div>
+                    </div>
+                </div>
 
                 <div class="free-banner" id="freeBanner">
                     <div class="free-banner-title">✓ This tournament is FREE — No payment required</div>
@@ -1520,11 +708,11 @@ select.form-input {
                 <div id="paymentFields">
                     <div class="payment-info">
                         <div class="payment-info-row">
-                            <span class="payment-info-label">Amount to Pay</span>
+                            <span>Amount to Pay</span>
                             <span class="pay-amount-big" id="pay-amount">₹0</span>
                         </div>
                         <div class="payment-info-row">
-                            <span class="payment-info-label">UPI ID</span>
+                            <span>UPI ID</span>
                             <span class="upi-id-wrap">
                                 <span id="upiIdValue">piyushkumar1477@naviaxis</span>
                                 <button type="button" class="copy-btn" onclick="copyUpiId(this)">📋 Copy</button>
@@ -1532,78 +720,88 @@ select.form-input {
                         </div>
                     </div>
 
+                    <ol class="pay-steps">
+                        <li>Scan the QR or pay to the UPI ID above</li>
+                        <li>Pay exactly <strong>the shown amount</strong> — mention your team name in remarks</li>
+                        <li>Enter the <strong>UTR / Reference No.</strong> and upload the payment screenshot below</li>
+                    </ol>
+
                     <div class="qr-panel">
                         <div class="qr-label">📱 Scan to Pay</div>
                         <div class="qr-wrap" id="qrWrap">
-                            <img id="upiQrImg" alt="UPI QR Code" onerror="handleQrError()">
+                            <img id="upiQrImg" alt="UPI QR Code" onerror="handleQrError()" />
                         </div>
-                        <div class="qr-hint">Use any UPI app — GPay, PhonePe, Paytm, BHIM</div>
-                        <div class="qr-amount-note">Pay exactly <strong id="qrAmountNote">₹0</strong> — other amounts may cause delays</div>
+                        <div class="qr-hint">GPay · PhonePe · Paytm · BHIM · Amazon Pay</div>
+                        <div class="qr-amount-note">Pay exactly <strong id="qrAmountNote">₹0</strong></div>
                         <div class="qr-fallback" id="qrFallback" style="display:none;">
-                            ⚠️ QR couldn't load. Pay manually to UPI ID: <strong>piyushkumar1477@naviaxis</strong>
+                            ⚠️ QR couldn't load. Pay manually to UPI ID:<br><strong>piyushkumar1477@naviaxis</strong>
                         </div>
                     </div>
 
                     <div class="form-grid">
                         <div class="form-group full">
-                            <label class="form-label">UPI UTR / Ref No. <span class="req">*</span></label>
+                            <label class="form-label" for="utr">UPI UTR / Ref No. <span class="req">*</span></label>
                             <input type="text" id="utr" class="form-input" placeholder="12-digit UTR from your payment app" inputmode="numeric">
                             <div class="form-error" id="err-utr">UTR is required.</div>
                         </div>
                         <div class="form-group full">
                             <label class="form-label">Payment Screenshot <span class="req">*</span></label>
                             <div class="upload-zone" id="uploadZone" onclick="document.getElementById('screenshotInput').click()">
-                                <input type="file" id="screenshotInput" accept="image/*">
-                                <div class="upload-zone-icon">📸</div>
-                                <div id="uploadTitle">Tap to upload screenshot</div>
-                                <div class="form-error" id="err-screenshot" style="color:red;margin-top:8px;">Screenshot required.</div>
+                                <input type="file" id="screenshotInput" accept="image/*" aria-label="Upload payment screenshot">
+                                <div style="font-size:32px;">📸</div>
+                                <div id="uploadTitle">Tap to upload payment screenshot</div>
+                                <div class="form-error" id="err-screenshot">Screenshot required.</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="step-nav" style="margin-top:20px;">
+                <div class="step-nav">
                     <button class="btn btn-outline" onclick="goToStep(2)">← Back</button>
                     <button class="btn btn-primary" onclick="goToStep(4)">Continue →</button>
                 </div>
             </div>
 
-            <!-- STEP 4 -->
+            <!-- STEP 4 — REVIEW -->
             <div class="step-card" id="step4" style="display:none;">
-                <h2 class="step-title">Review & Submit</h2>
-
-                <div class="review-block">
-                    <div class="review-group">
-                        <div class="review-group-title">👤 Captain</div>
-                        <div class="review-row"><span>Name</span><span id="revCaptainName">—</span></div>
-                        <div class="review-row"><span>Email</span><span id="revCaptainEmail">—</span></div>
-                        <div class="review-row"><span>Phone</span><span id="revCaptainPhone">—</span></div>
-                    </div>
-                    <div class="review-group">
-                        <div class="review-group-title">🏆 Team</div>
-                        <div class="review-row"><span>Team</span><span id="revTeamName">—</span></div>
-                        <div class="review-row"><span>Players</span><span id="revRoster">—</span></div>
-                    </div>
-                    <div class="review-group">
-                        <div class="review-group-title">💳 Payment</div>
-                        <div class="review-row"><span>Entry Fee</span><span id="revFee">—</span></div>
-                        <div class="review-row" id="revUtrRow"><span>UTR</span><span id="revUtr">—</span></div>
+                <div class="step-head">
+                    <div class="step-num">04</div>
+                    <div>
+                        <h2 class="step-title">Review &amp; Submit</h2>
+                        <div class="step-sub">Verify everything before locking in</div>
                     </div>
                 </div>
 
+                <div class="review-section-title">Team</div>
+                <div class="review-block">
+                    <div class="review-row"><span>Team</span><span id="revTeamName">—</span></div>
+                    <div class="review-row"><span>Captain</span><span id="revCaptainName">—</span></div>
+                </div>
+
+                <div class="review-section-title">Contact</div>
+                <div class="review-block">
+                    <div class="review-row"><span>Email</span><span id="revCaptainEmail">—</span></div>
+                </div>
+
+                <div class="review-section-title">Players</div>
+                <div class="review-block">
+                    <div class="review-row"><span>Roster</span><span id="revRoster">—</span></div>
+                    <div class="review-row"><span>Entry Fee</span><span id="revFee">—</span></div>
+                    <div class="review-row" id="revUtrRow"><span>UTR</span><span id="revUtr">—</span></div>
+                </div>
+
                 <div class="review-verify-block" id="revVerifyBlock">
-                    <div class="review-verify-title">👥 Player Roster</div>
+                    <div class="review-verify-title">👥 Player Details</div>
                     <div id="revVerifyList"></div>
                 </div>
 
                 <label class="agree-box">
                     <input type="checkbox" id="agreeCheckbox">
-                    <div class="agree-box-text">I confirm all information above is accurate and I agree to the tournament rules.</div>
+                    <div>I confirm all information is accurate.</div>
                 </label>
-                <div class="form-error" id="err-agree" style="margin-bottom:14px;">You must accept to continue.</div>
-
+                <div class="form-error" id="err-agree" style="margin-bottom:16px;">You must accept to continue.</div>
                 <div class="step-nav">
-                    <button class="btn btn-outline" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-outline" onclick="goToStep(3)">← Edit</button>
                     <button class="btn btn-primary" id="submitBtn" onclick="submitRegistration()">Submit Registration</button>
                 </div>
             </div>
@@ -1611,15 +809,23 @@ select.form-input {
             <!-- SUCCESS -->
             <div class="success-panel" id="successPanel">
                 <div class="success-icon">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
+                    <svg width="42" height="42" viewBox="0 0 52 52" fill="none">
+                        <circle cx="26" cy="26" r="24" stroke="#2ecc71" stroke-width="2.5"/>
+                        <path d="M15 27l8 8 14-16" stroke="#2ecc71" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
                 <h2 class="success-title">Registration Submitted</h2>
-                <p class="success-subtitle">Your team has been registered. Our team will review and verify your submission.</p>
+                <p class="success-sub">Your team is in! Save your Registration ID — you'll need it to check your status.</p>
                 <div class="success-id-box">
-                    <div class="success-id-label">Registration ID</div>
+                    <div class="success-id-label">Your Registration ID</div>
                     <div class="success-id-value" id="regIdDisplay">—</div>
+                </div>
+                <div>
+                    <button type="button" class="success-id-copy" id="copyRegIdBtn" onclick="copyRegId()">📋 Copy ID</button>
+                </div>
+                <div class="success-team">
+                    <span class="meta-chip" id="succTeamName">—</span>
+                    <span class="meta-chip" id="succFee">—</span>
                 </div>
                 <div class="success-actions">
                     <a href="registration-status.html" class="btn btn-outline">Check Status</a>
@@ -1630,25 +836,30 @@ select.form-input {
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <a href="index.html" class="logo">
-                        <div class="logo-mark">B</div>
-                        <div class="logo-text">
-                            <span class="logo-main">BCE</span>
-                            <span class="logo-sub">ESPORTS</span>
-                        </div>
-                    </a>
+                    <a href="index.html" class="logo"><div class="logo-mark">B</div><div class="logo-text"><span class="logo-main">BCE</span><span class="logo-sub">ESPORTS</span></div></a>
                     <p class="footer-tagline">The official competitive gaming platform of Bakhtiyarpur College of Engineering, Bihar.</p>
                 </div>
                 <div>
                     <h4 class="footer-heading">Platform</h4>
                     <div class="footer-links">
+                        <a href="about.html" class="footer-link">About Us</a>
                         <a href="tournaments.html" class="footer-link">Tournaments</a>
                         <a href="teams.html" class="footer-link">Teams</a>
                         <a href="rules.html" class="footer-link">Rules</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Games</h4>
+                    <div class="footer-links">
+                        <a href="index.html#games" class="footer-link">Free Fire</a>
+                        <a href="index.html#games" class="footer-link">BGMI</a>
+                        <a href="index.html#games" class="footer-link">Valorant</a>
+                        <a href="index.html#games" class="footer-link">COD Mobile</a>
                     </div>
                 </div>
                 <div>
@@ -1656,48 +867,45 @@ select.form-input {
                     <div class="footer-links">
                         <a href="index.html#community" class="footer-link">Discord</a>
                         <a href="index.html#community" class="footer-link">Instagram</a>
+                        <a href="index.html#community" class="footer-link">YouTube</a>
                         <a href="index.html#announcements" class="footer-link">News</a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
                 <p class="footer-copy">© 2026 <strong>BCE Esports</strong> · All rights reserved.</p>
-                <p class="footer-note">Live Platform</p>
+                <p class="footer-note">Design Preview · Sample data</p>
             </div>
         </div>
     </footer>
 </div>
 
 <script src="assets/js/main.js"></script>
-
 <script>
-/* ============================================================
-   AUDIO
-   ============================================================ */
+/* ============ AUDIO ============ */
 (function initAudio() {
     const music = document.getElementById('bgMusic');
     if (!music) return;
-    music.volume = 0.4;
-    const tryPlay = () => {
-        music.play().catch(() => {});
-        document.removeEventListener('click', tryPlay);
-        document.removeEventListener('touchstart', tryPlay);
-        document.removeEventListener('keydown', tryPlay);
-    };
-    document.addEventListener('click', tryPlay, { passive: true });
-    document.addEventListener('touchstart', tryPlay, { passive: true });
-    document.addEventListener('keydown', tryPlay);
+    const playPromise = music.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {
+            const playOnInteraction = () => {
+                music.play().catch(e => console.log('Audio play failed:', e));
+                document.removeEventListener('click', playOnInteraction);
+                document.removeEventListener('touchstart', playOnInteraction);
+            };
+            document.addEventListener('click', playOnInteraction);
+            document.addEventListener('touchstart', playOnInteraction);
+        });
+    }
 })();
 
-/* ============================================================
-   CONSTANTS
-   ============================================================ */
+/* ============ CONSTANTS ============ */
 const API_URL = "https://script.google.com/macros/s/AKfycbyr1jpPFtXFh2H6n9TV123vz8NOEsoOTBl6NHSLTG662vmvh2M-5VZIRs1Lri3s6QSnnw/exec";
 const UPI_ID = "piyushkumar1477@naviaxis";
 const UPI_NAME = "BCE Esports";
-
-const CACHE_KEY_PREFIX = 'bce_tourn_cache_';
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_PREFIX = "bce_reg_cache_";
+const CACHE_TTL = 5 * 60 * 1000; /* 5 minutes */
 
 const urlParams = new URLSearchParams(window.location.search);
 const tournamentId = urlParams.get('tid') || urlParams.get('id') || '';
@@ -1706,7 +914,10 @@ let tournament = null;
 let isIntra = false;
 let paymentRequired = false;
 let currentStep = 1;
-let isFetching = false;
+let renderedIntra = null;   /* tracks roster render state to avoid clobbering user input */
+let renderedDataJson = '';
+let fetchInFlight = false;
+let shownFromCache = false;
 
 const state = {
     captain: {},
@@ -1717,20 +928,15 @@ const state = {
     idCards: {}
 };
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
+/* ============ HELPERS ============ */
 function esc(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function showLoading(msg) {
-    const el = document.getElementById('loadingMessage');
-    if (el) el.textContent = msg || 'Loading...';
+    document.getElementById('loadingMessage').textContent = msg || 'Loading tournament';
     document.getElementById('loadingOverlay').classList.add('active');
 }
-function hideLoading() {
-    document.getElementById('loadingOverlay').classList.remove('active');
-}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
 function showError(title, msg) {
     hideLoading();
     document.getElementById('errorPanel').classList.add('active');
@@ -1738,184 +944,86 @@ function showError(title, msg) {
     document.getElementById('errorTitle').textContent = title;
     document.getElementById('errorMessage').textContent = msg || '';
 }
+let toastTimer = null;
+function showToast(msg) {
+    const t = document.getElementById('toastMsg');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
 
 async function fetchJSON(url, opts) {
     opts = opts || {};
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 30000);
     try {
-        const res = await fetch(url, {
-            method: opts.method || 'GET',
-            body: opts.body,
-            headers: opts.headers || {},
-            mode: 'cors',
-            credentials: 'omit',
-            signal: controller.signal
-        });
+        const res = await fetch(url, { method: opts.method || 'GET', body: opts.body, headers: opts.headers || {}, mode: 'cors', credentials: 'omit', signal: controller.signal });
         clearTimeout(timer);
         const text = await res.text();
-        if (text.trim().startsWith('<')) throw new Error('Server returned HTML. Deployment not public.');
-        try { return JSON.parse(text); }
-        catch (e) { throw new Error('Invalid JSON response'); }
+        if (text.trim().startsWith('<')) throw new Error('Server returned HTML. Deployment not public or wrong URL.');
+        try { return JSON.parse(text); } catch (e) { throw new Error('Invalid JSON: ' + text.substring(0, 200)); }
     } catch (e) {
         clearTimeout(timer);
-        if (e.name === 'AbortError') throw new Error('Request timed out. Please retry.');
+        if (e.name === 'AbortError') throw new Error('Request timed out (30s). Please retry.');
         throw e;
     }
 }
 
-/* ============================================================
-   LOCALSTORAGE SWR CACHE
-   ============================================================ */
-function getCachedTournament(tid) {
+/* ============ LOCAL STORAGE CACHE (SWR) ============ */
+/* Only public tournament data is cached — never personal/payment info. */
+function readCache(tid) {
     try {
-        if (!tid) return null;
-        const raw = localStorage.getItem(CACHE_KEY_PREFIX + tid);
+        const raw = localStorage.getItem(CACHE_PREFIX + tid);
         if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        if (!parsed || !parsed.data || typeof parsed.ts !== 'number') return null;
-        return parsed;
-    } catch (e) {
-        return null;
-    }
+        const entry = JSON.parse(raw);
+        if (!entry || !entry.data || typeof entry.ts !== 'number') return null;
+        return { data: entry.data, ts: entry.ts, fresh: (Date.now() - entry.ts) < CACHE_TTL };
+    } catch (e) { return null; }
+}
+function writeCache(tid, data) {
+    try { localStorage.setItem(CACHE_PREFIX + tid, JSON.stringify({ data: data, ts: Date.now() })); } catch (e) { /* storage full/blocked — non-fatal */ }
 }
 
-function setCachedTournament(tid, data) {
-    try {
-        if (!tid || !data) return;
-        // Only cache safe public fields
-        const safeData = {
-            TournamentID: data.TournamentID,
-            Name: data.Name,
-            GameID: data.GameID,
-            Status: data.Status,
-            Scope: data.Scope,
-            CollegeName: data.CollegeName,
-            Category: data.Category,
-            TeamFormat: data.TeamFormat,
-            RosterSize: data.RosterSize,
-            MaxTeams: data.MaxTeams,
-            TournamentStartAt: data.TournamentStartAt,
-            TournamentEndAt: data.TournamentEndAt,
-            EntryFee: data.EntryFee,
-            PrizePool: data.PrizePool,
-            TeamFormat: data.TeamFormat
-        };
-        localStorage.setItem(CACHE_KEY_PREFIX + tid, JSON.stringify({
-            data: safeData,
-            ts: Date.now()
-        }));
-    } catch (e) { /* quota, private mode, etc. */ }
-}
+/* ============ TOURNAMENT DATA → UI ============ */
+function renderTournament(t) {
+    tournament = t;
 
-/* ============================================================
-   LOAD TOURNAMENT (SWR)
-   ============================================================ */
-async function loadTournament() {
-    if (!tournamentId) {
-        showError('Missing Tournament ID', 'Please open this page from a tournament page.\n\nURL should contain ?tid=TRN-XXXX');
-        return;
-    }
+    const scopeRaw = String(t.Scope || '').trim();
+    const collegeRaw = String(t.CollegeName || '').trim();
+    const newIsIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
+    const newPaymentRequired = (Number(t.EntryFee) || 0) > 0;
 
-    // 1. Try cache immediately
-    const cached = getCachedTournament(tournamentId);
-    if (cached && cached.data) {
-        console.log('[Tournament] Using cached data');
-        applyTournamentData(cached.data, true);
-
-        // Show toast if cache is stale — but don't block
-        const age = Date.now() - cached.ts;
-        if (age > CACHE_TTL_MS) {
-            // Refresh silently in background
-            fetchFreshTournament(true);
-        }
-        return;
-    }
-
-    // 2. No cache — show loading and fetch
-    showLoading('Loading tournament...');
-    await fetchFreshTournament(false);
-}
-
-async function fetchFreshTournament(isBackground) {
-    if (isFetching) return;
-    isFetching = true;
-
-    try {
-        const json = await fetchJSON(API_URL + '?action=getTournament&id=' + encodeURIComponent(tournamentId));
-        if (!json.success) throw new Error(json.message || 'Failed to load tournament');
-        if (!json.data) throw new Error('Tournament not found');
-
-        // Cache it
-        setCachedTournament(tournamentId, json.data);
-
-        // Apply to UI
-        applyTournamentData(json.data, isBackground);
-
-        if (!isBackground) hideLoading();
-    } catch (e) {
-        console.error('[Tournament] Fetch failed:', e);
-        if (isBackground) {
-            // Silent fail — cached data already shown
-            console.log('[Tournament] Background refresh failed, keeping cached data');
-        } else {
-            // No cache, show error
-            const cached = getCachedTournament(tournamentId);
-            if (cached && cached.data) {
-                // Fallback to stale cache
-                applyTournamentData(cached.data, true);
-                hideLoading();
-            } else {
-                showError('Cannot Load Tournament', e.message || 'Network error');
-            }
-        }
-    } finally {
-        isFetching = false;
-    }
-}
-
-function applyTournamentData(data, fromCache) {
-    tournament = data;
-
-    const scopeRaw = String(tournament.Scope || '').trim();
-    const collegeRaw = String(tournament.CollegeName || '').trim();
-    isIntra = scopeRaw === 'Intra College' || (scopeRaw === '' && collegeRaw !== '');
-    paymentRequired = (Number(tournament.EntryFee) || 0) > 0;
-
-    // Strip
-    document.getElementById('strip-title').textContent = tournament.Name || 'Tournament';
-    document.getElementById('strip-format').textContent = '👥 ' + (tournament.TeamFormat || 'Squad');
-
-    if (tournament.TournamentStartAt) {
-        try {
-            const d = new Date(tournament.TournamentStartAt);
-            document.getElementById('strip-dates').textContent = '📅 ' + d.toLocaleDateString('en-IN', {day:'numeric', month:'short'});
-        } catch (e) {}
-    }
-
-    document.getElementById('back-link').href = 'tournament.html?tid=' + encodeURIComponent(tournament.TournamentID);
+    document.getElementById('heroTitleText').textContent = t.Name || 'Tournament';
+    document.title = (t.Name || 'Tournament') + ' — Register | BCE Esports';
+    document.getElementById('strip-format').textContent = '👥 ' + (t.TeamFormat || 'Squad');
+    document.getElementById('strip-dates').textContent = t.TournamentStartAt ? '📅 ' + new Date(t.TournamentStartAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+    document.getElementById('back-link').href = 'tournament.html?tid=' + t.TournamentID;
 
     const scopeBadge = document.getElementById('strip-scope');
-    if (isIntra) {
-        scopeBadge.innerHTML = '<span class="scope-badge intra">🎓 Intra</span>';
+    if (newIsIntra) {
+        scopeBadge.innerHTML = '<span class="scope-badge intra">🎓 Intra College</span>';
         document.getElementById('intraBanner').classList.add('show');
     } else {
         scopeBadge.innerHTML = '<span class="scope-badge public">🌐 Public</span>';
     }
 
     const feeBadge = document.getElementById('strip-fee');
-    if (paymentRequired) {
-        feeBadge.innerHTML = '<span class="fee-badge paid">₹' + (Number(tournament.EntryFee) || 0) + ' Entry</span>';
+    if (newPaymentRequired) {
+        feeBadge.innerHTML = '<span class="fee-badge paid">₹' + (Number(t.EntryFee) || 0) + ' Entry</span>';
     } else {
-        feeBadge.innerHTML = '<span class="fee-badge free">FREE</span>';
+        feeBadge.innerHTML = '<span class="fee-badge free">FREE Entry</span>';
     }
 
-    // Payment UI
+    isIntra = newIsIntra;
+    paymentRequired = newPaymentRequired;
+
     if (paymentRequired) {
-        const amount = Number(tournament.EntryFee) || 0;
+        const amount = Number(t.EntryFee) || 0;
         document.getElementById('pay-amount').textContent = '₹' + amount;
         document.getElementById('qrAmountNote').textContent = '₹' + amount;
-        generateQrCode(amount, tournament.Name || 'Tournament');
+        generateQrCode(amount, t.Name || 'Tournament');
         document.getElementById('revUtrRow').style.display = 'flex';
     } else {
         const paymentStep = document.querySelector('.progress-step[data-step="3"]');
@@ -1926,26 +1034,77 @@ function applyTournamentData(data, fromCache) {
             reviewStep.querySelector('.progress-label').textContent = 'Review';
         }
         const line = document.querySelector('.progress-line');
-        if (line) {
-            line.style.left = '16.66%';
-            line.style.right = '16.66%';
-        }
+        if (line) { line.style.left = '16.66%'; line.style.right = '16.66%'; }
         document.getElementById('freeBanner').classList.add('active');
         document.getElementById('paymentFields').style.display = 'none';
         document.getElementById('revUtrRow').style.display = 'none';
     }
 
-    // Render roster only once
-    if (!document.getElementById('rosterContainer').innerHTML.trim()) {
+    /* Re-render roster only when needed — never clobber entered data on refresh */
+    if (renderedIntra === null || renderedIntra !== isIntra) {
         renderRoster();
+        renderedIntra = isIntra;
     }
-
-    document.getElementById('mainContent').style.display = 'block';
+    updateProgressUI();
 }
 
-/* ============================================================
-   QR CODE
-   ============================================================ */
+/* ============ LOAD TOURNAMENT (Stale-While-Revalidate) ============ */
+async function loadTournament() {
+    if (!tournamentId) {
+        showError('Missing Tournament ID', 'URL me ?tid=XXXX hona chahiye.\nExample: register.html?tid=TRN-XXXX');
+        return;
+    }
+
+    const cached = readCache(tournamentId);
+
+    if (cached) {
+        /* Show cached data instantly — even if expired */
+        shownFromCache = true;
+        renderedDataJson = JSON.stringify(cached.data);
+        renderTournament(cached.data);
+        hideLoading();
+        document.getElementById('mainContent').style.display = 'block';
+        if (!cached.fresh) showToast('Refreshing latest details…');
+    } else {
+        showLoading('Loading tournament');
+    }
+
+    await fetchFresh(cached);
+}
+
+async function fetchFresh(cached) {
+    if (fetchInFlight) return;
+    fetchInFlight = true;
+    try {
+        const json = await fetchJSON(API_URL + '?action=getTournament&id=' + encodeURIComponent(tournamentId));
+        if (!json.success) throw new Error(json.message || 'getTournament failed');
+        if (!json.data) throw new Error('Tournament not found: ' + tournamentId);
+
+        const freshJson = JSON.stringify(json.data);
+        if (freshJson !== renderedDataJson) {
+            renderedDataJson = freshJson;
+            renderTournament(json.data);
+            writeCache(tournamentId, json.data);
+            if (shownFromCache) showToast('Details updated ✓');
+        } else {
+            writeCache(tournamentId, json.data); /* refresh timestamp */
+        }
+        hideLoading();
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('errorPanel').classList.remove('active');
+    } catch (e) {
+        if (cached || shownFromCache) {
+            /* Keep showing cached data; don't block the user */
+            showToast("Couldn't refresh — showing saved details");
+        } else {
+            showError('Cannot Load Tournament', e.message);
+        }
+    } finally {
+        fetchInFlight = false;
+    }
+}
+
+/* ============ QR CODE ============ */
 function generateQrCode(amount, tourName) {
     const note = encodeURIComponent((tourName || 'Tournament') + ' Registration');
     const upiString = 'upi://pay?pa=' + UPI_ID +
@@ -1972,23 +1131,33 @@ window.handleQrError = function() {
 };
 
 window.copyUpiId = function(btn) {
-    if (!navigator.clipboard) { alert('UPI ID: ' + UPI_ID); return; }
+    if (!navigator.clipboard) { showToast('UPI ID: ' + UPI_ID); return; }
     navigator.clipboard.writeText(UPI_ID).then(function() {
         const original = btn.textContent;
         btn.textContent = '✓ Copied';
         btn.disabled = true;
         setTimeout(function() { btn.textContent = original; btn.disabled = false; }, 1800);
-    }).catch(function() { alert('Copy failed. UPI ID: ' + UPI_ID); });
+    }).catch(function() { showToast('UPI ID: ' + UPI_ID); });
 };
 
-/* ============================================================
-   ROSTER
-   ============================================================ */
+window.copyRegId = function() {
+    const id = document.getElementById('regIdDisplay').textContent.trim();
+    const btn = document.getElementById('copyRegIdBtn');
+    if (!id || id === '—') return;
+    if (!navigator.clipboard) { showToast('ID: ' + id); return; }
+    navigator.clipboard.writeText(id).then(function() {
+        const original = btn.textContent;
+        btn.textContent = '✓ Copied';
+        setTimeout(function() { btn.textContent = original; }, 1800);
+    }).catch(function() { showToast('ID: ' + id); });
+};
+
+/* ============ ROSTER ============ */
 function renderRoster() {
     const players = ['P1', 'P2', 'P3', 'P4'];
     document.getElementById('rosterContainer').innerHTML = players.map((slot, i) => {
         const n = i + 1;
-        const titles = ['Player 1 (Captain)', 'Player 2', 'Player 3', 'Player 4'];
+        const titles = ['Player 1 — Captain', 'Player 2', 'Player 3', 'Player 4'];
         const isCaptain = i === 0;
         return `
             <div class="player-block ${isCaptain ? 'captain-block' : ''}">
@@ -1996,29 +1165,29 @@ function renderRoster() {
                     <div class="player-badge">${slot}</div>
                     <div>
                         <div class="player-title">${titles[i]}</div>
-                        <div class="player-subtitle">${isIntra ? 'Details + student verification' : 'Name, IGN & Game UID'}</div>
+                        <div class="player-subtitle">${isIntra ? 'Game details + student verification' : 'Name, IGN & Game UID required'}</div>
                     </div>
                 </div>
 
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label class="form-label">Player Name <span class="req">*</span></label>
-                        <input type="text" id="realName${n}" class="form-input" placeholder="Real name">
+                        <label class="form-label" for="realName${n}">Player Name <span class="req">*</span></label>
+                        <input type="text" id="realName${n}" class="form-input" placeholder="Enter real name" autocomplete="off">
                         <div class="form-error" id="err-realName${n}">Required.</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Game Name (IGN) <span class="req">*</span></label>
-                        <input type="text" id="ign${n}" class="form-input" placeholder="In-game name">
+                        <label class="form-label" for="ign${n}">Game Name (IGN) <span class="req">*</span></label>
+                        <input type="text" id="ign${n}" class="form-input" placeholder="In-game name" autocomplete="off">
                         <div class="form-error" id="err-ign${n}">Required.</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Game UID <span class="req">*</span></label>
-                        <input type="text" id="uid${n}" class="form-input" placeholder="Game UID">
+                        <label class="form-label" for="uid${n}">Game UID <span class="req">*</span></label>
+                        <input type="text" id="uid${n}" class="form-input" placeholder="Enter game UID" inputmode="numeric" autocomplete="off">
                         <div class="form-error" id="err-uid${n}">Required.</div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Role</label>
-                        <select id="role${n}" class="form-input">
+                        <label class="form-label" for="role${n}">Role</label>
+                        <select id="role${n}" class="form-input form-select">
                             <option value="IGL">IGL</option>
                             <option value="Assaulter">Assaulter</option>
                             <option value="Sniper">Sniper</option>
@@ -2028,24 +1197,24 @@ function renderRoster() {
                 </div>
 
                 <div class="student-fields ${isIntra ? 'show' : ''}" id="studentFields${n}">
-                    <div class="student-fields-header">🎓 Student Details</div>
+                    <div class="student-fields-header">🎓 Student Verification</div>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">Roll Number <span class="req">*</span></label>
-                            <input type="text" id="rollNumber${n}" class="form-input" placeholder="e.g. 21BCE1234">
+                            <label class="form-label" for="rollNumber${n}">Roll Number <span class="req">*</span></label>
+                            <input type="text" id="rollNumber${n}" class="form-input" placeholder="e.g. 21BCE1234" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">College Name <span class="req">*</span></label>
-                            <input type="text" id="collegeName${n}" class="form-input" placeholder="College name">
+                            <label class="form-label" for="collegeName${n}">College Name <span class="req">*</span></label>
+                            <input type="text" id="collegeName${n}" class="form-input" placeholder="Enter your college name" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Branch <span class="req">*</span></label>
-                            <input type="text" id="branch${n}" class="form-input" placeholder="e.g. CSE">
+                            <label class="form-label" for="branch${n}">Branch <span class="req">*</span></label>
+                            <input type="text" id="branch${n}" class="form-input" placeholder="e.g. CSE, ECE, ME" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Year <span class="req">*</span></label>
-                            <select id="year${n}" class="form-input">
-                                <option value="">Select...</option>
+                            <label class="form-label" for="year${n}">Year <span class="req">*</span></label>
+                            <select id="year${n}" class="form-input form-select">
+                                <option value="">Select…</option>
                                 <option value="1st">1st Year</option>
                                 <option value="2nd">2nd Year</option>
                                 <option value="3rd">3rd Year</option>
@@ -2053,9 +1222,9 @@ function renderRoster() {
                             </select>
                         </div>
                         <div class="form-group full">
-                            <label class="form-label">ID Card Photo <span class="req">*</span></label>
+                            <label class="form-label">College ID Card <span class="req">*</span></label>
                             <div class="id-upload" id="uploadBox${n}" onclick="document.getElementById('idCard${n}').click()">
-                                <input type="file" id="idCard${n}" accept="image/*" onchange="handleIdUpload(event, ${n})">
+                                <input type="file" id="idCard${n}" accept="image/*" aria-label="Upload ID card" onchange="handleIdUpload(event, ${n})">
                                 <div class="id-upload-icon">🪪</div>
                                 <div class="id-upload-text" id="uploadText${n}">Tap to upload (max 2 MB)</div>
                             </div>
@@ -2070,34 +1239,34 @@ function renderRoster() {
 
 function renderSubForm() {
     document.getElementById('subForm').innerHTML = `
-        <div class="player-block" style="border-color:rgba(225,6,0,.35);">
+        <div class="player-block" style="border-color:rgba(225,6,0,.4);">
             <div class="player-block-header">
-                <div class="player-badge" style="color:var(--red);border-color:rgba(225,6,0,.4);">SUB</div>
+                <div class="player-badge">SUB</div>
                 <div>
-                    <div class="player-title" style="color:var(--red);">Substitute Player</div>
-                    <div class="player-subtitle">${isIntra ? 'Details + student verification' : 'Name, IGN & Game UID'}</div>
+                    <div class="player-title">Substitute Player</div>
+                    <div class="player-subtitle">${isIntra ? 'Game details + student verification' : 'Name, IGN & Game UID required'}</div>
                 </div>
             </div>
 
             <div class="form-grid-2">
                 <div class="form-group">
-                    <label class="form-label">Player Name <span class="req">*</span></label>
-                    <input type="text" id="realNamesub" class="form-input" placeholder="Real name">
+                    <label class="form-label" for="realNamesub">Player Name <span class="req">*</span></label>
+                    <input type="text" id="realNamesub" class="form-input" placeholder="Enter real name" autocomplete="off">
                     <div class="form-error" id="err-realNamesub">Required.</div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Game Name (IGN) <span class="req">*</span></label>
-                    <input type="text" id="ignsub" class="form-input" placeholder="In-game name">
+                    <label class="form-label" for="ignsub">Game Name (IGN) <span class="req">*</span></label>
+                    <input type="text" id="ignsub" class="form-input" placeholder="In-game name" autocomplete="off">
                     <div class="form-error" id="err-ignsub">Required.</div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Game UID <span class="req">*</span></label>
-                    <input type="text" id="uidsub" class="form-input" placeholder="Game UID">
+                    <label class="form-label" for="uidsub">Game UID <span class="req">*</span></label>
+                    <input type="text" id="uidsub" class="form-input" placeholder="Enter game UID" inputmode="numeric" autocomplete="off">
                     <div class="form-error" id="err-uidsub">Required.</div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Role</label>
-                    <select id="rolesub" class="form-input">
+                    <label class="form-label" for="rolesub">Role</label>
+                    <select id="rolesub" class="form-input form-select">
                         <option value="Sub">Substitute</option>
                         <option value="IGL">IGL</option>
                         <option value="Assaulter">Assaulter</option>
@@ -2108,24 +1277,24 @@ function renderSubForm() {
             </div>
 
             <div class="student-fields ${isIntra ? 'show' : ''}" id="studentFieldssub">
-                <div class="student-fields-header">🎓 Student Details</div>
+                <div class="student-fields-header">🎓 Student Verification</div>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Roll Number <span class="req">*</span></label>
-                        <input type="text" id="rollNumbersub" class="form-input" placeholder="e.g. 21BCE1234">
+                        <label class="form-label" for="rollNumbersub">Roll Number <span class="req">*</span></label>
+                        <input type="text" id="rollNumbersub" class="form-input" placeholder="e.g. 21BCE1234" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">College Name <span class="req">*</span></label>
-                        <input type="text" id="collegeNamesub" class="form-input" placeholder="College name">
+                        <label class="form-label" for="collegeNamesub">College Name <span class="req">*</span></label>
+                        <input type="text" id="collegeNamesub" class="form-input" placeholder="Enter your college name" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Branch <span class="req">*</span></label>
-                        <input type="text" id="branchsub" class="form-input" placeholder="e.g. CSE">
+                        <label class="form-label" for="branchsub">Branch <span class="req">*</span></label>
+                        <input type="text" id="branchsub" class="form-input" placeholder="e.g. CSE" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Year <span class="req">*</span></label>
-                        <select id="yearsub" class="form-input">
-                            <option value="">Select...</option>
+                        <label class="form-label" for="yearsub">Year <span class="req">*</span></label>
+                        <select id="yearsub" class="form-input form-select">
+                            <option value="">Select…</option>
                             <option value="1st">1st Year</option>
                             <option value="2nd">2nd Year</option>
                             <option value="3rd">3rd Year</option>
@@ -2133,9 +1302,9 @@ function renderSubForm() {
                         </select>
                     </div>
                     <div class="form-group full">
-                        <label class="form-label">ID Card Photo <span class="req">*</span></label>
+                        <label class="form-label">College ID Card <span class="req">*</span></label>
                         <div class="id-upload" id="uploadBoxsub" onclick="document.getElementById('idCardsub').click()">
-                            <input type="file" id="idCardsub" accept="image/*" onchange="handleIdUpload(event, 'sub')">
+                            <input type="file" id="idCardsub" accept="image/*" aria-label="Upload ID card" onchange="handleIdUpload(event, 'sub')">
                             <div class="id-upload-icon">🪪</div>
                             <div class="id-upload-text" id="uploadTextsub">Tap to upload (max 2 MB)</div>
                         </div>
@@ -2157,7 +1326,7 @@ window.toggleSub = function() {
 window.handleIdUpload = function(evt, key) {
     const file = evt.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert('ID card must be under 2 MB'); evt.target.value = ''; return; }
+    if (file.size > 2 * 1024 * 1024) { showToast('ID card must be under 2 MB'); evt.target.value = ''; return; }
     const reader = new FileReader();
     reader.onload = function(e) {
         state.idCards[key] = { base64: e.target.result.split(',')[1], fileName: file.name, mimeType: file.type };
@@ -2169,11 +1338,39 @@ window.handleIdUpload = function(evt, key) {
     reader.readAsDataURL(file);
 };
 
-/* ============================================================
-   NAVIGATION
-   ============================================================ */
+/* ============ PROGRESS UI ============ */
+const CHECK_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+function stepLabel(n) {
+    if (!paymentRequired && n === 4) return '3';
+    return String(n);
+}
+
+function updateProgressUI() {
+    const visualStep = paymentRequired ? currentStep : (currentStep === 4 ? 3 : currentStep);
+    const totalSteps = paymentRequired ? 4 : 3;
+    const pct = ((visualStep - 1) / (totalSteps - 1)) * 100;
+    const fill = document.getElementById('progressFill');
+    if (fill) fill.style.width = pct + '%';
+
+    document.querySelectorAll('.progress-step').forEach(step => {
+        if (step.style.display === 'none') return;
+        const stepNum = parseInt(step.dataset.step, 10);
+        const vs = paymentRequired ? stepNum : (stepNum === 4 ? 3 : stepNum);
+        const numEl = step.querySelector('.progress-num');
+        step.classList.remove('current', 'completed');
+        if (vs < visualStep) {
+            step.classList.add('completed');
+            if (numEl) numEl.innerHTML = CHECK_SVG;
+        } else {
+            if (numEl) numEl.textContent = stepLabel(stepNum);
+            if (vs === visualStep) step.classList.add('current');
+        }
+    });
+}
+
+/* ============ NAVIGATION ============ */
 window.goToStep = function(target) {
-    // Skip payment step if free
     if (!paymentRequired) {
         if (currentStep === 2 && target === 3) target = 4;
         if (currentStep === 4 && target === 3) target = 2;
@@ -2184,28 +1381,13 @@ window.goToStep = function(target) {
         if (currentStep === 2 && !validateStep2()) return;
         if (currentStep === 3 && !validateStep3()) return;
     }
-
     captureStep();
-
     for (let i = 1; i <= 4; i++) {
         const card = document.getElementById('step' + i);
         if (card) card.style.display = (i === target) ? 'block' : 'none';
     }
     currentStep = target;
-
-    const visualStep = paymentRequired ? target : (target === 4 ? 3 : target);
-    const totalSteps = paymentRequired ? 4 : 3;
-    const pct = ((visualStep - 1) / (totalSteps - 1)) * 100;
-    const fill = document.getElementById('progressFill');
-    if (fill) fill.style.width = pct + '%';
-
-    document.querySelectorAll('.progress-step').forEach(step => {
-        const stepNum = parseInt(step.dataset.step, 10);
-        const vs = paymentRequired ? stepNum : (stepNum === 4 ? 3 : stepNum);
-        step.classList.remove('current', 'completed');
-        if (vs < visualStep) step.classList.add('completed');
-        else if (vs === visualStep) step.classList.add('current');
-    });
+    updateProgressUI();
 
     if (target === 4) renderReview();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2214,28 +1396,25 @@ window.goToStep = function(target) {
 function captureStep() {
     if (currentStep === 1) {
         state.captain = {
-            name: (document.getElementById('captainName').value || '').trim(),
-            email: (document.getElementById('captainEmail').value || '').trim(),
-            phone: (document.getElementById('captainPhone').value || '').trim(),
-            discord: (document.getElementById('captainDiscord').value || '').trim()
+            name: document.getElementById('captainName').value.trim(),
+            email: document.getElementById('captainEmail').value.trim(),
+            phone: document.getElementById('captainPhone').value.trim(),
+            discord: document.getElementById('captainDiscord').value.trim()
         };
     }
     if (currentStep === 2) {
-        state.team = {
-            name: (document.getElementById('teamName').value || '').trim(),
-            tag: (document.getElementById('teamTag').value || '').trim().toUpperCase()
-        };
+        state.team = { name: document.getElementById('teamName').value.trim(), tag: document.getElementById('teamTag').value.trim().toUpperCase() };
         state.roster = [1,2,3,4].map(i => {
             const r = {
-                realName: (document.getElementById('realName' + i).value || '').trim(),
-                ign: (document.getElementById('ign' + i).value || '').trim(),
-                gameUID: (document.getElementById('uid' + i).value || '').trim(),
+                realName: document.getElementById('realName' + i).value.trim(),
+                ign: document.getElementById('ign' + i).value.trim(),
+                gameUID: document.getElementById('uid' + i).value.trim(),
                 role: document.getElementById('role' + i).value
             };
             if (isIntra) {
-                r.rollNumber = (document.getElementById('rollNumber' + i).value || '').trim();
-                r.collegeName = (document.getElementById('collegeName' + i).value || '').trim();
-                r.branch = (document.getElementById('branch' + i).value || '').trim();
+                r.rollNumber = document.getElementById('rollNumber' + i).value.trim();
+                r.collegeName = document.getElementById('collegeName' + i).value.trim();
+                r.branch = document.getElementById('branch' + i).value.trim();
                 r.year = document.getElementById('year' + i).value;
                 const card = state.idCards[i] || {};
                 r.idCardBase64 = card.base64 || '';
@@ -2247,15 +1426,15 @@ function captureStep() {
         state.substitute = null;
         if (document.getElementById('subCheckbox').checked) {
             const s = {
-                realName: (document.getElementById('realNamesub').value || '').trim(),
-                ign: (document.getElementById('ignsub').value || '').trim(),
-                gameUID: (document.getElementById('uidsub').value || '').trim(),
+                realName: document.getElementById('realNamesub').value.trim(),
+                ign: document.getElementById('ignsub').value.trim(),
+                gameUID: document.getElementById('uidsub').value.trim(),
                 role: document.getElementById('rolesub').value
             };
             if (isIntra) {
-                s.rollNumber = (document.getElementById('rollNumbersub').value || '').trim();
-                s.collegeName = (document.getElementById('collegeNamesub').value || '').trim();
-                s.branch = (document.getElementById('branchsub').value || '').trim();
+                s.rollNumber = document.getElementById('rollNumbersub').value.trim();
+                s.collegeName = document.getElementById('collegeNamesub').value.trim();
+                s.branch = document.getElementById('branchsub').value.trim();
                 s.year = document.getElementById('yearsub').value;
                 const card = state.idCards['sub'] || {};
                 s.idCardBase64 = card.base64 || '';
@@ -2271,63 +1450,57 @@ function captureStep() {
     }
 }
 
+/* ============ VALIDATION ============ */
+function setErr(errId, inputId, bad) {
+    const err = document.getElementById(errId);
+    if (err) err.classList.toggle('show', bad);
+    const input = inputId ? document.getElementById(inputId) : null;
+    if (input) input.classList.toggle('invalid', bad);
+    return !bad;
+}
+
 function validateStep1() {
     let ok = true;
-    if (document.getElementById('captainName').value.length < 2) { document.getElementById('err-captainName').classList.add('show'); ok = false; } else document.getElementById('err-captainName').classList.remove('show');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('captainEmail').value)) { document.getElementById('err-captainEmail').classList.add('show'); ok = false; } else document.getElementById('err-captainEmail').classList.remove('show');
-    if (document.getElementById('captainPhone').value.length !== 10) { document.getElementById('err-captainPhone').classList.add('show'); ok = false; } else document.getElementById('err-captainPhone').classList.remove('show');
+    ok = setErr('err-captainName', 'captainName', document.getElementById('captainName').value.trim().length < 2) && ok;
+    ok = setErr('err-captainEmail', 'captainEmail', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('captainEmail').value.trim())) && ok;
+    ok = setErr('err-captainPhone', 'captainPhone', !/^\d{10}$/.test(document.getElementById('captainPhone').value.trim())) && ok;
     return ok;
 }
 
 function validateStep2() {
     let ok = true;
-    if (document.getElementById('teamName').value.length < 3) { document.getElementById('err-teamName').classList.add('show'); ok = false; } else document.getElementById('err-teamName').classList.remove('show');
-    if (document.getElementById('teamTag').value.length < 2) { document.getElementById('err-teamTag').classList.add('show'); ok = false; } else document.getElementById('err-teamTag').classList.remove('show');
+    ok = setErr('err-teamName', 'teamName', document.getElementById('teamName').value.trim().length < 3) && ok;
+    ok = setErr('err-teamTag', 'teamTag', document.getElementById('teamTag').value.trim().length < 2) && ok;
 
     for (let i = 1; i <= 4; i++) {
-        const realName = (document.getElementById('realName' + i).value || '').trim();
-        const ign = (document.getElementById('ign' + i).value || '').trim();
-        const uid = (document.getElementById('uid' + i).value || '').trim();
-
-        if (!realName) { document.getElementById('err-realName' + i).classList.add('show'); ok = false; } else document.getElementById('err-realName' + i).classList.remove('show');
-        if (!ign) { document.getElementById('err-ign' + i).classList.add('show'); ok = false; } else document.getElementById('err-ign' + i).classList.remove('show');
-        if (!uid) { document.getElementById('err-uid' + i).classList.add('show'); ok = false; } else document.getElementById('err-uid' + i).classList.remove('show');
+        ok = setErr('err-realName' + i, 'realName' + i, !document.getElementById('realName' + i).value.trim()) && ok;
+        ok = setErr('err-ign' + i, 'ign' + i, !document.getElementById('ign' + i).value.trim()) && ok;
+        ok = setErr('err-uid' + i, 'uid' + i, !document.getElementById('uid' + i).value.trim()) && ok;
 
         if (isIntra) {
-            const roll = (document.getElementById('rollNumber' + i).value || '').trim();
-            const college = (document.getElementById('collegeName' + i).value || '').trim();
-            const branch = (document.getElementById('branch' + i).value || '').trim();
+            const roll = document.getElementById('rollNumber' + i).value.trim();
+            const college = document.getElementById('collegeName' + i).value.trim();
+            const branch = document.getElementById('branch' + i).value.trim();
             const year = document.getElementById('year' + i).value;
             const card = state.idCards[i];
-            if (!roll || !college || !branch || !year || !card) {
-                document.getElementById('err-student' + i).classList.add('show'); ok = false;
-            } else {
-                document.getElementById('err-student' + i).classList.remove('show');
-            }
+            document.getElementById('err-student' + i).classList.toggle('show', !roll || !college || !branch || !year || !card);
+            if (!roll || !college || !branch || !year || !card) ok = false;
         }
     }
 
-    const subChecked = document.getElementById('subCheckbox').checked;
-    if (subChecked) {
-        const realName = (document.getElementById('realNamesub').value || '').trim();
-        const ign = (document.getElementById('ignsub').value || '').trim();
-        const uid = (document.getElementById('uidsub').value || '').trim();
-
-        if (!realName) { document.getElementById('err-realNamesub').classList.add('show'); ok = false; } else document.getElementById('err-realNamesub').classList.remove('show');
-        if (!ign) { document.getElementById('err-ignsub').classList.add('show'); ok = false; } else document.getElementById('err-ignsub').classList.remove('show');
-        if (!uid) { document.getElementById('err-uidsub').classList.add('show'); ok = false; } else document.getElementById('err-uidsub').classList.remove('show');
+    if (document.getElementById('subCheckbox').checked) {
+        ok = setErr('err-realNamesub', 'realNamesub', !document.getElementById('realNamesub').value.trim()) && ok;
+        ok = setErr('err-ignsub', 'ignsub', !document.getElementById('ignsub').value.trim()) && ok;
+        ok = setErr('err-uidsub', 'uidsub', !document.getElementById('uidsub').value.trim()) && ok;
 
         if (isIntra) {
-            const roll = (document.getElementById('rollNumbersub').value || '').trim();
-            const college = (document.getElementById('collegeNamesub').value || '').trim();
-            const branch = (document.getElementById('branchsub').value || '').trim();
+            const roll = document.getElementById('rollNumbersub').value.trim();
+            const college = document.getElementById('collegeNamesub').value.trim();
+            const branch = document.getElementById('branchsub').value.trim();
             const year = document.getElementById('yearsub').value;
             const card = state.idCards['sub'];
-            if (!roll || !college || !branch || !year || !card) {
-                document.getElementById('err-studentsub').classList.add('show'); ok = false;
-            } else {
-                document.getElementById('err-studentsub').classList.remove('show');
-            }
+            document.getElementById('err-studentsub').classList.toggle('show', !roll || !college || !branch || !year || !card);
+            if (!roll || !college || !branch || !year || !card) ok = false;
         }
     }
     return ok;
@@ -2336,15 +1509,24 @@ function validateStep2() {
 function validateStep3() {
     if (!paymentRequired) return true;
     let ok = true;
-    if (!document.getElementById('utr').value.trim()) { document.getElementById('err-utr').classList.add('show'); ok = false; } else document.getElementById('err-utr').classList.remove('show');
-    if (!state.payment.fileBase64) { document.getElementById('err-screenshot').style.display = 'block'; ok = false; } else document.getElementById('err-screenshot').style.display = 'none';
+    ok = setErr('err-utr', 'utr', !document.getElementById('utr').value.trim()) && ok;
+    const shotErr = document.getElementById('err-screenshot');
+    if (shotErr) shotErr.style.display = state.payment.fileBase64 ? 'none' : 'block';
+    if (!state.payment.fileBase64) ok = false;
     return ok;
 }
+
+/* live error clearing */
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('invalid')) {
+        e.target.classList.remove('invalid');
+    }
+});
 
 document.getElementById('screenshotInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 3 * 1024 * 1024) { alert('Max 3 MB'); return; }
+    if (file.size > 3 * 1024 * 1024) { showToast('Max 3 MB'); e.target.value = ''; return; }
     const reader = new FileReader();
     reader.onload = function(evt) {
         state.payment.fileBase64 = evt.target.result.split(',')[1];
@@ -2357,67 +1539,47 @@ document.getElementById('screenshotInput').addEventListener('change', function(e
     reader.readAsDataURL(file);
 });
 
-/* ============================================================
-   REVIEW
-   ============================================================ */
+/* ============ REVIEW ============ */
 function renderReview() {
-    document.getElementById('revCaptainName').textContent = state.captain.name || '—';
-    document.getElementById('revCaptainEmail').textContent = state.captain.email || '—';
-    document.getElementById('revCaptainPhone').textContent = state.captain.phone || '—';
-    document.getElementById('revTeamName').textContent = (state.team.name || '—') + (state.team.tag ? ' (' + state.team.tag + ')' : '');
-
-    let str = state.roster.map(p => p.ign).filter(Boolean).join(', ');
+    document.getElementById('revCaptainName').textContent = state.captain.name;
+    document.getElementById('revCaptainEmail').textContent = state.captain.email;
+    document.getElementById('revTeamName').textContent = state.team.name + ' (' + state.team.tag + ')';
+    let str = state.roster.map(p => p.ign).join(', ');
     if (state.substitute) str += ' + Sub: ' + state.substitute.ign;
-    document.getElementById('revRoster').textContent = str || '—';
+    document.getElementById('revRoster').textContent = str;
     document.getElementById('revFee').textContent = paymentRequired ? '₹' + (Number(tournament.EntryFee) || 0) : 'FREE';
     document.getElementById('revUtr').textContent = paymentRequired ? (state.payment.utr || '—') : 'FREE';
 
     const rows = state.roster.map((p, i) => {
         const isCaptain = i === 0;
-        const slotClass = isCaptain ? 'captain-slot' : '';
-        const slotText = isCaptain ? 'P1 · Captain' : 'P' + (i + 1);
-
-        let tags = '';
-        if (p.realName) tags += '<span class="review-player-tag name">' + esc(p.realName) + '</span>';
-        if (p.gameUID) tags += '<span class="review-player-tag uid">UID: ' + esc(p.gameUID) + '</span>';
-        if (p.role) tags += '<span class="review-player-tag role">' + esc(p.role) + '</span>';
-        if (isIntra && p.rollNumber) {
-            tags += '<span class="review-player-tag extra">Roll: ' + esc(p.rollNumber) + ' · ' + esc(p.collegeName) + ' · ' + esc(p.branch) + ' · ' + esc(p.year) + ' · 🪪 ID Uploaded</span>';
+        let line = '';
+        if (isCaptain) line += '<span class="tag captain">Captain</span>';
+        line += '<strong>P' + (i + 1) + '</strong> ' +
+            '<span class="tag name">Name</span>' + esc(p.realName || '—') + ' · ' +
+            '<span class="tag ign">IGN</span>' + esc(p.ign || '—') + ' · ' +
+            '<span class="tag uid">UID</span>' + esc(p.gameUID || '—') + ' · ' +
+            '<span class="tag role">Role</span>' + esc(p.role || '—');
+        if (isIntra) {
+            line += '<br><span style="color:var(--text-3);font-size:12px;">Roll: ' + esc(p.rollNumber) + ' · ' + esc(p.collegeName) + ' · ' + esc(p.branch) + ' · ' + esc(p.year) + ' Year · 🪪 ID Uploaded</span>';
         }
-
-        return '<div class="review-player-card">' +
-            '<div class="review-player-head">' +
-                '<span class="review-player-slot ' + slotClass + '">' + slotText + '</span>' +
-                '<span class="review-player-ign">' + esc(p.ign || '—') + '</span>' +
-            '</div>' +
-            '<div class="review-player-tags">' + tags + '</div>' +
-        '</div>';
+        return '<div class="review-verify-row">' + line + '</div>';
     });
-
     if (state.substitute) {
-        let tags = '';
-        if (state.substitute.realName) tags += '<span class="review-player-tag name">' + esc(state.substitute.realName) + '</span>';
-        if (state.substitute.gameUID) tags += '<span class="review-player-tag uid">UID: ' + esc(state.substitute.gameUID) + '</span>';
-        if (state.substitute.role) tags += '<span class="review-player-tag role">' + esc(state.substitute.role) + '</span>';
-        if (isIntra && state.substitute.rollNumber) {
-            tags += '<span class="review-player-tag extra">Roll: ' + esc(state.substitute.rollNumber) + ' · ' + esc(state.substitute.collegeName) + ' · ' + esc(state.substitute.branch) + ' · ' + esc(state.substitute.year) + ' · 🪪 ID Uploaded</span>';
+        let line = '<span class="tag captain">Sub</span><strong>SUB</strong> ' +
+            '<span class="tag name">Name</span>' + esc(state.substitute.realName || '—') + ' · ' +
+            '<span class="tag ign">IGN</span>' + esc(state.substitute.ign || '—') + ' · ' +
+            '<span class="tag uid">UID</span>' + esc(state.substitute.gameUID || '—') + ' · ' +
+            '<span class="tag role">Role</span>' + esc(state.substitute.role || '—');
+        if (isIntra) {
+            line += '<br><span style="color:var(--text-3);font-size:12px;">Roll: ' + esc(state.substitute.rollNumber) + ' · ' + esc(state.substitute.collegeName) + ' · ' + esc(state.substitute.branch) + ' · ' + esc(state.substitute.year) + ' Year · 🪪 ID Uploaded</span>';
         }
-        rows.push('<div class="review-player-card">' +
-            '<div class="review-player-head">' +
-                '<span class="review-player-slot captain-slot">SUB</span>' +
-                '<span class="review-player-ign">' + esc(state.substitute.ign || '—') + '</span>' +
-            '</div>' +
-            '<div class="review-player-tags">' + tags + '</div>' +
-        '</div>');
+        rows.push('<div class="review-verify-row">' + line + '</div>');
     }
-
     document.getElementById('revVerifyList').innerHTML = rows.join('');
     document.getElementById('revVerifyBlock').style.display = 'block';
 }
 
-/* ============================================================
-   SUBMIT
-   ============================================================ */
+/* ============ SUBMIT ============ */
 window.submitRegistration = async function() {
     if (!document.getElementById('agreeCheckbox').checked) {
         document.getElementById('err-agree').classList.add('show');
@@ -2427,8 +1589,8 @@ window.submitRegistration = async function() {
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.textContent = 'Submitting...';
-    showLoading('Submitting registration...');
+    btn.innerHTML = '<span class="btn-spinner"></span> Submitting';
+    showLoading('Submitting registration');
 
     const verification = [];
     state.roster.forEach((p, i) => {
@@ -2479,35 +1641,30 @@ window.submitRegistration = async function() {
         substitute: state.substitute ? { ign: state.substitute.ign, role: state.substitute.role, realName: state.substitute.realName, gameUID: state.substitute.gameUID } : null,
         verification: verification,
         payment: paymentRequired ? {
-            utr: state.payment.utr,
-            fileBase64: state.payment.fileBase64,
-            fileName: state.payment.fileName,
-            mimeType: state.payment.mimeType,
+            utr: state.payment.utr, fileBase64: state.payment.fileBase64, fileName: state.payment.fileName, mimeType: state.payment.mimeType,
             amount: Number(tournament.EntryFee) || 0
         } : null
     };
 
     try {
-        const json = await fetchJSON(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-        });
+        const json = await fetchJSON(API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } });
         hideLoading();
         if (json.success) {
             document.getElementById('step4').style.display = 'none';
             document.querySelector('.progress-wrap').style.display = 'none';
             document.getElementById('regIdDisplay').textContent = json.data.registrationId;
+            document.getElementById('succTeamName').textContent = '🎮 ' + state.team.name + ' [' + state.team.tag + ']';
+            document.getElementById('succFee').textContent = paymentRequired ? '💰 Paid ₹' + (Number(tournament.EntryFee) || 0) : '🎟 Free Entry';
             document.getElementById('successPanel').classList.add('show');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-            alert('❌ ' + (json.message || 'Submission failed'));
+            showToast('❌ ' + (json.message || 'Submission failed'));
             btn.disabled = false;
             btn.textContent = 'Submit Registration';
         }
     } catch (e) {
         hideLoading();
-        alert('❌ ' + e.message);
+        showToast('❌ ' + e.message);
         btn.disabled = false;
         btn.textContent = 'Submit Registration';
     }
@@ -2515,18 +1672,13 @@ window.submitRegistration = async function() {
 
 window.retryLoad = function() {
     document.getElementById('errorPanel').classList.remove('active');
+    shownFromCache = false;
     loadTournament();
 };
 
-/* ============================================================
-   BOOT
-   ============================================================ */
 (function boot() {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadTournament);
-    } else {
-        loadTournament();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTournament);
+    else loadTournament();
 })();
 </script>
 </body>
