@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         .preview-notice { background: linear-gradient(90deg, #4a0a0a, #2a0808); border-bottom: 1px solid rgba(225,6,0,0.3); padding: 10px 16px; text-align: center; font-size: 13px; color: #ffb3b3; position: relative; z-index: 100; }
         .preview-notice strong { color: #fff; font-weight: 700; }
@@ -33,6 +34,7 @@
         .selector-status.live { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
         .selector-status.upcoming { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); }
         .selector-status.completed { background: rgba(107,107,107,0.2); color: var(--text-muted); border: 1px solid var(--border-bright); }
+        .selector-status.archived { background: rgba(107,107,107,0.2); color: var(--text-muted); border: 1px solid var(--border-bright); }
         .selector-status.cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
 
         .tournament-info { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
@@ -42,9 +44,15 @@
         .tournament-info-meta span { display: inline-flex; align-items: center; gap: 6px; }
         .tournament-info-meta strong { color: var(--red); font-family: var(--font-display); letter-spacing: 0.5px; }
 
+        .view-tabs { display: flex; gap: 8px; margin-bottom: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px; }
+        .view-tab { flex: 1; font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); padding: 14px 18px; border-radius: 4px; transition: all var(--transition); background: transparent; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .view-tab:hover { color: #fff; background: rgba(255,255,255,0.03); }
+        .view-tab.active { background: var(--red); color: #fff; box-shadow: 0 0 16px var(--red-glow); }
+        .view-tab .tab-icon { font-size: 14px; }
+
         .stage-tabs { display: flex; gap: 6px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
         .stage-tabs::-webkit-scrollbar { display: none; }
-        .stage-tab { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); padding: 10px 18px; border-radius: 4px; transition: all var(--transition); white-space: nowrap; flex-shrink: 0; }
+        .stage-tab { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); padding: 10px 18px; border-radius: 4px; transition: all var(--transition); white-space: nowrap; flex-shrink: 0; background: transparent; border: none; cursor: pointer; }
         .stage-tab:hover { color: #fff; }
         .stage-tab.active { background: var(--red); color: #fff; box-shadow: 0 0 16px var(--red-glow); }
         .stage-tab .count { display: inline-block; font-size: 9px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 3px; margin-left: 6px; letter-spacing: 0.5px; }
@@ -53,10 +61,17 @@
         .results-list { display: flex; flex-direction: column; gap: 20px; }
         .result-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: all var(--transition); }
         .result-card:hover { border-color: var(--border-bright); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .result-card.pending { border-style: dashed; opacity: 0.85; }
+        .result-card.pending:hover { opacity: 1; }
+        .result-card.final-match { border-color: rgba(255,215,0,0.4); box-shadow: 0 0 0 1px rgba(255,215,0,0.15), 0 8px 24px rgba(0,0,0,0.3); }
+        .result-card.final-match .result-head { background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(225,6,0,0.05)); }
         .result-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
         .result-head-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .result-round-badge { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--red); background: rgba(225,6,0,0.1); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(225,6,0,0.25); }
         .result-map-badge { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #22d3ee; background: rgba(34,211,238,0.1); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(34,211,238,0.25); }
+        .completed-badge { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.35); }
+        .pending-badge { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.35); }
+        .final-badge { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.45); }
         .result-date { font-size: 12px; color: var(--text-muted); }
         .result-table { width: 100%; border-collapse: collapse; }
         .result-table thead { background: rgba(0,0,0,0.3); }
@@ -74,17 +89,72 @@
         .result-table tr.rank-3 .rank-num { color: #cd7f32; }
         .team-cell { display: flex; flex-direction: column; gap: 2px; }
         .team-cell .team-name { font-weight: 700; color: #fff; }
+        .result-table tr.rank-1 .team-name::after { content: ' 🏆'; font-size: 14px; }
         .team-cell .team-tag { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); }
         .stat-cell { font-family: var(--font-display); font-weight: 700; color: #fff; }
         .stat-cell.kills { color: #f87171; }
         .stat-cell.points { color: #22d3ee; font-size: 15px; }
+        .pending-body { padding: 32px 20px; text-align: center; color: var(--text-secondary); font-size: 14px; }
+        .pending-body .pending-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.6; }
+
+        .final-standings-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+        .final-standings-head { padding: 20px 24px; background: linear-gradient(135deg, rgba(225,6,0,0.08), rgba(225,6,0,0.02)); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .final-standings-title { font-family: var(--font-display); font-size: 18px; font-weight: 900; letter-spacing: 1px; }
+        .final-standings-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .final-standings-meta { display: flex; gap: 20px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+        .final-standings-meta strong { color: #ffd700; font-family: var(--font-display); }
+        .standings-table { width: 100%; border-collapse: collapse; }
+        .standings-table thead { background: rgba(0,0,0,0.35); }
+        .standings-table th { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+        .standings-table th.center { text-align: center; }
+        .standings-table td { padding: 12px 14px; font-size: 14px; border-bottom: 1px solid var(--border); }
+        .standings-table tr:last-child td { border-bottom: none; }
+        .standings-table td.center { text-align: center; }
+        .standings-table tr.rank-1 { background: linear-gradient(90deg, rgba(255,215,0,0.10), transparent 60%); }
+        .standings-table tr.rank-2 { background: linear-gradient(90deg, rgba(192,192,192,0.06), transparent 60%); }
+        .standings-table tr.rank-3 { background: linear-gradient(90deg, rgba(205,127,50,0.06), transparent 60%); }
+        .standings-rank { font-family: var(--font-display); font-weight: 900; font-size: 16px; color: var(--text-muted); }
+        .standings-table tr.rank-1 .standings-rank { color: #ffd700; }
+        .standings-table tr.rank-2 .standings-rank { color: #c0c0c0; }
+        .standings-table tr.rank-3 .standings-rank { color: #cd7f32; }
+        .standings-team-name { font-weight: 700; color: #fff; }
+        .standings-table tr.rank-1 .standings-team-name::after { content: ' 🏆'; font-size: 15px; }
+        .standings-team-tag { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); margin-top: 2px; }
+        .standings-stat { font-family: var(--font-display); font-weight: 700; color: #fff; }
+        .standings-stat.wins { color: #fbbf24; }
+        .standings-stat.kills { color: #f87171; }
+        .standings-stat.points { color: #22d3ee; font-size: 17px; font-weight: 900; }
+        .qualify-badge { display: inline-block; font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; }
+        .qualify-badge.qualified { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
+        .qualify-badge.eliminated { background: rgba(107,107,107,0.15); color: var(--text-muted); border: 1px solid var(--border-bright); }
 
         .empty-state, .loading-state, .error-state { text-align: center; padding: 80px 20px; background: var(--bg-card); border: 1px dashed var(--border-bright); border-radius: var(--radius-lg); }
         .state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
         .state-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: 1px; margin-bottom: 8px; }
         .state-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
-        .results-count { font-family: var(--font-display); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+        .results-count { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--font-display); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
         .results-count strong { color: var(--red); }
+        .filter-toggle { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 14px; border-radius: 4px; background: var(--bg-card); border: 1px solid var(--border-bright); color: var(--text-secondary); cursor: pointer; transition: all var(--transition); white-space: nowrap; }
+        .filter-toggle:hover { border-color: var(--red); color: #fff; }
+        .filter-toggle.active { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 0 12px var(--red-glow); }
+
+        /* ============ DOWNLOAD BUTTONS ============ */
+        .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; justify-content: flex-end; }
+        .download-btn { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 10px 18px; border-radius: 6px; border: 1px solid var(--border-bright); background: var(--bg-card); color: #fff; cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .download-btn:hover { border-color: var(--red); background: rgba(225,6,0,0.08); box-shadow: 0 0 16px rgba(225,6,0,0.2); transform: translateY(-1px); }
+        .download-btn:active { transform: translateY(0); }
+        .download-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .download-btn.primary { background: linear-gradient(135deg, #e10600, #7a0400); border-color: #e10600; }
+        .download-btn.primary:hover { box-shadow: 0 0 20px rgba(225,6,0,0.5); }
+        .download-btn svg { width: 14px; height: 14px; }
+        .download-btn .btn-icon { font-size: 14px; line-height: 1; }
+        .dl-status { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 6px 12px; border-radius: 4px; display: none; }
+        .dl-status.success { display: inline-block; background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
+        .dl-status.error { display: inline-block; background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+        .dl-status.working { display: inline-block; background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
+
+        /* Hide during PNG export */
+        .capturing .toolbar, .capturing .view-tabs, .capturing .stage-tabs, .capturing .results-count { display: none !important; }
 
         @media (max-width: 768px) {
             .section { padding: 40px 0; }
@@ -95,8 +165,14 @@
             .tournament-info { padding: 20px 16px; }
             .tournament-info-name { font-size: 16px; }
             .result-table th, .result-table td { padding: 8px 6px; font-size: 12px; }
+            .standings-table th, .standings-table td { padding: 8px 6px; font-size: 12px; }
             .rank-num { width: 30px; font-size: 13px; }
             .result-head { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+            .view-tab { padding: 12px 12px; font-size: 10px; letter-spacing: 1px; }
+            .view-tab .tab-icon { display: none; }
+            .final-standings-head { padding: 16px; }
+            .toolbar { justify-content: stretch; }
+            .download-btn { flex: 1; justify-content: center; font-size: 10px; padding: 10px 12px; }
         }
     </style>
 </head>
@@ -110,7 +186,7 @@
         <div class="page-hero-content">
             <span class="page-hero-label">Results</span>
             <h1 class="page-hero-title">Match <span class="accent">Results</span></h1>
-            <p class="page-hero-desc">Complete per-game outcomes from BCE Esports tournaments. Filter by tournament and stage for detailed breakdowns.</p>
+            <p class="page-hero-desc">Complete per-game outcomes and final standings from BCE Esports tournaments. Download as CSV or share as image.</p>
         </div>
     </section>
 
@@ -139,13 +215,49 @@
                 <a href="leaderboard.html" class="btn btn-outline btn-sm">View Leaderboard →</a>
             </div>
 
-            <div class="stage-tabs" id="stageTabs" style="display:none;"></div>
-
-            <div class="results-count" id="resultsCount" style="display:none;">
-                Showing <strong id="visibleCount">0</strong> match(es) — filter: <strong id="activeFilterLabel">All Stages</strong>
+            <div class="view-tabs" id="viewTabs">
+                <button class="view-tab active" data-view="matches"><span class="tab-icon">🎮</span> Match Results</button>
+                <button class="view-tab" data-view="standings"><span class="tab-icon">🏆</span> Final Standings</button>
             </div>
 
-            <div class="results-list" id="resultsList"></div>
+            <!-- Match Results View -->
+            <div id="matchesView">
+                <!-- Download toolbar -->
+                <div class="toolbar" id="matchesToolbar">
+                    <span class="dl-status" id="matchesDlStatus"></span>
+                    <button class="download-btn" id="dlMatchesCSV" title="Download all match results as CSV">
+                        <span class="btn-icon">📊</span> Download CSV
+                    </button>
+                    <button class="download-btn primary" id="dlMatchesPNG" title="Download current results as image">
+                        <span class="btn-icon">🖼️</span> Save as Image
+                    </button>
+                </div>
+
+                <div class="stage-tabs" id="stageTabs" style="display:none;"></div>
+
+                <div class="results-count" id="resultsCount" style="display:none;">
+                    <span>Showing <strong id="visibleCount">0</strong> match(es) — filter: <strong id="activeFilterLabel">All Stages</strong></span>
+                    <button class="filter-toggle" id="filterToggle">Show All Matches</button>
+                </div>
+
+                <div class="results-list" id="resultsList"></div>
+            </div>
+
+            <!-- Final Standings View -->
+            <div id="standingsView" style="display:none;">
+                <!-- Download toolbar -->
+                <div class="toolbar" id="standingsToolbar">
+                    <span class="dl-status" id="standingsDlStatus"></span>
+                    <button class="download-btn" id="dlStandingsCSV" title="Download final standings as CSV">
+                        <span class="btn-icon">📊</span> Download CSV
+                    </button>
+                    <button class="download-btn primary" id="dlStandingsPNG" title="Download standings as shareable image">
+                        <span class="btn-icon">🖼️</span> Save as Image
+                    </button>
+                </div>
+
+                <div id="standingsContent"></div>
+            </div>
         </div>
     </section>
 
@@ -197,13 +309,16 @@
         'use strict';
         const M = window.MAIN;
         if (!M) { console.error('main.js not loaded'); return; }
-        const { fetchJSON, fetchJSONWithParams, escapeHTML, formatDate } = M;
+        const { fetchJSON, fetchJSONWithParams, escapeHTML } = M;
 
         let tournaments = [];
-        let currentMatches = [];
+        let allMatches = [];
+        let standingsData = [];
         let activeTournamentId = '';
         let activeTournament = null;
         let activeStage = 'all';
+        let showOnlyResults = true;
+        let activeView = 'matches';
 
         const selectEl = document.getElementById('tournamentSelect');
         const statusBadge = document.getElementById('statusBadge');
@@ -213,6 +328,39 @@
         const resultsCount = document.getElementById('resultsCount');
         const visibleCountEl = document.getElementById('visibleCount');
         const activeFilterLabel = document.getElementById('activeFilterLabel');
+        const filterToggle = document.getElementById('filterToggle');
+        const matchesView = document.getElementById('matchesView');
+        const standingsView = document.getElementById('standingsView');
+        const standingsContent = document.getElementById('standingsContent');
+        const viewTabs = document.getElementById('viewTabs');
+
+        // ==================== HELPERS ====================
+        function hasResults(m) {
+            if (!m) return false;
+            if (m.HasResults === true) return true;
+            const teams = Array.isArray(m.Teams) ? m.Teams : [];
+            return teams.some(function (t) {
+                if (!t) return false;
+                const p = t.Placement;
+                if (p !== undefined && p !== null && p !== '' && !isNaN(Number(p)) && Number(p) > 0) return true;
+                const tp = t.TotalPoints;
+                if (tp !== undefined && tp !== null && tp !== '' && !isNaN(Number(tp))) return true;
+                return false;
+            });
+        }
+
+        function stageKey(m) {
+            const s = m.Stage ? String(m.Stage).trim() : '';
+            if (s) return s;
+            const r = m.Round ? String(m.Round).trim() : '';
+            if (r) return r;
+            return 'Match';
+        }
+
+        function isFinalMatch(m) {
+            const str = ((m.Stage || '') + ' ' + (m.Round || '')).toLowerCase();
+            return /final|grand\s*final/.test(str);
+        }
 
         function formatPrize(p) {
             const n = Number(p);
@@ -229,26 +377,316 @@
             return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ' · ' + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
         }
 
+        function slugify(s) {
+            return String(s || 'tournament')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60) || 'tournament';
+        }
+
+        function todayStamp() {
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return y + m + day;
+        }
+
+        function showDlStatus(elId, type, msg) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            el.className = 'dl-status ' + type;
+            el.textContent = msg;
+            clearTimeout(el._t);
+            el._t = setTimeout(function () {
+                el.className = 'dl-status';
+                el.textContent = '';
+            }, 3500);
+        }
+
+        // ==================== CSV EXPORT ====================
+        function csvEscape(v) {
+            const s = String(v === undefined || v === null ? '' : v);
+            if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+            return s;
+        }
+
+        function downloadBlob(filename, blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+        }
+
+        function downloadCSV(filename, rows) {
+            // BOM so Excel opens with correct UTF-8 (handles ₹, emojis, etc.)
+            const csv = '\uFEFF' + rows.map(function (r) { return r.map(csvEscape).join(','); }).join('\r\n');
+            downloadBlob(filename, new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+        }
+
+        function exportMatchesCSV() {
+            if (!allMatches.length) {
+                showDlStatus('matchesDlStatus', 'error', 'No matches to export');
+                return;
+            }
+            const filtered = filterCurrentMatches();
+            if (!filtered.length) {
+                showDlStatus('matchesDlStatus', 'error', 'No matches in current filter');
+                return;
+            }
+
+            const rows = [];
+            // Metadata header
+            rows.push(['BCE Esports — Match Results']);
+            rows.push(['Tournament', activeTournament ? activeTournament.Name : '']);
+            rows.push(['Game', activeTournament ? activeTournament.GameID : '']);
+            rows.push(['Status', activeTournament ? activeTournament.Status : '']);
+            rows.push(['Filter', activeStage === 'all' ? 'All Stages' : activeStage]);
+            rows.push(['Exported', new Date().toLocaleString('en-IN')]);
+            rows.push([]);
+
+            // Column headers
+            rows.push(['Match #', 'Stage/Round', 'Map', 'Date', 'Rank', 'Team', 'Tag', 'Kills', 'Place Pts', 'Kill Pts', 'Total Pts']);
+
+            filtered.forEach(function (m) {
+                const hasRes = hasResults(m);
+                const teams = (Array.isArray(m.Teams) ? m.Teams : []).slice();
+
+                if (!hasRes) {
+                    rows.push([
+                        m.MatchNumber || '',
+                        (m.Stage || m.Round || 'Match'),
+                        m.Map || '',
+                        m.ScheduledAt ? new Date(m.ScheduledAt).toLocaleString('en-IN') : '',
+                        '—', 'Results Pending', '', '', '', '', ''
+                    ]);
+                    return;
+                }
+
+                // Sort by points desc — consistent with on-page view
+                teams.sort(function (a, b) {
+                    const ta = Number(a.TotalPoints) || 0;
+                    const tb = Number(b.TotalPoints) || 0;
+                    if (ta !== tb) return tb - ta;
+                    const ka = Number(a.Kills) || 0;
+                    const kb = Number(b.Kills) || 0;
+                    if (ka !== kb) return kb - ka;
+                    return (Number(a.Placement) || 999) - (Number(b.Placement) || 999);
+                });
+
+                teams.forEach(function (t, i) {
+                    rows.push([
+                        m.MatchNumber || '',
+                        (m.Stage || m.Round || 'Match'),
+                        m.Map || '',
+                        m.ScheduledAt ? new Date(m.ScheduledAt).toLocaleString('en-IN') : '',
+                        i + 1,
+                        t.TeamName || t.TeamID || '',
+                        t.TeamTag || '',
+                        Number(t.Kills) || 0,
+                        Number(t.PlacementPoints) || 0,
+                        Number(t.KillPts || t.KillPoints) || 0,
+                        Number(t.TotalPoints) || 0
+                    ]);
+                });
+            });
+
+            const name = 'bce-results_' + slugify(activeTournament && activeTournament.Name) + '_' + todayStamp() + '.csv';
+            downloadCSV(name, rows);
+            showDlStatus('matchesDlStatus', 'success', '✓ CSV downloaded');
+        }
+
+        function exportStandingsCSV() {
+            if (!standingsData.length) {
+                showDlStatus('standingsDlStatus', 'error', 'No standings to export');
+                return;
+            }
+
+            const topN = Number(activeTournament && activeTournament.QualifySlots) || 6;
+            const isCompleted = String((activeTournament && activeTournament.Status) || '').toLowerCase() === 'completed';
+
+            const rows = [];
+            rows.push(['BCE Esports — ' + (isCompleted ? 'Final Standings' : 'Current Standings')]);
+            rows.push(['Tournament', activeTournament ? activeTournament.Name : '']);
+            rows.push(['Game', activeTournament ? activeTournament.GameID : '']);
+            rows.push(['Qualify Top', topN]);
+            rows.push(['Exported', new Date().toLocaleString('en-IN')]);
+            rows.push([]);
+
+            rows.push(['Rank', 'Team', 'Tag', 'Matches', 'WWCD', 'Kills', 'Total Points', 'Status']);
+
+            standingsData.forEach(function (s, i) {
+                const rank = i + 1;
+                const isQualified = rank <= topN;
+                rows.push([
+                    rank,
+                    s.TeamName || s.TeamID || '',
+                    s.TeamTag || '',
+                    Number(s.MatchesPlayed) || 0,
+                    Number(s.Wins) || 0,
+                    Number(s.Kills) || 0,
+                    Number(s.Points) || 0,
+                    isQualified ? 'Qualified' : 'Eliminated'
+                ]);
+            });
+
+            const name = 'bce-standings_' + slugify(activeTournament && activeTournament.Name) + '_' + todayStamp() + '.csv';
+            downloadCSV(name, rows);
+            showDlStatus('standingsDlStatus', 'success', '✓ CSV downloaded');
+        }
+
+        // ==================== PNG EXPORT ====================
+        async function exportMatchesPNG(btn) {
+            if (typeof html2canvas !== 'function') {
+                showDlStatus('matchesDlStatus', 'error', 'Image library not loaded');
+                return;
+            }
+            const filtered = filterCurrentMatches();
+            if (!filtered.length) {
+                showDlStatus('matchesDlStatus', 'error', 'No matches to capture');
+                return;
+            }
+
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="btn-icon">⏳</span> Rendering...';
+            showDlStatus('matchesDlStatus', 'working', 'Building image...');
+
+            try {
+                // Build a dedicated wrapper for clean export
+                const wrapper = buildExportWrapper(
+                    (activeTournament ? activeTournament.Name : 'Tournament') + ' — Match Results',
+                    'Export: ' + (activeStage === 'all' ? 'All Stages' : activeStage) + ' · ' + filtered.length + ' matches',
+                    resultsList.innerHTML
+                );
+                document.body.appendChild(wrapper);
+                const canvas = await html2canvas(wrapper, {
+                    backgroundColor: '#0a0a0a',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: 1200
+                });
+                document.body.removeChild(wrapper);
+
+                canvas.toBlob(function (blob) {
+                    if (!blob) {
+                        showDlStatus('matchesDlStatus', 'error', 'Image generation failed');
+                        return;
+                    }
+                    const name = 'bce-results_' + slugify(activeTournament && activeTournament.Name) + '_' + todayStamp() + '.png';
+                    downloadBlob(name, blob);
+                    showDlStatus('matchesDlStatus', 'success', '✓ Image downloaded');
+                }, 'image/png');
+            } catch (err) {
+                console.error(err);
+                showDlStatus('matchesDlStatus', 'error', 'Image export failed');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function exportStandingsPNG(btn) {
+            if (typeof html2canvas !== 'function') {
+                showDlStatus('standingsDlStatus', 'error', 'Image library not loaded');
+                return;
+            }
+            if (!standingsData.length) {
+                showDlStatus('standingsDlStatus', 'error', 'No standings to capture');
+                return;
+            }
+
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="btn-icon">⏳</span> Rendering...';
+            showDlStatus('standingsDlStatus', 'working', 'Building image...');
+
+            try {
+                const isCompleted = String((activeTournament && activeTournament.Status) || '').toLowerCase() === 'completed';
+                const wrapper = buildExportWrapper(
+                    (activeTournament ? activeTournament.Name : 'Tournament') + ' — ' + (isCompleted ? 'Final Standings' : 'Standings'),
+                    standingsData.length + ' teams · Top ' + (Number(activeTournament && activeTournament.QualifySlots) || 6) + ' qualified',
+                    standingsContent.innerHTML
+                );
+                document.body.appendChild(wrapper);
+                const canvas = await html2canvas(wrapper, {
+                    backgroundColor: '#0a0a0a',
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: 1200
+                });
+                document.body.removeChild(wrapper);
+
+                canvas.toBlob(function (blob) {
+                    if (!blob) {
+                        showDlStatus('standingsDlStatus', 'error', 'Image generation failed');
+                        return;
+                    }
+                    const name = 'bce-standings_' + slugify(activeTournament && activeTournament.Name) + '_' + todayStamp() + '.png';
+                    downloadBlob(name, blob);
+                    showDlStatus('standingsDlStatus', 'success', '✓ Image downloaded');
+                }, 'image/png');
+            } catch (err) {
+                console.error(err);
+                showDlStatus('standingsDlStatus', 'error', 'Image export failed');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // Wrapper with BCE branding for PNG export
+        function buildExportWrapper(title, subtitle, innerHTML) {
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'position:fixed;left:-99999px;top:0;width:900px;padding:32px;background:#0a0a0a;font-family:"Rajdhani",Arial,sans-serif;color:#fff;';
+            wrap.innerHTML =
+                '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:20px;margin-bottom:24px;border-bottom:2px solid #e10600;">' +
+                    '<div>' +
+                        '<div style="font-family:"Orbitron",Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;color:#e10600;margin-bottom:6px;">BCE ESPORTS</div>' +
+                        '<div style="font-family:"Orbitron",Arial,sans-serif;font-size:22px;font-weight:900;letter-spacing:0.5px;margin-bottom:4px;">' + escapeHTML(title) + '</div>' +
+                        '<div style="font-size:13px;color:#8a8a8a;">' + escapeHTML(subtitle) + '</div>' +
+                    '</div>' +
+                    '<div style="text-align:right;font-size:11px;color:#6b6b6b;line-height:1.6;font-family:"Orbitron",Arial,sans-serif;letter-spacing:1px;">' +
+                        '<div>Generated</div>' +
+                        '<div style="color:#22d3ee;font-weight:700;">' + new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + '</div>' +
+                        '<div style="margin-top:6px;">bakhtiyarpur college of engineering</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div>' + innerHTML + '</div>' +
+                '<div style="margin-top:28px;padding-top:16px;border-top:1px solid #232323;text-align:center;font-size:11px;color:#6b6b6b;letter-spacing:1px;">' +
+                    'BCE ESPORTS · Official Match Results · bce-esports.github.io' +
+                '</div>';
+            return wrap;
+        }
+
+        // ==================== LOAD TOURNAMENTS ====================
         async function loadTournaments() {
             try {
                 const all = await fetchJSON('getTournaments');
-                tournaments = all.filter(function (t) {
+                tournaments = (Array.isArray(all) ? all : []).filter(function (t) {
                     const pub = t.IsPublished;
                     return pub === undefined || pub === true || String(pub).toUpperCase() === 'TRUE';
                 });
                 if (!tournaments.length) {
                     selectEl.innerHTML = '<option value="">No tournaments</option>';
-                    showError('No Tournaments', 'Results will appear once a tournament is completed.');
+                    resultsList.innerHTML = '<div class="empty-state"><div class="state-icon">📋</div><div class="state-title">No Tournaments</div><div class="state-desc">Results will appear once a tournament is completed.</div></div>';
                     return;
                 }
                 selectEl.innerHTML = tournaments.map(function (t) {
-                    return '<option value="' + escapeHTML(t.TournamentID) + '">' + escapeHTML(t.Name) + ' (' + escapeHTML(t.GameID || 'Game') + ')</option>';
+                    return '<option value="' + escapeHTML(t.TournamentID) + '">' + escapeHTML(t.Name || t.TournamentID) + ' (' + escapeHTML(t.GameID || 'Game') + ')</option>';
                 }).join('');
                 const completed = tournaments.find(function (t) { return String(t.Status || '').toLowerCase() === 'completed'; });
                 const live = tournaments.find(function (t) { return String(t.Status || '').toLowerCase() === 'live'; });
                 activeTournamentId = (completed || live || tournaments[0]).TournamentID;
                 selectEl.value = activeTournamentId;
-                await loadResultsForTournament(activeTournamentId);
+                await loadTournamentData(activeTournamentId);
             } catch (err) {
                 console.error(err);
                 selectEl.innerHTML = '<option value="">Error</option>';
@@ -256,9 +694,10 @@
             }
         }
 
-        async function loadResultsForTournament(tid) {
+        async function loadTournamentData(tid) {
             activeTournament = tournaments.find(function (t) { return t.TournamentID === tid; });
             if (!activeTournament) return;
+
             infoBox.style.display = 'flex';
             document.getElementById('infoName').textContent = activeTournament.Name || '—';
             document.getElementById('infoGame').textContent = activeTournament.GameID || '—';
@@ -266,23 +705,47 @@
             document.getElementById('infoPrize').textContent = formatPrize(activeTournament.PrizePool);
 
             const s = String(activeTournament.Status || 'upcoming').toLowerCase();
-            statusBadge.className = 'selector-status ' + (['live','upcoming','completed','cancelled'].indexOf(s) > -1 ? s : 'upcoming');
+            const validStatuses = ['live','upcoming','completed','cancelled','archived'];
+            statusBadge.className = 'selector-status ' + (validStatuses.indexOf(s) > -1 ? s : 'upcoming');
             statusBadge.textContent = s.charAt(0).toUpperCase() + s.slice(1);
 
+            if (activeView === 'matches') {
+                await loadMatchesAndResults(tid);
+            } else {
+                await loadFinalStandings(tid);
+            }
+        }
+
+        // ==================== MATCH RESULTS VIEW ====================
+        async function loadMatchesAndResults(tid) {
             resultsList.innerHTML = '<div class="loading-state"><div class="state-icon">⏳</div><div class="state-title">Loading Results...</div></div>';
             stageTabs.style.display = 'none';
             resultsCount.style.display = 'none';
 
             try {
-                const data = await fetchJSONWithParams('getTournamentResults', { tournamentId: tid });
-                currentMatches = data.filter(function (m) {
-                    return m.HasResults || (m.Teams || []).some(function (t) { return t.TotalPoints !== ''; });
-                });
-                if (!currentMatches.length) {
-                    showEmpty('No Results Yet', 'Results will appear here once matches are completed for this tournament.');
+                let data = [];
+                try {
+                    const res = await fetchJSONWithParams('getTournamentResults', { tournamentId: tid });
+                    data = Array.isArray(res) ? res : [];
+                } catch (e) {
+                    console.warn('getTournamentResults failed, trying getMatches:', e);
+                    const res2 = await fetchJSONWithParams('getMatches', { tournamentId: tid });
+                    data = Array.isArray(res2) ? res2 : [];
+                }
+
+                allMatches = data;
+
+                if (!allMatches.length) {
+                    showEmpty('No Matches Scheduled', 'No matches have been created for this tournament yet. Check back soon.');
                     return;
                 }
+
                 activeStage = 'all';
+                showOnlyResults = true;
+                filterToggle.classList.remove('active');
+                filterToggle.textContent = 'Show All Matches';
+
+                resultsCount.style.display = 'flex';
                 buildStageTabs();
                 render();
             } catch (err) {
@@ -292,20 +755,29 @@
         }
 
         function buildStageTabs() {
+            const pool = showOnlyResults ? allMatches.filter(hasResults) : allMatches;
+            if (!pool.length) {
+                stageTabs.innerHTML = '';
+                stageTabs.style.display = 'none';
+                return;
+            }
             const stages = {};
-            currentMatches.forEach(function (m) {
-                const key = m.Stage || m.Round || 'Match';
-                if (!stages[key]) stages[key] = 0;
-                stages[key]++;
+            pool.forEach(function (m) {
+                const key = stageKey(m);
+                stages[key] = (stages[key] || 0) + 1;
             });
             const stageKeys = Object.keys(stages);
-            const tabs = [{ key: 'all', label: 'All Stages', count: currentMatches.length }];
+            if (activeStage !== 'all' && stageKeys.indexOf(activeStage) === -1) activeStage = 'all';
+
+            const tabs = [{ key: 'all', label: 'All Stages', count: pool.length }];
             stageKeys.forEach(function (k) { tabs.push({ key: k, label: k, count: stages[k] }); });
+
             stageTabs.innerHTML = tabs.map(function (t) {
-                return '<button class="stage-tab ' + (t.key === activeStage ? 'active' : '') + '" data-stage="' + escapeHTML(t.key) + '">' + escapeHTML(t.label) + '<span class="count">' + t.count + '</span></button>';
+                return '<button class="stage-tab ' + (t.key === activeStage ? 'active' : '') + '" data-stage="' + escapeHTML(t.key) + '">' +
+                    escapeHTML(t.label) + '<span class="count">' + t.count + '</span></button>';
             }).join('');
             stageTabs.style.display = 'flex';
-            resultsCount.style.display = 'block';
+
             stageTabs.querySelectorAll('.stage-tab').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     activeStage = btn.dataset.stage;
@@ -315,43 +787,11 @@
             });
         }
 
-        function buildResultCard(m) {
-            const teams = (m.Teams || []).slice();
-            const roundLabel = m.Round || 'Match';
-            const dateLabel = formatDateLabel(m.ScheduledAt);
-            const mapLabel = m.Map || '';
-            const teamRows = teams.map(function (t) {
-                const place = Number(t.Placement) || 0;
-                const kills = Number(t.Kills) || 0;
-                const pp = Number(t.PlacementPoints) || 0;
-                const total = Number(t.TotalPoints) || 0;
-                const rankClass = place === 1 ? 'rank-1' : place === 2 ? 'rank-2' : place === 3 ? 'rank-3' : '';
-                return '<tr class="' + rankClass + '">' +
-                    '<td class="rank-num">#' + (place || '—') + '</td>' +
-                    '<td><div class="team-cell"><span class="team-name">' + escapeHTML(t.TeamName || t.TeamID) + '</span>' + (t.TeamTag ? '<span class="team-tag">' + escapeHTML(t.TeamTag) + '</span>' : '') + '</div></td>' +
-                    '<td class="center stat-cell kills">' + kills + '</td>' +
-                    '<td class="center stat-cell">' + pp + '</td>' +
-                    '<td class="center stat-cell points">' + total + '</td>' +
-                '</tr>';
-            }).join('');
-            return '<div class="result-card">' +
-                '<div class="result-head"><div class="result-head-left">' +
-                    '<span class="result-round-badge">' + escapeHTML(roundLabel) + '</span>' +
-                    (mapLabel ? '<span class="result-map-badge">🗺 ' + escapeHTML(mapLabel) + '</span>' : '') +
-                '</div>' + (dateLabel ? '<span class="result-date">' + escapeHTML(dateLabel) + '</span>' : '') + '</div>' +
-                '<table class="result-table"><thead><tr>' +
-                    '<th class="center" style="width:60px;">Rank</th><th>Team</th>' +
-                    '<th class="center" style="width:70px;">Kills</th>' +
-                    '<th class="center" style="width:100px;">Place Pts</th>' +
-                    '<th class="center" style="width:80px;">Total</th>' +
-                '</tr></thead><tbody>' + teamRows + '</tbody></table>' +
-            '</div>';
-        }
-
-        function render() {
+        function filterCurrentMatches() {
+            const pool = showOnlyResults ? allMatches.filter(hasResults) : allMatches;
             let filtered;
-            if (activeStage === 'all') filtered = currentMatches.slice();
-            else filtered = currentMatches.filter(function (m) { return (m.Stage || m.Round || 'Match') === activeStage; });
+            if (activeStage === 'all') filtered = pool.slice();
+            else filtered = pool.filter(function (m) { return stageKey(m) === activeStage; });
 
             filtered.sort(function (a, b) {
                 const na = Number(a.MatchNumber || 0);
@@ -359,24 +799,196 @@
                 if (na !== nb) return na - nb;
                 return new Date(a.ScheduledAt || 0).getTime() - new Date(b.ScheduledAt || 0).getTime();
             });
+            return filtered;
+        }
+
+        function buildResultCard(m) {
+            const hasRes = hasResults(m);
+            const isFinal = isFinalMatch(m);
+            const teams = (Array.isArray(m.Teams) ? m.Teams : []).slice();
+            const roundLabel = m.Round || 'Match';
+            const dateLabel = formatDateLabel(m.ScheduledAt);
+            const mapLabel = m.Map || '';
+            const matchNum = m.MatchNumber ? ' · #' + m.MatchNumber : '';
+
+            const badges = [];
+            if (isFinal) badges.push('<span class="final-badge">🏆 Final</span>');
+            badges.push(hasRes ? '<span class="completed-badge">✓ Results In</span>' : '<span class="pending-badge">⏳ Pending</span>');
+
+            let bodyHtml;
+            if (!hasRes) {
+                bodyHtml = '<div class="pending-body"><div class="pending-icon">📋</div>Results pending — will appear here once entered.</div>';
+            } else {
+                teams.sort(function (a, b) {
+                    const ta = Number(a.TotalPoints) || 0;
+                    const tb = Number(b.TotalPoints) || 0;
+                    if (ta !== tb) return tb - ta;
+                    const ka = Number(a.Kills) || 0;
+                    const kb = Number(b.Kills) || 0;
+                    if (ka !== kb) return kb - ka;
+                    return (Number(a.Placement) || 999) - (Number(b.Placement) || 999);
+                });
+
+                const teamRows = teams.map(function (t, i) {
+                    const pointsRank = i + 1;
+                    const place = Number(t.Placement) || 0;
+                    const kills = Number(t.Kills) || 0;
+                    const pp = Number(t.PlacementPoints) || 0;
+                    const total = Number(t.TotalPoints) || 0;
+                    const rankClass = pointsRank === 1 ? 'rank-1' : pointsRank === 2 ? 'rank-2' : pointsRank === 3 ? 'rank-3' : '';
+                    const placeLabel = place > 0 ? ' <span style="color:var(--text-muted);font-size:11px;font-weight:400;">(#' + place + ' place)</span>' : '';
+                    return '<tr class="' + rankClass + '">' +
+                        '<td class="rank-num">#' + pointsRank + '</td>' +
+                        '<td><div class="team-cell">' +
+                            '<span class="team-name">' + escapeHTML(t.TeamName || t.TeamID || 'Unknown') + placeLabel + '</span>' +
+                            (t.TeamTag ? '<span class="team-tag">' + escapeHTML(t.TeamTag) + '</span>' : '') +
+                        '</div></td>' +
+                        '<td class="center stat-cell kills">' + kills + '</td>' +
+                        '<td class="center stat-cell">' + pp + '</td>' +
+                        '<td class="center stat-cell points">' + total + '</td>' +
+                    '</tr>';
+                }).join('');
+
+                bodyHtml = '<table class="result-table"><thead><tr>' +
+                    '<th class="center" style="width:60px;">Rank</th><th>Team</th>' +
+                    '<th class="center" style="width:70px;">Kills</th>' +
+                    '<th class="center" style="width:100px;">Place Pts</th>' +
+                    '<th class="center" style="width:80px;">Total</th>' +
+                '</tr></thead><tbody>' + teamRows + '</tbody></table>';
+            }
+
+            return '<div class="result-card' + (hasRes ? '' : ' pending') + (isFinal ? ' final-match' : '') + '">' +
+                '<div class="result-head">' +
+                    '<div class="result-head-left">' +
+                        '<span class="result-round-badge">' + escapeHTML(roundLabel) + escapeHTML(matchNum) + '</span>' +
+                        (mapLabel ? '<span class="result-map-badge">🗺 ' + escapeHTML(mapLabel) + '</span>' : '') +
+                        badges.join('') +
+                    '</div>' +
+                    (dateLabel ? '<span class="result-date">' + escapeHTML(dateLabel) + '</span>' : '') +
+                '</div>' +
+                bodyHtml +
+            '</div>';
+        }
+
+        function render() {
+            const filtered = filterCurrentMatches();
 
             if (!filtered.length) {
-                resultsList.innerHTML = '<div class="empty-state"><div class="state-icon">📋</div><div class="state-title">No matches in this stage</div><div class="state-desc">Try selecting a different stage.</div><button class="btn btn-primary btn-sm" id="showAllBtn" style="margin-top:16px;">Show All Stages</button></div>';
-                document.getElementById('showAllBtn').addEventListener('click', clearStage);
                 visibleCountEl.textContent = '0';
+                activeFilterLabel.textContent = activeStage === 'all' ? 'All Stages' : activeStage;
+                if (showOnlyResults) {
+                    resultsList.innerHTML = '<div class="empty-state"><div class="state-icon">📋</div><div class="state-title">No Results Yet</div><div class="state-desc">' + allMatches.length + ' match(es) scheduled. Results will appear once entered.</div><button class="btn btn-primary btn-sm" id="showAllBtn" style="margin-top:16px;">Show All Matches</button></div>';
+                    const btn = document.getElementById('showAllBtn');
+                    if (btn) btn.addEventListener('click', toggleFilterMode);
+                } else {
+                    resultsList.innerHTML = '<div class="empty-state"><div class="state-icon">📋</div><div class="state-title">No matches in this stage</div><div class="state-desc">Try a different stage.</div><button class="btn btn-primary btn-sm" id="showAllBtn" style="margin-top:16px;">Show All Stages</button></div>';
+                    const btn = document.getElementById('showAllBtn');
+                    if (btn) btn.addEventListener('click', clearStage);
+                }
                 return;
             }
+
             visibleCountEl.textContent = filtered.length;
             activeFilterLabel.textContent = activeStage === 'all' ? 'All Stages' : activeStage;
             resultsList.innerHTML = filtered.map(buildResultCard).join('');
         }
 
-        function clearStage() {
+        function clearStage() { activeStage = 'all'; buildStageTabs(); render(); }
+
+        function toggleFilterMode() {
+            showOnlyResults = !showOnlyResults;
+            filterToggle.classList.toggle('active', !showOnlyResults);
+            filterToggle.textContent = showOnlyResults ? 'Show All Matches' : 'Show Results Only';
             activeStage = 'all';
             buildStageTabs();
             render();
         }
 
+        // ==================== FINAL STANDINGS VIEW ====================
+        async function loadFinalStandings(tid) {
+            standingsContent.innerHTML = '<div class="loading-state"><div class="state-icon">⏳</div><div class="state-title">Loading Final Standings...</div></div>';
+            try {
+                const data = await fetchJSONWithParams('getStandings', { tournamentId: tid });
+                standingsData = Array.isArray(data) ? data : [];
+
+                standingsData.sort(function (a, b) {
+                    const pa = Number(a.Points) || 0;
+                    const pb = Number(b.Points) || 0;
+                    if (pa !== pb) return pb - pa;
+                    const wa = Number(a.Wins) || 0;
+                    const wb = Number(b.Wins) || 0;
+                    if (wa !== wb) return wb - wa;
+                    const ka = Number(a.Kills) || 0;
+                    const kb = Number(b.Kills) || 0;
+                    return kb - ka;
+                });
+
+                renderFinalStandings();
+            } catch (err) {
+                console.error(err);
+                standingsContent.innerHTML = '<div class="error-state"><div class="state-icon">⚠️</div><div class="state-title">Unable to load standings</div><div class="state-desc">' + escapeHTML(err.message || 'Network error') + '</div></div>';
+            }
+        }
+
+        function renderFinalStandings() {
+            if (!standingsData.length) {
+                standingsContent.innerHTML = '<div class="empty-state"><div class="state-icon">🏆</div><div class="state-title">No Standings Yet</div><div class="state-desc">Final standings will appear here once match results are entered. Check back after the first match is completed.</div><a href="tournaments.html" class="btn btn-primary btn-sm" style="margin-top:16px;">Browse Tournaments</a></div>';
+                return;
+            }
+
+            const topN = Number(activeTournament && activeTournament.QualifySlots) || 6;
+            const isCompleted = String((activeTournament && activeTournament.Status) || '').toLowerCase() === 'completed';
+            const heading = isCompleted ? 'Final Standings' : 'Current Standings';
+            const subtitle = isCompleted
+                ? '🏆 Official final results — ' + standingsData.length + ' teams · Top ' + topN + ' qualified'
+                : '📊 Live standings — ' + standingsData.length + ' teams · Top ' + topN + ' qualifying';
+
+            const rows = standingsData.map(function (s, i) {
+                const rank = i + 1;
+                const isQualified = rank <= topN;
+                const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : '';
+                const wwcd = Number(s.Wins) || 0;
+                return '<tr class="' + rankClass + '">' +
+                    '<td class="standings-rank">#' + rank + '</td>' +
+                    '<td>' +
+                        '<div class="standings-team-name">' + escapeHTML(s.TeamName || s.TeamID || 'Unknown') + '</div>' +
+                        (s.TeamTag ? '<div class="standings-team-tag">' + escapeHTML(s.TeamTag) + '</div>' : '') +
+                    '</td>' +
+                    '<td class="center standings-stat">' + (Number(s.MatchesPlayed) || 0) + '</td>' +
+                    '<td class="center standings-stat wins">' + wwcd + '</td>' +
+                    '<td class="center standings-stat kills">' + (Number(s.Kills) || 0) + '</td>' +
+                    '<td class="center standings-stat points">' + (Number(s.Points) || 0) + '</td>' +
+                    '<td class="center"><span class="qualify-badge ' + (isQualified ? 'qualified' : 'eliminated') + '">' + (isQualified ? '✓ Qualified' : 'Eliminated') + '</span></td>' +
+                '</tr>';
+            }).join('');
+
+            standingsContent.innerHTML = '<div class="final-standings-card">' +
+                '<div class="final-standings-head">' +
+                    '<div>' +
+                        '<div class="final-standings-title">🏆 ' + escapeHTML(heading) + '</div>' +
+                        '<div class="final-standings-subtitle">' + escapeHTML(subtitle) + '</div>' +
+                    '</div>' +
+                    '<div class="final-standings-meta">' +
+                        '<span>Teams: <strong>' + standingsData.length + '</strong></span>' +
+                        '<span>Qualify: <strong>Top ' + topN + '</strong></span>' +
+                    '</div>' +
+                '</div>' +
+                '<table class="standings-table">' +
+                    '<thead><tr>' +
+                        '<th style="width:80px;">Rank</th>' +
+                        '<th>Team</th>' +
+                        '<th class="center" style="width:90px;">Matches</th>' +
+                        '<th class="center" style="width:90px;">WWCD</th>' +
+                        '<th class="center" style="width:90px;">Kills</th>' +
+                        '<th class="center" style="width:110px;">Total Points</th>' +
+                        '<th class="center" style="width:130px;">Status</th>' +
+                    '</tr></thead>' +
+                    '<tbody>' + rows + '</tbody>' +
+                '</table>' +
+            '</div>';
+        }
+
+        // ==================== SHARED STATES ====================
         function showEmpty(title, desc) {
             stageTabs.style.display = 'none';
             resultsCount.style.display = 'none';
@@ -387,11 +999,44 @@
             stageTabs.style.display = 'none';
             resultsCount.style.display = 'none';
             resultsList.innerHTML = '<div class="error-state"><div class="state-icon">⚠️</div><div class="state-title">' + escapeHTML(title) + '</div><div class="state-desc">' + escapeHTML(msg || 'Network error') + '</div><button class="btn btn-primary btn-sm" id="retryBtn" style="margin-top:16px;">Retry</button></div>';
-            document.getElementById('retryBtn').addEventListener('click', loadTournaments);
+            const b = document.getElementById('retryBtn');
+            if (b) b.addEventListener('click', loadTournaments);
         }
 
+        // ==================== VIEW TAB SWITCHING ====================
+        function switchView(view) {
+            activeView = view;
+            viewTabs.querySelectorAll('.view-tab').forEach(function (btn) {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+            if (view === 'matches') {
+                matchesView.style.display = 'block';
+                standingsView.style.display = 'none';
+                if (activeTournamentId) loadMatchesAndResults(activeTournamentId);
+            } else {
+                matchesView.style.display = 'none';
+                standingsView.style.display = 'block';
+                if (activeTournamentId) loadFinalStandings(activeTournamentId);
+            }
+        }
+
+        viewTabs.querySelectorAll('.view-tab').forEach(function (btn) {
+            btn.addEventListener('click', function () { switchView(btn.dataset.view); });
+        });
+
+        // ==================== DOWNLOAD HANDLERS ====================
+        document.getElementById('dlMatchesCSV').addEventListener('click', exportMatchesCSV);
+        document.getElementById('dlMatchesPNG').addEventListener('click', function () { exportMatchesPNG(this); });
+        document.getElementById('dlStandingsCSV').addEventListener('click', exportStandingsCSV);
+        document.getElementById('dlStandingsPNG').addEventListener('click', function () { exportStandingsPNG(this); });
+
+        // ==================== WIRE UP ====================
+        filterToggle.addEventListener('click', toggleFilterMode);
         selectEl.addEventListener('change', function (e) {
-            if (e.target.value) loadResultsForTournament(e.target.value);
+            if (e.target.value) {
+                activeTournamentId = e.target.value;
+                loadTournamentData(activeTournamentId);
+            }
         });
 
         document.addEventListener('DOMContentLoaded', loadTournaments);
