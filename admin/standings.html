@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Standings — BCE Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/admin.css">
+<style>
+  .rank-1 { background: rgba(255,215,0,0.08); }
+  .table-wrap th { background: #0a0a0a; color: #6b6b6b; font-size: 11px; letter-spacing: 1px; }
+</style>
 </head>
 <body>
 <div class="admin-shell">
@@ -18,35 +20,40 @@
       
       <div class="page-header">
         <h1>Tournament Standings</h1>
-        <p>Update points, kills, and ranks for teams.</p>
+        <p>Auto-calculated from match results. <strong style="color: var(--red);">Qualified teams highlighted.</strong></p>
       </div>
 
-      <div class="dashboard-card" style="margin-bottom: 24px; display: flex; gap: 16px; align-items: flex-end;">
-        <div class="form-group" style="flex: 1; max-width: 400px; margin: 0;">
-          <label class="form-label">Select Tournament</label>
-          <select id="tournSelect" class="form-select">
-            <option value="">Choose a tournament to load standings...</option>
-          </select>
+      <div class="dashboard-card" style="margin-bottom: 20px;">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+          <div class="form-group" style="flex: 1; max-width: 350px; margin: 0;">
+            <label class="form-label">Tournament</label>
+            <select id="tournSelect" class="form-select"><option value="">Choose...</option></select>
+          </div>
+          <div class="form-group" style="max-width: 150px; margin: 0;">
+            <label class="form-label">Qualify Top</label>
+            <input type="number" id="qualifyTop" class="form-input" value="6" min="1">
+          </div>
+          <button id="recalcBtn" class="btn btn-primary" style="display: none;">Recalculate Points</button>
         </div>
-        <button id="saveBtn" class="btn btn-primary" style="display: none;">Save Standings</button>
       </div>
 
-      <div class="table-wrap" id="tableWrap" style="display: none;">
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Team Name</th>
-              <th>Matches Played</th>
-              <th>Wins</th>
-              <th>Kills</th>
-              <th>Points</th>
-            </tr>
-          </thead>
-          <tbody id="standingsBody">
-            <!-- Rows will be generated here -->
-          </tbody>
-        </table>
+      <div id="standingsArea" style="display: none;">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 80px;">Rank</th>
+                <th>Team</th>
+                <th style="width: 100px;">Matches</th>
+                <th style="width: 100px;">WWCD</th>
+                <th style="width: 100px;">Kills</th>
+                <th style="width: 120px;">Total Points</th>
+                <th style="width: 150px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="standingsBody"></tbody>
+          </table>
+        </div>
       </div>
 
     </main>
@@ -60,88 +67,75 @@
   const admin = await ADMIN_LAYOUT.init('Standings');
   if (!admin) return;
 
-  let currentData = [];
+  let currentTid = '';
 
   try {
-    const tRes = await ADMIN_API.get('getTournaments');
-    if (tRes.success) {
+    const r = await ADMIN_API.get('admin.getTournaments');
+    if (r.success) {
       const sel = document.getElementById('tournSelect');
-      (tRes.data || []).forEach(t => {
-        sel.innerHTML += `<option value="${t.TournamentID}">${t.Name}</option>`;
-      });
+      (r.data || []).forEach(t => sel.innerHTML += `<option value="${t.TournamentID}">${t.Name}</option>`);
     }
-  } catch (e) { console.error(e); }
+  } catch(e) {}
 
-  document.getElementById('tournSelect').addEventListener('change', async (e) => {
-    const tid = e.target.value;
-    if (!tid) {
-      document.getElementById('tableWrap').style.display = 'none';
-      document.getElementById('saveBtn').style.display = 'none';
-      return;
-    }
-
-    document.getElementById('tableWrap').style.display = 'block';
-    document.getElementById('saveBtn').style.display = 'inline-block';
-    const tbody = document.getElementById('standingsBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Loading...</td></tr>';
+  async function loadStandings(tid) {
+    if (!tid) { document.getElementById('standingsArea').style.display = 'none'; return; }
+    document.getElementById('standingsArea').style.display = 'block';
+    document.getElementById('recalcBtn').style.display = 'inline-block';
+    document.getElementById('standingsBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;">Loading...</td></tr>';
 
     try {
-      const res = await ADMIN_API.get('admin.getStandings', { tournamentId: tid });
-      if (res.success) {
-        currentData = res.data || [];
-        if (currentData.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:var(--text-muted);">No teams found in this tournament. Add teams in the sheet first.</td></tr>';
-          return;
-        }
+      const r = await ADMIN_API.get('admin.getStandings', { tournamentId: tid });
+      const topN = Number(document.getElementById('qualifyTop').value) || 6;
+      
+      if (r.success && r.data.length) {
+        document.getElementById('standingsBody').innerHTML = r.data.map(s => {
+          const rank = Number(s.Rank);
+          const isQualified = rank <= topN;
+          const rankClass = rank === 1 ? 'rank-1' : '';
+          
+          let rankColor = 'inherit';
+          if (rank === 1) rankColor = '#ffd700';
+          else if (rank === 2) rankColor = '#c0c0c0';
+          else if (rank === 3) rankColor = '#cd7f32';
 
-        tbody.innerHTML = currentData.map((s, idx) => `
-          <tr>
-            <td><input type="number" class="form-input rank-input" style="width: 60px;" value="${s.Rank || idx+1}" data-idx="${idx}" data-field="Rank"></td>
-            <td><strong style="color:#fff;">${s.TeamName || s.TeamID}</strong></td>
-            <td><input type="number" class="form-input" style="width: 80px;" value="${s.MatchesPlayed || 0}" data-idx="${idx}" data-field="MatchesPlayed"></td>
-            <td><input type="number" class="form-input" style="width: 80px;" value="${s.Wins || 0}" data-idx="${idx}" data-field="Wins"></td>
-            <td><input type="number" class="form-input" style="width: 80px;" value="${s.Kills || 0}" data-idx="${idx}" data-field="Kills"></td>
-            <td><input type="number" class="form-input" style="width: 80px;" value="${s.Points || 0}" data-idx="${idx}" data-field="Points"></td>
-          </tr>
-        `).join('');
-
+          return `<tr class="${rankClass}">
+            <td><strong style="color: ${rankColor}; font-family: Orbitron; font-size: 16px;">#${rank}</strong></td>
+            <td>
+              <strong style="color:#fff; font-size: 14px;">${s.TeamName || s.TeamID}</strong>
+              ${rank === 1 ? ' <span title="Winner Winner Chicken Dinner!">🍗</span>' : ''}
+            </td>
+            <td style="font-family: Orbitron;">${s.MatchesPlayed || 0}</td>
+            <td style="font-family: Orbitron; color: #fbbf24;">${s.Wins || 0}</td>
+            <td style="font-family: Orbitron; color: #f87171;">${s.Kills || 0}</td>
+            <td><strong style="color: #22d3ee; font-size: 18px; font-family: Orbitron;">${s.Points || 0}</strong></td>
+            <td>${isQualified ? '<span class="badge badge-active">QUALIFIED</span>' : '<span class="badge badge-completed">Eliminated</span>'}</td>
+          </tr>`;
+        }).join('');
+      } else {
+        document.getElementById('standingsBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">No standings yet. Enter match results first.</td></tr>';
       }
-    } catch (err) {
-      tbody.innerHTML = '<tr><td colspan="6" style="color: red; text-align: center;">Error loading</td></tr>';
+    } catch(e) {
+      document.getElementById('standingsBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f87171;">Error loading</td></tr>';
     }
+  }
+
+  document.getElementById('tournSelect').addEventListener('change', (e) => {
+    currentTid = e.target.value;
+    loadStandings(currentTid);
   });
 
-  document.getElementById('saveBtn').addEventListener('click', async () => {
-    const tid = document.getElementById('tournSelect').value;
-    if (!tid) return;
+  document.getElementById('qualifyTop').addEventListener('change', () => loadStandings(currentTid));
 
-    // Collect all inputs
-    const inputs = document.querySelectorAll('.form-input[data-idx]');
-    inputs.forEach(input => {
-      const idx = input.getAttribute('data-idx');
-      const field = input.getAttribute('data-field');
-      currentData[idx][field] = Number(input.value);
-    });
-
-    // Attach TournamentID to all
-    currentData.forEach(s => s.TournamentID = tid);
-
-    const btn = document.getElementById('saveBtn');
-    btn.textContent = 'Saving...';
-    btn.disabled = true;
-
+  document.getElementById('recalcBtn').addEventListener('click', async () => {
+    if (!currentTid) return;
+    const btn = document.getElementById('recalcBtn');
+    btn.disabled = true; btn.textContent = 'Recalculating...';
     try {
-      const res = await ADMIN_API.post('admin.saveStandings', { tournamentId: tid, data: currentData });
-      if (res.success) {
-        alert('Standings updated successfully!');
-      } else {
-        alert(res.message);
-      }
-    } catch (e) { alert('Network Error'); }
-    finally {
-      btn.textContent = 'Save Standings';
-      btn.disabled = false;
-    }
+      const r = await ADMIN_API.post('admin.recalculateStandings', { tournamentId: currentTid });
+      if (r.success) loadStandings(currentTid);
+      else alert(r.message);
+    } catch(e) { alert('Error'); }
+    finally { btn.disabled = false; btn.textContent = 'Recalculate Points'; }
   });
 })();
 </script>
